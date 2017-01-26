@@ -5,4 +5,9 @@ public enum Action {
 	BurgerShot,
 	AirEmu,
 	Fruit;
+
+	public static boolean estValide(String string) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -23,8 +23,8 @@ public class ClientTest extends Thread {
 		new ListenIn("ServeurTestor1 :", new BufferedInputStream(soc.getInputStream()));
 		out = new BufferedOutputStream(soc.getOutputStream());
 
-		out.write("eeeeeeeeeeeeeeeeeeeee\n".getBytes());
-		out.flush();
+//		out.write("CREATE\n".getBytes());
+//		out.flush();
 
 		start();
 	}
@@ -68,15 +68,16 @@ class ListenIn extends Thread {
 			while (true) {
 				byte b = (byte) in.read();
 				byte r[] = new byte[in.available()];
-				System.out.println(b);
+//				System.out.println(b);
 				in.read(r, 0, r.length);
 
-				String str = " -- " + String.valueOf(b) + " ";
+//				DEBUG NETWORK
+//				String str = " -- " + String.valueOf(b) + " -- ";
+//
+//				for (short j = 0; j < r.length; j++)
+//					str += r[j] + " ";
 
-				for (short j = 0; j < r.length; j++)
-					str += r[j] + " ";
-
-				System.out.println(name + str + " \n " + new String(r));
+				System.out.println(name + ((char)b)+new String(r));
 				i++;
 				if (i > 5)
 					Thread.sleep(1000);

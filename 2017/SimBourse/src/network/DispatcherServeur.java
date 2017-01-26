@@ -6,23 +6,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import core.Config;
-import core.Marche;
 
 
-public class Dispatcher {
+public class DispatcherServeur {
 
 	private Map<Integer, Partie> liste_partie;
 
-	public Dispatcher() {
+	public DispatcherServeur() {
 		ServerSocket ss = null;
 		try {
 			ss = new ServerSocket(Config.getInstance().PORT);
 			this.liste_partie = new HashMap<Integer, Partie>();
-			Marche m = new Marche(); //un seul marché pour le moment
 
 			while (true) {
 				Socket client = ss.accept();
-				new Client(client, this, m);
+				new Client(client, this);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -46,8 +44,7 @@ public class Dispatcher {
 	}
 
 	public static void main(String[] args) {
-		new Dispatcher();
-
+		new DispatcherServeur();
 	}
 
 }

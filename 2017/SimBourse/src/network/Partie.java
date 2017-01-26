@@ -1,47 +1,31 @@
 package network;
 
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
+
+import core.Joueur;
+import core.Marche;
 
 public class Partie {
-	private boolean joined, started;
-	private Socket client1, client2;
+	private final Marche marche;
+	private final List<Socket> liste_client;
 
 	public Partie() {
-		this.joined = false;
-		this.started = false;
-		this.client1 = null;
-		this.client2 = null;
+		marche = new Marche();
+		liste_client = new LinkedList<>();
 	}
 
-	public boolean isJoined() {
-		return joined;
-	}
-
-	public void setJoined(boolean joined) {
-		this.joined = joined;
+	public List<Socket> getListe_client() {
+		return liste_client;
 	}
 	
-	public Socket getClient1() {
-		return client1;
+	public Joueur ajouter_client(Socket s, String nom){
+		liste_client.add(s);
+		return marche.creer_joueur(nom);
 	}
 
-	public void setClient1(Socket client1) {
-		this.client1 = client1;
-	}
-
-	public Socket getClient2() {
-		return client2;
-	}
-
-	public void setClient2(Socket client2) {
-		this.client2 = client2;
-	}
-
-	public boolean isStarted() {
-		return started;
-	}
-
-	public void setStarted(boolean started) {
-		this.started = started;
+	public Marche getMarche() {
+		return marche;
 	}
 }
