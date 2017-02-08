@@ -6,6 +6,8 @@ public class Echange implements Comparable<Echange> {
 	private final float prix;
 	private final float volume;
 	private final long temps;
+	
+	private static Long temps_increment = (long) 0;
 
 	public Echange(Joueur vendeur, Joueur acheteur, float prix, float volume) {
 		super();
@@ -13,7 +15,9 @@ public class Echange implements Comparable<Echange> {
 		this.acheteur = acheteur;
 		this.prix = prix;
 		this.volume = volume;
-		this.temps = System.currentTimeMillis();
+		synchronized (temps_increment) {
+			this.temps = temps_increment++;
+		}
 	}
 
 	public Joueur getVendeur() {
@@ -43,6 +47,6 @@ public class Echange implements Comparable<Echange> {
 
 	@Override
 	public String toString() {
-		return "(" + vendeur.getNom() + "," + acheteur.getNom() + "," + prix + "," + volume + ")";
+		return "('" + vendeur.getNom() + "','" + acheteur.getNom() + "'," + prix + "," + volume + ")";
 	}
 }

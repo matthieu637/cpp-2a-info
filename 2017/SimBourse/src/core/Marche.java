@@ -73,18 +73,16 @@ public class Marche {
 			return -1;
 		if (prix_achat <= 0.0)
 			return -1;
-		
+
 		mutex.lock();
 		int argent_joueur = joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
-		if (argent_joueur < argent_engage){
+		if (argent_joueur < argent_engage) {
 			mutex.unlock();
 			return -1;
 		}
 
-		joueur_achat.setSolde_euros(argent_joueur - argent_engage);
 		Iterator<Ordre> it = liste_ventes.get(a).iterator();
-		int argent_paye = 0;
 
 		while (it.hasNext() && volume_achat > 0) {
 			Ordre vente = it.next();
@@ -97,15 +95,11 @@ public class Marche {
 				// l'achat est complete
 				if (volume_achat <= vente.volume) {
 					int volume_vendu = volume_achat;
-					argent_paye += (int) (vente.prix * volume_vendu);
 
 					joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (vente.prix * volume_vendu));
+					joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (vente.prix * volume_vendu));
 					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
 					vente.setVolume(vente.getVolume() - volume_vendu);
-
-					// rend l'argent a l'acheteur si le prix de vente est inferieur
-					if (argent_paye < argent_engage)
-						joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() + (argent_engage - argent_paye));
 
 					mutex.unlock();
 					return 0;
@@ -113,9 +107,9 @@ public class Marche {
 				// volume_achat > vente.volume
 
 				int volume_vendu = vente.volume;
-				argent_paye += (int) (vente.prix * volume_vendu);
 
 				joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (vente.prix * volume_vendu));
+				joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (vente.prix * volume_vendu));
 				joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
 				vente.setVolume(vente.getVolume() - volume_vendu);
 
@@ -129,8 +123,11 @@ public class Marche {
 				break;
 		}
 
+		// provisionne le reste
+		joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (prix_achat * volume_achat));
+
 		int id = creer_id_ordre();
-		Ordre achat = new Achat(id, a, prix_achat, volume_achat, joueur_achat, argent_paye);
+		Ordre achat = new Achat(id, a, prix_achat, volume_achat, joueur_achat);
 		liste_achats.get(a).add(achat);
 		joueur_achat.getOperationsOuvertes().add(Pair.of(id, achat));
 		mutex.unlock();
@@ -145,7 +142,7 @@ public class Marche {
 
 		mutex.lock();
 		int volume_joueur = joueur_vente.getSolde_actions().get(a);
-		if (volume_joueur < volume_vente){
+		if (volume_joueur < volume_vente) {
 			mutex.unlock();
 			return -1;
 		}
@@ -166,7 +163,7 @@ public class Marche {
 					int volume_vendu = volume_vente;
 					joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (achat.prix * volume_vendu));
 					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
-					achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
+					// achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
 					achat.setVolume(achat.getVolume() - volume_vente);
 
 					mutex.unlock();
@@ -177,7 +174,7 @@ public class Marche {
 				int volume_vendu = achat.volume;
 				joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (achat.prix * volume_vendu));
 				joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
-				achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
+				// achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
 				achat.setVolume(achat.getVolume() - volume_vente);
 
 				// remove
@@ -195,14 +192,14 @@ public class Marche {
 		liste_ventes.get(a).add(vente);
 		joueur_vente.getOperationsOuvertes().add(Pair.of(id, vente));
 		mutex.unlock();
-		
+
 		return id;
 	}
 
 	public int suivre(Joueur joueur, Integer ordre) {
 		mutex.lock();
 		Ordre o = joueur.contientOperation(ordre);
-		if (o == null){
+		if (o == null) {
 			mutex.unlock();
 			return 0;
 		}
@@ -215,7 +212,7 @@ public class Marche {
 	public int annuler(Joueur joueur, int ordre_id) {
 		mutex.lock();
 		Ordre o = joueur.contientOperation(ordre_id);
-		if (o == null){
+		if (o == null) {
 			mutex.unlock();
 			return -1;
 		}
@@ -224,11 +221,10 @@ public class Marche {
 			liste_achats.remove(o);
 			joueur.retirerOperation(ordre_id);
 
-			Achat a = (Achat) o;
-			int argent_recupere = o.getArgent_engage() - a.getArgent_paye();
+			int argent_recupere = (int) (o.prix * o.volume);
 			if (argent_recupere > 0)
 				joueur.setSolde_euros(joueur.getSolde_euros() + argent_recupere);
-			
+
 			mutex.unlock();
 			return argent_recupere;
 		} else {

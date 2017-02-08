@@ -9,6 +9,8 @@ public abstract class Ordre implements Comparable<Ordre> {
 	protected final int volume_initial;
 	protected final Joueur joueur;
 	protected final long temps;
+	
+	private static Long temps_increment = (long) 0;
 
 	public Ordre(int id_ordre, Action action, float prix, int volume, Joueur joueur) {
 		super();
@@ -18,7 +20,9 @@ public abstract class Ordre implements Comparable<Ordre> {
 		this.volume = volume;
 		this.volume_initial = volume;
 		this.joueur = joueur;
-		this.temps = System.currentTimeMillis();
+		synchronized (temps_increment) {
+			this.temps = temps_increment++;
+		}
 	}
 
 	public int getId_ordre() {
@@ -55,16 +59,12 @@ public abstract class Ordre implements Comparable<Ordre> {
 
 	@Override
 	public String toString() {
-		return "(" + joueur.getNom() + "," + prix + "," + volume + ")";
+		return "('" + joueur.getNom() + "'," + prix + "," + volume + ")";
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		Ordre o = (Ordre) obj;
 		return id_ordre == o.id_ordre;
-	}
-
-	public int getArgent_engage() {
-		return (int) (volume * prix);
 	}
 }

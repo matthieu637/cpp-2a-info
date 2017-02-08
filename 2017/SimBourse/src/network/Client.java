@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
-import core.Joueur;
 import core.Action;
+import core.Joueur;
 
 public class Client extends Thread {
 	private Socket client;
@@ -52,29 +55,29 @@ public class Client extends Thread {
 					joueur = current.ajouter_client(client, nom);
 					serveur.ajouterPartie(numero_partie, current);
 					create = true;
-				} else if (userInput.startsWith("JOIN ") && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
-						&& !create && !join) {
+				} else if (userInput.startsWith("JOIN ") && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && !create
+						&& !join) {
 					numero_partie = Integer.parseInt(arguments[1]);
 					String nom = arguments[2];
-					
-					if (!serveur.partieExiste(numero_partie)){
+
+					if (!serveur.partieExiste(numero_partie)) {
 						out.write("-1");
 						out.flush();
 						continue;
 					}
-					
-					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)){
+
+					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)) {
 						out.write("-2");
 						out.flush();
 						continue;
 					}
-					
-					if(serveur.getListepartie(numero_partie).getMarche().est_ouvert()){
+
+					if (serveur.getListepartie(numero_partie).getMarche().est_ouvert()) {
 						out.write("-3");
 						out.flush();
 						continue;
 					}
-					
+
 					out.write("0");
 					out.flush();
 					current = serveur.getListepartie(numero_partie);
@@ -85,33 +88,30 @@ public class Client extends Thread {
 					for (Socket s : current.getListe_client())
 						if (s != client) {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-							outAdvers.write("YES");
+							outAdvers.write("0");
 							outAdvers.flush();
 						}
-					out.write("YES");
+					out.write("0");
 					out.flush();
 
-				} else if (userInput.startsWith("ATTENTE") && !create && join && !current.getMarche().est_ouvert()) {
-					;// treated in TOP
+				} else if (userInput.startsWith("TOP") && join && !current.getMarche().est_ouvert()) {
+					// attente retour
 				} else if (userInput.startsWith("SOLDE") && peut_jouer) {
-					out.write(
-							String.valueOf(joueur.getSolde_euros()) + " " + String.valueOf(joueur.getSolde_actions()));
+					String begin = "{'euros':" + String.valueOf(joueur.getSolde_euros()) + ", ";
+					out.write(begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 					out.flush();
 				} else if (userInput.startsWith("OPERATIONS") && peut_jouer) {
-					out.write(String.valueOf(joueur.getOperationsOuvertes()));
+					out.write(String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
 					out.flush();
-				} else if (userInput.startsWith("ACHATS ") && arguments.length == 2 && Action.estValide(arguments[1])
-						&& peut_jouer) {
+				} else if (userInput.startsWith("ACHATS ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getListeAchats(a)));
 					out.flush();
-				} else if (userInput.startsWith("VENTES ") && arguments.length == 2 && Action.estValide(arguments[1])
-						&& peut_jouer) {
+				} else if (userInput.startsWith("VENTES ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getListeVentes(a)));
 					out.flush();
-				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1])
-						&& peut_jouer) {
+				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
 					out.flush();
@@ -129,18 +129,16 @@ public class Client extends Thread {
 					int volume = Integer.parseInt(arguments[3]);
 					out.write(String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
 					out.flush();
-				} else if (userInput.startsWith("SUIVRE ") && arguments.length == 2
-						&& StringUtils.isNumeric(arguments[1]) && peut_jouer) {
+				} else if (userInput.startsWith("SUIVRE ") && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					out.write(String.valueOf(current.getMarche().suivre(joueur, ordre)));
 					out.flush();
-				} else if (userInput.startsWith("ANNULER ") && arguments.length == 2
-						&& StringUtils.isNumeric(arguments[1]) && peut_jouer) {
+				} else if (userInput.startsWith("ANNULER ") && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					out.write(String.valueOf(current.getMarche().annuler(joueur, ordre)));
 					out.flush();
 				} else {
-					System.out.println("FAIL " + userInput);
+					System.out.println("FAIL |" + userInput + "|");
 					out.write("-1");
 					out.flush();
 				}
@@ -159,10 +157,10 @@ public class Client extends Thread {
 	}
 
 	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur) throws IOException {
-		if(joueur != null && current != null){
+		if (joueur != null && current != null) {
 			current.getMarche().retirer_joueur(joueur);
 		}
-		
+
 		if (current != null && create) {
 			for (Socket s : current.getListe_client())
 				s.close();
@@ -174,4 +172,32 @@ public class Client extends Thread {
 		System.out.println("Client déconnecté");
 	}
 
+	private <E, V> String MapToStringPython(Map<E, V> map) {
+		StringBuffer sb = new StringBuffer(12 * map.size());
+		for (Map.Entry<E, V> v : map.entrySet()) {
+			sb.append('\'');
+			sb.append(String.valueOf(v.getKey()));
+			sb.append("':");
+			sb.append(String.valueOf(v.getValue()));
+			sb.append(',');
+		}
+
+		if (map.size() != 0)
+			sb.deleteCharAt(sb.length() - 1);
+		return new String(sb);
+	}
+
+	private <E, V> String ListPairToStringPythonKeyOnly(List<Pair<E, V>> list) {
+		StringBuffer sb = new StringBuffer(12 * list.size());
+		sb.append('[');
+		for (Pair<E, V> v : list) {
+			sb.append(String.valueOf(v.getKey()));
+			sb.append(',');
+		}
+
+		if (list.size() != 0)
+			sb.deleteCharAt(sb.length() - 1);
+		sb.append(']');
+		return new String(sb);
+	}
 }

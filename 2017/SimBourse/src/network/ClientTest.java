@@ -3,7 +3,10 @@ package network;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -23,26 +26,41 @@ public class ClientTest extends Thread {
 		new ListenIn("ServeurTestor1 :", new BufferedInputStream(soc.getInputStream()));
 		out = new BufferedOutputStream(soc.getOutputStream());
 
-//		out.write("CREATE\n".getBytes());
-//		out.flush();
+		// out.write("CREATE\n".getBytes());
+		// out.flush();
 
 		start();
 	}
 
 	public void run() {
 		try {
-			String Commande;
+			String commande;
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
 			System.out.println("Write your commande here :");
 
-			while ((Commande = in.readLine()) != null) {
-				if (Commande.equalsIgnoreCase("stop"))
+			while ((commande = in.readLine()) != null) {
+				if (commande.equalsIgnoreCase("stop"))
 					System.exit(1);
 
-				Commande = Commande + "\n";
+				if (new File(commande).exists()) {
+					InputStream ips = new FileInputStream(commande);
+					InputStreamReader ipsr = new InputStreamReader(ips);
+					BufferedReader br = new BufferedReader(ipsr);
+					while ((commande = br.readLine()) != null) {
+						if (commande.equals(""))
+							continue;
+						commande += "\n";
+						out.write(commande.getBytes());
+						out.flush();
+					}
+					br.close();
+					continue;
+				}
 
-				out.write(Commande.getBytes());
+				commande = commande + "\n";
+
+				out.write(commande.getBytes());
 				out.flush();
 			}
 		} catch (IOException e) {
@@ -68,16 +86,16 @@ class ListenIn extends Thread {
 			while (true) {
 				byte b = (byte) in.read();
 				byte r[] = new byte[in.available()];
-//				System.out.println(b);
+				// System.out.println(b);
 				in.read(r, 0, r.length);
 
-//				DEBUG NETWORK
-//				String str = " -- " + String.valueOf(b) + " -- ";
-//
-//				for (short j = 0; j < r.length; j++)
-//					str += r[j] + " ";
+				// DEBUG NETWORK
+				// String str = " -- " + String.valueOf(b) + " -- ";
+				//
+				// for (short j = 0; j < r.length; j++)
+				// str += r[j] + " ";
 
-				System.out.println(name + ((char)b)+new String(r));
+				System.out.println(name + ((char) b) + new String(r));
 				i++;
 				if (i > 5)
 					Thread.sleep(1000);
