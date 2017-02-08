@@ -56,19 +56,30 @@ public class Client extends Thread {
 						&& !create && !join) {
 					numero_partie = Integer.parseInt(arguments[1]);
 					String nom = arguments[2];
-
-					if (serveur.partieExiste(numero_partie)
-							&& serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)
-							&& (!serveur.getListepartie(numero_partie).getMarche().est_ouvert())) {
-						out.write("YES");
+					
+					if (!serveur.partieExiste(numero_partie)){
+						out.write("-1");
 						out.flush();
-						current = serveur.getListepartie(numero_partie);
-						joueur = current.ajouter_client(client, nom);
-						join = true;
-					} else {
-						out.write("NO");
-						out.flush();
+						continue;
 					}
+					
+					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)){
+						out.write("-2");
+						out.flush();
+						continue;
+					}
+					
+					if(serveur.getListepartie(numero_partie).getMarche().est_ouvert()){
+						out.write("-3");
+						out.flush();
+						continue;
+					}
+					
+					out.write("0");
+					out.flush();
+					current = serveur.getListepartie(numero_partie);
+					joueur = current.ajouter_client(client, nom);
+					join = true;
 				} else if (userInput.startsWith("TOP") && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
 					for (Socket s : current.getListe_client())
@@ -91,29 +102,29 @@ public class Client extends Thread {
 					out.flush();
 				} else if (userInput.startsWith("ACHATS ") && arguments.length == 2 && Action.estValide(arguments[1])
 						&& peut_jouer) {
-					Action a = Action.valueOf(arguments[1]);
+					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getListeAchats(a)));
 					out.flush();
 				} else if (userInput.startsWith("VENTES ") && arguments.length == 2 && Action.estValide(arguments[1])
 						&& peut_jouer) {
-					Action a = Action.valueOf(arguments[1]);
+					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getListeVentes(a)));
 					out.flush();
 				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1])
 						&& peut_jouer) {
-					Action a = Action.valueOf(arguments[1]);
+					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
 					out.flush();
 				} else if (userInput.startsWith("ASK ") && arguments.length == 4 && Action.estValide(arguments[1])
 						&& StringUtils.isNumeric(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
-					Action a = Action.valueOf(arguments[1]);
+					Action a = Action.from(arguments[1]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					out.write(String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
 					out.flush();
 				} else if (userInput.startsWith("BID ") && arguments.length == 4 && Action.estValide(arguments[1])
 						&& StringUtils.isNumeric(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
-					Action a = Action.valueOf(arguments[1]);
+					Action a = Action.from(arguments[1]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					out.write(String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
@@ -125,14 +136,16 @@ public class Client extends Thread {
 					out.flush();
 				} else {
 					System.out.println("FAIL " + userInput);
+					out.write("-1");
+					out.flush();
 				}
 			}
 
-			libererPartie(current, numero_partie, create);
+			libererPartie(current, numero_partie, create, joueur);
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
-				libererPartie(current, numero_partie, create);
+				libererPartie(current, numero_partie, create, joueur);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -140,7 +153,11 @@ public class Client extends Thread {
 
 	}
 
-	private void libererPartie(Partie current, int numero_partie, boolean create) throws IOException {
+	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur) throws IOException {
+		if(joueur != null && current != null){
+			current.getMarche().retirer_joueur(joueur);
+		}
+		
 		if (current != null && create) {
 			for (Socket s : current.getListe_client())
 				s.close();

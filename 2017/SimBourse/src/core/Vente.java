@@ -8,6 +8,9 @@ public class Vente extends Ordre {
 
 	@Override
 	public int compareTo(Ordre o) {
-		return Float.compare(this.prix, o.prix);
+		int c = Float.compare(this.prix, o.prix);
+		if(c == 0)
+			return Long.compare(this.temps, o.temps);
+		return c;
 	}
 }

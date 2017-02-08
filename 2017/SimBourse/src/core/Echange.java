@@ -5,15 +5,15 @@ public class Echange implements Comparable<Echange> {
 	private final Joueur acheteur;
 	private final float prix;
 	private final float volume;
-	private final int temps;
+	private final long temps;
 
-	public Echange(Joueur vendeur, Joueur acheteur, float prix, float volume, int temps) {
+	public Echange(Joueur vendeur, Joueur acheteur, float prix, float volume) {
 		super();
 		this.vendeur = vendeur;
 		this.acheteur = acheteur;
 		this.prix = prix;
 		this.volume = volume;
-		this.temps = temps;
+		this.temps = System.currentTimeMillis();
 	}
 
 	public Joueur getVendeur() {
@@ -32,12 +32,12 @@ public class Echange implements Comparable<Echange> {
 		return volume;
 	}
 
-	public int getTemps() {
+	public long getTemps() {
 		return temps;
 	}
 
 	@Override
 	public int compareTo(Echange o) {
-		return Integer.compare(this.temps, o.temps);
+		return Long.compare(this.temps, o.temps);
 	}
 }

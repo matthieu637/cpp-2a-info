@@ -1,12 +1,14 @@
 package core;
 
 public abstract class Ordre implements Comparable<Ordre> {
+
 	protected final int id_ordre;
 	protected final Action action;
 	protected final float prix;
 	protected int volume;
 	protected final int volume_initial;
 	protected final Joueur joueur;
+	protected final long temps;
 
 	public Ordre(int id_ordre, Action action, float prix, int volume, Joueur joueur) {
 		super();
@@ -16,6 +18,7 @@ public abstract class Ordre implements Comparable<Ordre> {
 		this.volume = volume;
 		this.volume_initial = volume;
 		this.joueur = joueur;
+		this.temps = System.currentTimeMillis();
 	}
 
 	public int getId_ordre() {
@@ -40,5 +43,18 @@ public abstract class Ordre implements Comparable<Ordre> {
 
 	public Joueur getJoueur() {
 		return joueur;
+	}
+
+	public int getVolume_initial() {
+		return volume_initial;
+	}
+
+	public long getTemps() {
+		return temps;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + joueur.getNom() + "," + prix + "," + volume + ")";
 	}
 }

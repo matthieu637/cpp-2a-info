@@ -46,8 +46,8 @@ public class Marche {
 	public boolean nom_possible(String nom) {
 		for (Joueur j : liste_joueurs)
 			if (j.getNom().equalsIgnoreCase(nom))
-				return true;
-		return false;
+				return false;
+		return true;
 	}
 
 	public Set<Ordre> getListeAchats(Action a) {
@@ -68,22 +68,34 @@ public class Marche {
 			return -1;
 		if (prix <= 0.0)
 			return -1;
+		// mutex
+		int volume_joueur = joueur.getSolde_actions().get(a);
+		if (volume_joueur < volume)
+			return -1;
+
+		joueur.getSolde_actions().put(a, volume_joueur - volume);
 
 		int id = creer_id_ordre();
 		Ordre achat = new Achat(id, a, prix, volume, joueur);
 		if (liste_ventes.get(a).size() > 0) {
 			Ordre vente = liste_ventes.get(a).iterator().next();
 
-			if (prix <= vente.prix && volume >= vente.volume)
-				// ajout historique
-				return 0;
-			else if (prix <= vente.prix)
-				;
-			// ajout historique
-			// else remove volume
+			if (prix <= vente.prix) {
+				vente.getJoueur().setSolde_euros(vente.getJoueur().getSolde_euros() + (int) (prix * volume));
+				joueur.getSolde_actions().put(a, joueur.getSolde_actions().get(a) + volume);
+				
+				Echange e = new Echange(vente.getJoueur(), joueur, prix, ??);
+				historiques.get(a).add(e);
+
+				if (prix <= vente.prix && volume >= vente.volume) {
+					
+					return 0;
+				}
+			}
 		}
 
 		liste_achats.get(a).add(achat);
+		joueur.getOperationsOuvertes().add(id);
 		return id;
 	}
 
@@ -103,5 +115,10 @@ public class Marche {
 			numero_partie = (int) (Math.random() * 100000000);
 		liste_id_ordres.add(numero_partie);
 		return numero_partie;
+	}
+
+	public void retirer_joueur(Joueur joueur) {
+		liste_joueurs.remove(joueur);
+		// TODO: remove order of joueur?
 	}
 }
