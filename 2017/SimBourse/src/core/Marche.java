@@ -1,11 +1,16 @@
 package core;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 public class Marche {
 	private boolean ouvert;
@@ -14,6 +19,7 @@ public class Marche {
 	private List<Joueur> liste_joueurs;
 	private Set<Integer> liste_id_ordres;
 	private Map<Action, Set<Echange>> historiques;
+	private final Lock mutex = new ReentrantLock();
 
 	public Marche() {
 		ouvert = false;
@@ -37,13 +43,13 @@ public class Marche {
 		ouvert = true;
 	}
 
-	public Joueur creer_joueur(String nom) {
+	public synchronized Joueur creer_joueur(String nom) {
 		Joueur j = new Joueur(nom);
 		liste_joueurs.add(j);
 		return j;
 	}
 
-	public boolean nom_possible(String nom) {
+	public synchronized boolean nom_possible(String nom) {
 		for (Joueur j : liste_joueurs)
 			if (j.getNom().equalsIgnoreCase(nom))
 				return false;
@@ -58,55 +64,182 @@ public class Marche {
 		return liste_ventes.get(a);
 	}
 
-	public Object getHistoriqueEchanges(Action a) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<Echange> getHistoriqueEchanges(Action a) {
+		return historiques.get(a);
 	}
 
-	public int achat(Joueur joueur, Action a, float prix, int volume) {
-		if (volume <= 0.0)
+	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
+		if (volume_achat <= 0.0)
 			return -1;
-		if (prix <= 0.0)
+		if (prix_achat <= 0.0)
 			return -1;
-		// mutex
-		int volume_joueur = joueur.getSolde_actions().get(a);
-		if (volume_joueur < volume)
+		
+		mutex.lock();
+		int argent_joueur = joueur_achat.getSolde_euros();
+		int argent_engage = (int) (volume_achat * prix_achat);
+		if (argent_joueur < argent_engage){
+			mutex.unlock();
 			return -1;
-
-		joueur.getSolde_actions().put(a, volume_joueur - volume);
-
-		int id = creer_id_ordre();
-		Ordre achat = new Achat(id, a, prix, volume, joueur);
-		if (liste_ventes.get(a).size() > 0) {
-			Ordre vente = liste_ventes.get(a).iterator().next();
-
-			if (prix <= vente.prix) {
-				vente.getJoueur().setSolde_euros(vente.getJoueur().getSolde_euros() + (int) (prix * volume));
-				joueur.getSolde_actions().put(a, joueur.getSolde_actions().get(a) + volume);
-				
-				Echange e = new Echange(vente.getJoueur(), joueur, prix, ??);
-				historiques.get(a).add(e);
-
-				if (prix <= vente.prix && volume >= vente.volume) {
-					
-					return 0;
-				}
-			}
 		}
 
+		joueur_achat.setSolde_euros(argent_joueur - argent_engage);
+		Iterator<Ordre> it = liste_ventes.get(a).iterator();
+		int argent_paye = 0;
+
+		while (it.hasNext() && volume_achat > 0) {
+			Ordre vente = it.next();
+			Joueur joueur_vente = vente.getJoueur();
+
+			if (prix_achat >= vente.prix) {
+				Echange e = new Echange(joueur_vente, joueur_achat, vente.prix, Math.min(vente.volume, volume_achat));
+				historiques.get(a).add(e);
+
+				// l'achat est complete
+				if (volume_achat <= vente.volume) {
+					int volume_vendu = volume_achat;
+					argent_paye += (int) (vente.prix * volume_vendu);
+
+					joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (vente.prix * volume_vendu));
+					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
+					vente.setVolume(vente.getVolume() - volume_vendu);
+
+					// rend l'argent a l'acheteur si le prix de vente est inferieur
+					if (argent_paye < argent_engage)
+						joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() + (argent_engage - argent_paye));
+
+					mutex.unlock();
+					return 0;
+				}
+				// volume_achat > vente.volume
+
+				int volume_vendu = vente.volume;
+				argent_paye += (int) (vente.prix * volume_vendu);
+
+				joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (vente.prix * volume_vendu));
+				joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
+				vente.setVolume(vente.getVolume() - volume_vendu);
+
+				// remove
+				Integer id_vente = vente.getId_ordre();
+				joueur_vente.retirerOperation(id_vente);
+				it.remove();
+
+				volume_achat -= volume_vendu;
+			} else
+				break;
+		}
+
+		int id = creer_id_ordre();
+		Ordre achat = new Achat(id, a, prix_achat, volume_achat, joueur_achat, argent_paye);
 		liste_achats.get(a).add(achat);
-		joueur.getOperationsOuvertes().add(id);
+		joueur_achat.getOperationsOuvertes().add(Pair.of(id, achat));
+		mutex.unlock();
 		return id;
 	}
 
-	public Object vend(Joueur joueur, Action a, float prix, int volume) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object vend(Joueur joueur_vente, Action a, float prix_vente, int volume_vente) {
+		if (volume_vente <= 0.0)
+			return -1;
+		if (prix_vente <= 0.0)
+			return -1;
+
+		mutex.lock();
+		int volume_joueur = joueur_vente.getSolde_actions().get(a);
+		if (volume_joueur < volume_vente){
+			mutex.unlock();
+			return -1;
+		}
+
+		joueur_vente.getSolde_actions().put(a, volume_joueur - volume_vente);
+		Iterator<Ordre> it = liste_achats.get(a).iterator();
+
+		while (it.hasNext() && volume_vente > 0) {
+			Achat achat = (Achat) it.next();
+			Joueur joueur_achat = achat.getJoueur();
+
+			if (prix_vente <= achat.prix) {
+				Echange e = new Echange(joueur_vente, joueur_achat, achat.prix, Math.min(achat.volume, volume_vente));
+				historiques.get(a).add(e);
+
+				// la vente est complete
+				if (volume_vente <= achat.volume) {
+					int volume_vendu = volume_vente;
+					joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (achat.prix * volume_vendu));
+					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
+					achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
+					achat.setVolume(achat.getVolume() - volume_vente);
+
+					mutex.unlock();
+					return 0;
+				}
+				// volume_vente > vente.volume
+
+				int volume_vendu = achat.volume;
+				joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (achat.prix * volume_vendu));
+				joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
+				achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
+				achat.setVolume(achat.getVolume() - volume_vente);
+
+				// remove
+				Integer id_vente = achat.getId_ordre();
+				joueur_achat.retirerOperation(id_vente);
+				it.remove();
+
+				volume_vente -= volume_vendu;
+			} else
+				break;
+		}
+
+		int id = creer_id_ordre();
+		Ordre vente = new Vente(id, a, prix_vente, volume_vente, joueur_vente);
+		liste_ventes.get(a).add(vente);
+		joueur_vente.getOperationsOuvertes().add(Pair.of(id, vente));
+		mutex.unlock();
+		
+		return id;
 	}
 
-	public Object suivre(Joueur joueur, int ordre) {
-		// TODO Auto-generated method stub
-		return null;
+	public int suivre(Joueur joueur, Integer ordre) {
+		mutex.lock();
+		Ordre o = joueur.contientOperation(ordre);
+		if (o == null){
+			mutex.unlock();
+			return 0;
+		}
+
+		int vol = o.getVolume();
+		mutex.unlock();
+		return vol;
+	}
+
+	public int annuler(Joueur joueur, int ordre_id) {
+		mutex.lock();
+		Ordre o = joueur.contientOperation(ordre_id);
+		if (o == null){
+			mutex.unlock();
+			return -1;
+		}
+
+		if (o instanceof Achat) {
+			liste_achats.remove(o);
+			joueur.retirerOperation(ordre_id);
+
+			Achat a = (Achat) o;
+			int argent_recupere = o.getArgent_engage() - a.getArgent_paye();
+			if (argent_recupere > 0)
+				joueur.setSolde_euros(joueur.getSolde_euros() + argent_recupere);
+			
+			mutex.unlock();
+			return argent_recupere;
+		} else {
+			liste_ventes.remove(o);
+			joueur.retirerOperation(ordre_id);
+			int nb_action = joueur.getSolde_actions().get(o.action);
+			joueur.getSolde_actions().put(o.action, nb_action + o.volume);
+
+			mutex.unlock();
+			return o.volume;
+		}
 	}
 
 	private synchronized int creer_id_ordre() {
@@ -117,7 +250,7 @@ public class Marche {
 		return numero_partie;
 	}
 
-	public void retirer_joueur(Joueur joueur) {
+	public synchronized void retirer_joueur(Joueur joueur) {
 		liste_joueurs.remove(joueur);
 		// TODO: remove order of joueur?
 	}

@@ -57,4 +57,14 @@ public abstract class Ordre implements Comparable<Ordre> {
 	public String toString() {
 		return "(" + joueur.getNom() + "," + prix + "," + volume + ")";
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		Ordre o = (Ordre) obj;
+		return id_ordre == o.id_ordre;
+	}
+
+	public int getArgent_engage() {
+		return (int) (volume * prix);
+	}
 }

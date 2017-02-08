@@ -1,16 +1,19 @@
 package core;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 public class Joueur {
 
 	private final String nom;
 	private int solde_euros;
 	private final Map<Action, Integer> solde_actions;
-	private final List<Integer> operations;
+	private final List<Pair<Integer, Ordre>> operations;
 
 	public Joueur(String nom) {
 		super();
@@ -40,8 +43,25 @@ public class Joueur {
 		return solde_actions;
 	}
 
-	public List<Integer> getOperationsOuvertes() {
+	public List<Pair<Integer, Ordre>> getOperationsOuvertes() {
 		return operations;
 	}
 
+	public Ordre contientOperation(Integer i) {
+		for (Pair<Integer, Ordre> p : operations)
+			if (p.getLeft().equals(i))
+				return p.getRight();
+
+		return null;
+	}
+
+	public void retirerOperation(Integer i) {
+		Iterator<Pair<Integer, Ordre>> it = operations.iterator();
+		while (it.hasNext())
+			if (it.next().getLeft().equals(i)) {
+				it.remove();
+				break;
+			}
+
+	}
 }

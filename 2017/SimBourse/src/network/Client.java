@@ -134,6 +134,11 @@ public class Client extends Thread {
 					int ordre = Integer.parseInt(arguments[1]);
 					out.write(String.valueOf(current.getMarche().suivre(joueur, ordre)));
 					out.flush();
+				} else if (userInput.startsWith("ANNULER ") && arguments.length == 2
+						&& StringUtils.isNumeric(arguments[1]) && peut_jouer) {
+					int ordre = Integer.parseInt(arguments[1]);
+					out.write(String.valueOf(current.getMarche().annuler(joueur, ordre)));
+					out.flush();
 				} else {
 					System.out.println("FAIL " + userInput);
 					out.write("-1");

@@ -40,4 +40,9 @@ public class Echange implements Comparable<Echange> {
 	public int compareTo(Echange o) {
 		return Long.compare(this.temps, o.temps);
 	}
+
+	@Override
+	public String toString() {
+		return "(" + vendeur.getNom() + "," + acheteur.getNom() + "," + prix + "," + volume + ")";
+	}
 }
