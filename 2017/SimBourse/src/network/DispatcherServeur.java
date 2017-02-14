@@ -17,6 +17,8 @@ public class DispatcherServeur {
 		try {
 			ss = new ServerSocket(Config.getInstance().PORT);
 			this.liste_partie = new HashMap<Integer, Partie>();
+			Console c = new Console(liste_partie);
+			c.start();
 
 			while (true) {
 				Socket client = ss.accept();

@@ -28,4 +28,9 @@ public class Partie {
 	public Marche getMarche() {
 		return marche;
 	}
+
+	@Override
+	public String toString() {
+		return "Partie [marche=" + marche + ", liste_client=" + liste_client + "]";
+	}
 }

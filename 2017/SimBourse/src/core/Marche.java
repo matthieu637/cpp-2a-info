@@ -23,6 +23,7 @@ public class Marche {
 	private Set<Integer> liste_id_ordres;
 	private Map<Action, Set<Echange>> historiques;
 	private final Lock mutex = new ReentrantLock();
+	private Thread timer = null;
 
 	public Marche() {
 		ouvert = false;
@@ -47,18 +48,19 @@ public class Marche {
 		ouvert = true;
 		debut = System.currentTimeMillis();
 
-		Thread t = new Thread() {
+		timer = new Thread() {
 			@Override
 			public void run() {
 				try {
 					Thread.sleep(1000 * 60 * Config.getInstance().TEMPS_PARTIE);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					//might be interrupted if creator leaves
+					//don't print error in this case
 				}
 				fini = true;
 			}
 		};
-		t.start();
+		timer.start();
 	}
 
 	public boolean est_fini() {
@@ -294,5 +296,18 @@ public class Marche {
 		sb.append("}");
 
 		return new String(sb);
+	}
+
+	@Override
+	public String toString() {
+		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
+				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
+				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
+	}
+
+	public void destroy(){
+		if(timer != null){
+			timer.interrupt();
+		}
 	}
 }

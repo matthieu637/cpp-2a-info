@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 
@@ -150,11 +151,14 @@ public class Client extends Thread {
 
 			libererPartie(current, numero_partie, create, joueur);
 		} catch (Exception e) {
-			e.printStackTrace();
+			if(!(e instanceof SocketException))
+				e.printStackTrace();
 			try {
 				libererPartie(current, numero_partie, create, joueur);
 			} catch (Exception e1) {
 				e1.printStackTrace();
+				if(!(e1 instanceof SocketException))
+					e.printStackTrace();
 			}
 		}
 
@@ -169,6 +173,7 @@ public class Client extends Thread {
 			for (Socket s : current.getListe_client())
 				s.close();
 
+			current.getMarche().destroy();
 			serveur.retirerPartie(numero_partie);
 		} else if (!create) {
 			client.close();
