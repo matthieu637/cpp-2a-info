@@ -8,7 +8,7 @@ import java.util.Map;
 public class Console extends Thread {
 
 	private final Map<Integer, Partie> liste_partie;
-	
+
 	public Console(Map<Integer, Partie> liste_partie) {
 		this.liste_partie = liste_partie;
 	}
@@ -22,18 +22,23 @@ public class Console extends Thread {
 			while ((commande = in.readLine()) != null) {
 				if (commande.equalsIgnoreCase("stop"))
 					System.exit(1);
-				else if(commande.equalsIgnoreCase("help")){
+				else if (commande.equalsIgnoreCase("help")) {
 					System.err.println("Commandes :");
 					System.err.println("\tstop");
 					System.err.println("\thelp");
 					System.err.println("\tliste");
 					System.err.println("\tthread");
-				} else if(commande.equalsIgnoreCase("liste")){
-					for(int id : liste_partie.keySet())
-						System.err.println(id+" "+liste_partie.get(id));
+					System.err.println("\tparticipants");
+				} else if (commande.equalsIgnoreCase("liste")) {
+					for (int id : liste_partie.keySet())
+						System.err.println(id + " " + liste_partie.get(id));
 					System.err.println();
-				} else if(commande.equalsIgnoreCase("thread")){
+				} else if (commande.equalsIgnoreCase("thread")) {
 					System.err.println(Thread.activeCount());
+				} else if (commande.equalsIgnoreCase("participants")) {
+					for (int id : liste_partie.keySet())
+						System.err.println(id + " " + liste_partie.get(id).getListe_client().size());
+					System.err.println();
 				}
 
 			}

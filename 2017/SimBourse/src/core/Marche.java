@@ -271,8 +271,14 @@ public class Marche {
 	}
 
 	public synchronized void retirer_joueur(Joueur joueur) {
+		List<Integer> ordre_supprimer = new LinkedList<>();
+		for(Pair<Integer, Ordre> t : joueur.getOperationsOuvertes()){
+			ordre_supprimer.add(t.getLeft());
+		}
+		for(Integer i : ordre_supprimer){
+			annuler(joueur, i);
+		}
 		liste_joueurs.remove(joueur);
-		// TODO: remove order of joueur?
 	}
 
 	public String fin() {
