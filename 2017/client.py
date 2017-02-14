@@ -20,95 +20,99 @@ class Reseau:
 	def __estTop(self):
 		if(not self.topbool):
 			raise RuntimeError("La partie n'est pas encore commencee.")
+	
+	def __envoyer(self, commande):
+		try:
+			sent = self.sock.send((commande+"\n").encode())
+			if sent == 0:
+				raise RuntimeError("Connexion perdu. _1", commande)	
+		except (ConnectionRefusedError):
+			raise RuntimeError("Connexion perdu. _2")
+	def __recevoir(self):
+		try:
+			back = self.sock.recv(256)
+			if back == b'':
+				raise RuntimeError("Connexion perdu. _3")
+			return back.decode()
+		except (ConnectionRefusedError):
+			raise RuntimeError("Connexion perdu. _4")
+			
 
 	def creerPartie(self, nom):
 		self.__estConnect()
-		sent = self.sock.send(("CREATE "+nom+"\n").encode())
-		if sent == 0:
-			raise RuntimeError("Erreur deconnexion. _1")
-		id_partie = self.sock.recv(256)
-		if id_partie == b'':
-			raise RuntimeError("Erreur deconnexion. _2")
-		#print("Nouvelle partie : ", id_partie.decode() )
+		self.__envoyer("CREATE "+nom)
+		id_partie = int(self.__recevoir())
 		self.connect = True
-		return int(id_partie.decode())
+		return id_partie
 
 	def top(self):
 		if(not self.connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
-		self.sock.send(("TOP\n").encode())
-		r = int(self.sock.recv(256).decode())
+		self.__envoyer("TOP")
+		r = int(self.__recevoir())
 		self.topbool= True
 		return r
 	
 	def rejoindrePartie(self, id_partie, nom):
 		self.__estConnect()
-		sent = self.sock.send(("JOIN "+str(id_partie)+" "+nom+"\n").encode())
-		if sent == 0:
-			raise RuntimeError("Erreur deconnexion. _3")
-		ok = self.sock.recv(256)
-		if ok == b'':
-			raise RuntimeError("Erreur deconnexion. _4")
-		if ok.decode() == "-1":
+		self.__envoyer("JOIN "+str(id_partie)+" "+nom)
+		ok = self.__recevoir()
+		if ok == "-1":
 			raise RuntimeError("La partie", str(id_partie) ,"n'existe pas.")
-		if ok.decode() == "-2":
+		if ok == "-2":
 			raise RuntimeError("Le nom", nom ,"est deja pris.")
-		if ok.decode() == "-3":
+		if ok == "-3":
 			raise RuntimeError("La partie", str(id_partie) ,"est deja lance.")
-		#print (ok.decode())
 		self.connect = True
 		return True
 
 	def solde(self):
 		self.__estTop()
-		self.sock.send(("SOLDE\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("SOLDE")
+		return eval(self.__recevoir())
 	
 	def operationsEnCours(self):
 		self.__estTop()
-		self.sock.send(("OPERATIONS\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("OPERATIONS")
+		return eval(self.__recevoir())
 
-	def ask(self, action, prix, volum):
+	def ask(self, action, prix, volume):
 		self.__estTop()
-		self.sock.send(("ASK "+action+" "+str(prix)+" "+str(volum)+"\n").encode())
-		return int(self.sock.recv(256).decode())
+		self.__envoyer("ASK "+action+" "+str(prix)+" "+str(volume))
+		return eval(self.__recevoir())
 
-	def bid(self, action, prix, volum):
+	def bid(self, action, prix, volume):
 		self.__estTop()
-		self.sock.send(("BID "+action+" "+str(prix)+" "+str(volum)+"\n").encode())
-		return int(self.sock.recv(256).decode())
+		self.__envoyer("BID "+action+" "+str(prix)+" "+str(volume))
+		return eval(self.__recevoir())
 
 	def achats(self, action):
 		self.__estTop()
-		self.sock.send(("ACHATS "+action+"\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("ACHATS "+action)
+		return eval(self.__recevoir())
 	
 	def ventes(self, action):
 		self.__estTop()
-		self.sock.send(("VENTES "+action+"\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("VENTES "+action)
+		return eval(self.__recevoir())
 
 	def historiques(self, action):
 		self.__estTop()
-		self.sock.send(("HISTO "+action+"\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("HISTO "+action)
+		return eval(self.__recevoir())
 
 	def suivreOperation(self, id_partie):
 		self.__estTop()
-		self.sock.send(("SUIVRE "+str(id_partie)+"\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("SUIVRE "+str(id_partie))
+		return eval(self.__recevoir())
 
-	def annulerOperation(self, id_partie):
+	def annulerOperation(self, id_ordre):
 		self.__estTop()
-		self.sock.send(("ANNULER "+str(id_partie)+"\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("ANNULER "+str(id_ordre))
+		return eval(self.__recevoir())
+
 	def fin(self):
 		self.__estTop()
-		self.sock.send(("FIN\n").encode())
-		return eval(self.sock.recv(256).decode())
+		self.__envoyer("FIN")
+		return eval(self.__recevoir())
 
-
-
-
-		
