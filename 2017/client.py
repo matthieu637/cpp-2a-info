@@ -1,13 +1,17 @@
 import socket
 
 class Reseau:
-	def __init__(self, h="192.168.0.45", p=3080):
-		self.host=h
-		self.port=p
-		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.connect_ex((self.host, self.port))
+	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.connect = False
-		self.topbool= False
+		self.topbool = False
+		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.sock.settimeout(5)
+		result = self.sock.connect_ex((host, port))
+		if result != 0 and host == "matthieu-zimmer.net":
+			result = self.sock.connect_ex(("paris.matthieu-zimmer.net", 80))
+		if result != 0:
+			raise RuntimeError("Impossible de se connecter a l'host fourni.")
+		self.sock.settimeout(30)
 
 	def __estConnect(self):
 		if(self.connect):
@@ -98,6 +102,10 @@ class Reseau:
 	def annulerOperation(self, id_partie):
 		self.__estTop()
 		self.sock.send(("ANNULER "+str(id_partie)+"\n").encode())
+		return eval(self.sock.recv(256).decode())
+	def fin(self):
+		self.__estTop()
+		self.sock.send(("FIN\n").encode())
 		return eval(self.sock.recv(256).decode())
 
 

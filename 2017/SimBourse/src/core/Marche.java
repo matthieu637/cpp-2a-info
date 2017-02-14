@@ -1,5 +1,6 @@
 package core;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,6 +15,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class Marche {
 	private boolean ouvert;
+	private boolean fini;
+	private long debut;
 	private Map<Action, Set<Ordre>> liste_achats;
 	private Map<Action, Set<Ordre>> liste_ventes;
 	private List<Joueur> liste_joueurs;
@@ -23,6 +26,7 @@ public class Marche {
 
 	public Marche() {
 		ouvert = false;
+		fini = false;
 		liste_achats = new HashMap<>();
 		liste_ventes = new HashMap<>();
 		historiques = new HashMap<>();
@@ -41,6 +45,24 @@ public class Marche {
 
 	public void commence() {
 		ouvert = true;
+		debut = System.currentTimeMillis();
+
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000 * 60 * Config.getInstance().TEMPS_PARTIE);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				fini = true;
+			}
+		};
+		t.start();
+	}
+
+	public boolean est_fini() {
+		return fini;
 	}
 
 	public synchronized Joueur creer_joueur(String nom) {
@@ -249,5 +271,28 @@ public class Marche {
 	public synchronized void retirer_joueur(Joueur joueur) {
 		liste_joueurs.remove(joueur);
 		// TODO: remove order of joueur?
+	}
+
+	public String fin() {
+		StringBuffer sb = new StringBuffer(liste_joueurs.size() * 100);
+		sb.append("{'temps':");
+		long secondes = ((debut + Config.getInstance().TEMPS_PARTIE * 60 * 1000) - System.currentTimeMillis()) / 1000;
+		if (secondes < 0)
+			secondes = 0;
+		sb.append(String.valueOf(secondes));
+		if (fini) {
+			sb.append(",'classement':[");
+			Collections.sort(liste_joueurs);
+			for(Joueur j : liste_joueurs){
+				sb.append("'");
+				sb.append(j.getNom());
+				sb.append("',");
+			}
+			sb.deleteCharAt(sb.length()-1);
+			sb.append("]");
+		}
+		sb.append("}");
+
+		return new String(sb);
 	}
 }

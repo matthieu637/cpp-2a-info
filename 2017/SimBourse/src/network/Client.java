@@ -43,7 +43,7 @@ public class Client extends Thread {
 			while ((userInput = in.readLine()) != null) {
 				System.out.println(userInput + "\n");
 				String[] arguments = userInput.split(" ");
-				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert();
+				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
 
 				// Utilisateur n'ayant ni créé ni rejoint peut créer
 				if (userInput.startsWith("CREATE ") && arguments.length == 2 && !create && !join) {
@@ -96,7 +96,7 @@ public class Client extends Thread {
 
 				} else if (userInput.startsWith("TOP") && join && !current.getMarche().est_ouvert()) {
 					// attente retour
-				} else if (userInput.startsWith("SOLDE") && peut_jouer) {
+				} else if (userInput.startsWith("SOLDE") && (create || join) && current.getMarche().est_ouvert()) {
 					String begin = "{'euros':" + String.valueOf(joueur.getSolde_euros()) + ", ";
 					out.write(begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 					out.flush();
@@ -111,7 +111,8 @@ public class Client extends Thread {
 					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getListeVentes(a)));
 					out.flush();
-				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
+				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1]) && 
+						(create || join) && current.getMarche().est_ouvert()) {
 					Action a = Action.from(arguments[1]);
 					out.write(String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
 					out.flush();
@@ -136,6 +137,9 @@ public class Client extends Thread {
 				} else if (userInput.startsWith("ANNULER ") && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					out.write(String.valueOf(current.getMarche().annuler(joueur, ordre)));
+					out.flush();
+				} else if (userInput.startsWith("FIN") && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
+					out.write(String.valueOf(current.getMarche().fin()));
 					out.flush();
 				} else {
 					System.out.println("FAIL |" + userInput + "|");
