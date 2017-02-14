@@ -1,0 +1,8 @@
+#!/bin/bash
+rm -rf bin/*
+vim src/core/Config.java
+#compile
+javac -cp libs/commons-lang3-3.5.jar -d bin src/*/*.java
+#run
+sudo java -cp bin:libs/commons-lang3-3.5.jar network.DispatcherServeur
+
