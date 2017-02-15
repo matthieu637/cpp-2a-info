@@ -1,8 +1,16 @@
 #!/bin/bash
+if [ ! -e bin ] ; then
+	mkdir bin
+fi
 rm -rf bin/*
 vim src/core/Config.java
 #compile
 javac -cp libs/commons-lang3-3.5.jar -d bin src/*/*.java
 #run
-sudo java -cp bin:libs/commons-lang3-3.5.jar network.DispatcherServeur
+port=$(cat src/core/Config.java | grep PORT | sed 's/^.*= \([0-9]*\).*$/\1/')
+if [ $port -eq 80 ] ; then
+	sudo java -cp bin:libs/commons-lang3-3.5.jar network.DispatcherServeur
+else
+	java -cp bin:libs/commons-lang3-3.5.jar network.DispatcherServeur
+fi
 
