@@ -30,7 +30,10 @@ class Reseau:
 			raise RuntimeError("Connexion perdu. _2")
 	def __recevoir(self):
 		try:
-			back = self.sock.recv(256)
+			length = self.sock.recv(8)
+			if length == b'':
+				raise RuntimeError("Connexion perdu. _5")
+			back = self.sock.recv(int(length.decode()))
 			if back == b'':
 				raise RuntimeError("Connexion perdu. _3")
 			return back.decode()

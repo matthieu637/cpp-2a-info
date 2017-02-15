@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import core.Action;
+import core.Config;
 import core.Joueur;
 
 public class Client extends Thread {
@@ -50,8 +51,7 @@ public class Client extends Thread {
 				if (userInput.startsWith("CREATE ") && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
 					numero_partie = (int) (Math.random() * 100000);
-					out.write(String.valueOf(numero_partie));
-					out.flush();
+					envoyer(out, String.valueOf(numero_partie));
 					current = new Partie();
 					joueur = current.ajouter_client(client, nom);
 					serveur.ajouterPartie(numero_partie, current);
@@ -62,25 +62,21 @@ public class Client extends Thread {
 					String nom = arguments[2];
 
 					if (!serveur.partieExiste(numero_partie)) {
-						out.write("-1");
-						out.flush();
+						envoyer(out, "-1");
 						continue;
 					}
 
 					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)) {
-						out.write("-2");
-						out.flush();
+						envoyer(out, "-2");
 						continue;
 					}
 
 					if (serveur.getListepartie(numero_partie).getMarche().est_ouvert()) {
-						out.write("-3");
-						out.flush();
+						envoyer(out, "-3");
 						continue;
 					}
 
-					out.write("0");
-					out.flush();
+					envoyer(out, "0");
 					current = serveur.getListepartie(numero_partie);
 					joueur = current.ajouter_client(client, nom);
 					join = true;
@@ -89,63 +85,49 @@ public class Client extends Thread {
 					for (Socket s : current.getListe_client())
 						if (s != client) {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-							outAdvers.write("0");
-							outAdvers.flush();
+							envoyer(outAdvers, "0");
 						}
-					out.write("0");
-					out.flush();
-
+					envoyer(out, "0");
 				} else if (userInput.startsWith("TOP") && join && !current.getMarche().est_ouvert()) {
 					// attente retour
 				} else if (userInput.startsWith("SOLDE") && (create || join) && current.getMarche().est_ouvert()) {
 					String begin = "{'euros':" + String.valueOf(joueur.getSolde_euros()) + ", ";
-					out.write(begin + MapToStringPython(joueur.getSolde_actions()) + "}");
-					out.flush();
+					envoyer(out, begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 				} else if (userInput.startsWith("OPERATIONS") && peut_jouer) {
-					out.write(String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
-					out.flush();
+					envoyer(out, String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
 				} else if (userInput.startsWith("ACHATS ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
-					out.write(String.valueOf(current.getMarche().getListeAchats(a)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().getListeAchats(a)));
 				} else if (userInput.startsWith("VENTES ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
-					out.write(String.valueOf(current.getMarche().getListeVentes(a)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
 				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1]) && 
 						(create || join) && current.getMarche().est_ouvert()) {
 					Action a = Action.from(arguments[1]);
-					out.write(String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
 				} else if (userInput.startsWith("ASK ") && arguments.length == 4 && Action.estValide(arguments[1])
 						&& StringUtils.isNumeric(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
-					out.write(String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
 				} else if (userInput.startsWith("BID ") && arguments.length == 4 && Action.estValide(arguments[1])
 						&& StringUtils.isNumeric(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
-					out.write(String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
 				} else if (userInput.startsWith("SUIVRE ") && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
-					out.write(String.valueOf(current.getMarche().suivre(joueur, ordre)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().suivre(joueur, ordre)));
 				} else if (userInput.startsWith("ANNULER ") && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
-					out.write(String.valueOf(current.getMarche().annuler(joueur, ordre)));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
 				} else if (userInput.startsWith("FIN") && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
-					out.write(String.valueOf(current.getMarche().fin()));
-					out.flush();
+					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
 					System.out.println("FAIL |" + userInput + "|");
-					out.write("-1");
-					out.flush();
+					envoyer(out, "-1");
 				}
 			}
 
@@ -162,6 +144,22 @@ public class Client extends Thread {
 			}
 		}
 
+	}
+
+	private void envoyer(BufferedWriter out, String packet) throws IOException {
+		StringBuilder length = new StringBuilder(Config.getInstance().PACKET_SIZE);
+		String llength = String.valueOf(packet.length());
+		if(packet.length() > 99999){
+			System.out.println("ERROR : packet too small");
+			System.err.println("ERROR : packet too small");
+		}
+		for(int i=llength.length();i<Config.getInstance().PACKET_SIZE;i++)
+			length.insert(0, "0");
+		length.append(llength);
+		
+		out.write(new String(length));
+		out.write(packet);
+		out.flush();
 	}
 
 	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur) throws IOException {
