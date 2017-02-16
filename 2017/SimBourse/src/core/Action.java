@@ -1,7 +1,7 @@
 package core;
 
 public enum Action {
-	ECola("ECola"), BurgerShot("BurgerShot"), AirEmu("AirEmu"), Fruit("Fruit");
+	Apple("Apple"), Facebook("Facebook"), Trydea("Trydea"), Google("Google");
 
 	private String name;
 
