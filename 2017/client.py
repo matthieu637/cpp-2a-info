@@ -11,7 +11,7 @@ class Reseau:
 			result = self.sock.connect_ex(("paris.matthieu-zimmer.net", 80))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
-		self.sock.settimeout(30)
+		self.sock.settimeout(None)
 
 	def __estConnect(self):
 		if(self.connect):
