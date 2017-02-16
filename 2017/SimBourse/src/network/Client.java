@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import core.Action;
@@ -106,13 +107,13 @@ public class Client extends Thread {
 					Action a = Action.from(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
 				} else if (userInput.startsWith("ASK ") && arguments.length == 4 && Action.estValide(arguments[1])
-						&& StringUtils.isNumeric(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
+						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
 				} else if (userInput.startsWith("BID ") && arguments.length == 4 && Action.estValide(arguments[1])
-						&& StringUtils.isNumeric(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
+						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
