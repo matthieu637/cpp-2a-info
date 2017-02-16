@@ -121,16 +121,16 @@ public class Marche {
 
 	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
 		if (volume_achat <= 0.0)
-			return -1;
+			return -5;
 		if (prix_achat <= 0.0)
-			return -1;
+			return -6;
 
 		mutex.lock();
 		int argent_joueur = joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
 		if (argent_joueur < argent_engage) {
 			mutex.unlock();
-			return -1;
+			return -7;
 		}
 
 		Iterator<Ordre> it = liste_ventes.get(a).iterator();
@@ -187,15 +187,15 @@ public class Marche {
 
 	public Object vend(Joueur joueur_vente, Action a, float prix_vente, int volume_vente) {
 		if (volume_vente <= 0.0)
-			return -1;
+			return -8;
 		if (prix_vente <= 0.0)
-			return -1;
+			return -9;
 
 		mutex.lock();
 		int volume_joueur = joueur_vente.getSolde_actions().get(a);
 		if (volume_joueur < volume_vente) {
 			mutex.unlock();
-			return -1;
+			return -10;
 		}
 
 		joueur_vente.getSolde_actions().put(a, volume_joueur - volume_vente);
@@ -265,7 +265,7 @@ public class Marche {
 		Ordre o = joueur.contientOperation(ordre_id);
 		if (o == null) {
 			mutex.unlock();
-			return -1;
+			return -11;
 		}
 
 		if (o instanceof Achat) {

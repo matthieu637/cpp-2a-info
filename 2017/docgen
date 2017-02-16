@@ -1,0 +1,5 @@
+#!/bin/bash
+epydoc -v  --html --no-private --no-imports --no-sourcecode --no-frames --graph=all client.py
+epydoc -v  --pdf --no-private --no-imports --no-sourcecode --no-frames --graph=all client.py
+
+mv html ../docs

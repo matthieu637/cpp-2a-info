@@ -128,7 +128,7 @@ public class Client extends Thread {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
 					System.out.println("FAIL |" + userInput + "|");
-					envoyer(out, "-1");
+					envoyer(out, "-4");
 				}
 			}
 
