@@ -8,6 +8,7 @@ public class Config {
 	public final int PORT = 23456; //23456 ou 80
 	public final int TEMPS_PARTIE = 10;//en minutes
 	public final int PACKET_SIZE = 8;
+	public final boolean BANQUE = true;
 	
 	private Config (){
 		

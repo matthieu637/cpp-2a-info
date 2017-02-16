@@ -38,6 +38,17 @@ public class Marche {
 		}
 		liste_joueurs = new LinkedList<>();
 		liste_id_ordres = new TreeSet<>();
+		
+		if(Config.getInstance().BANQUE){
+			Joueur banque = creer_joueur("banque");
+			banque.setSolde_euros(Integer.MAX_VALUE);
+			int max_action_en_jeu = Config.getInstance().SOLDE_ACTIONS_INIT*Action.values().length*100;//100 joueurs
+			for(Action a : Action.values()){
+				banque.getSolde_actions().put(a, Integer.MAX_VALUE);
+				achat(banque, a, 0.25f, max_action_en_jeu);
+				vend(banque, a, 25.0f, max_action_en_jeu);
+			}
+		}
 	}
 
 	public boolean est_ouvert() {
