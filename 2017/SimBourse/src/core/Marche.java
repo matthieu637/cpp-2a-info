@@ -58,6 +58,22 @@ public class Marche {
 					//don't print error in this case
 				}
 				fini = true;
+				try {
+					Thread.sleep(1000 * 60); // sleep 1 s to be sure fini is taking into account
+				} catch (InterruptedException e) {
+					//might be interrupted if creator leaves
+					//don't print error in this case
+				}
+				//fermer tous les ordres
+				for(Joueur joueur : liste_joueurs){
+					List<Integer> ordre_supprimer = new LinkedList<>();
+					for(Pair<Integer, Ordre> t : joueur.getOperationsOuvertes()){
+						ordre_supprimer.add(t.getLeft());
+					}
+					for(Integer i : ordre_supprimer){
+						annuler(joueur, i);
+					}
+				}
 			}
 		};
 		timer.start();
