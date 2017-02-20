@@ -269,7 +269,7 @@ public class Marche {
 		}
 
 		if (o instanceof Achat) {
-			liste_achats.remove(o);
+			liste_achats.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 
 			int argent_recupere = (int) (o.prix * o.volume);
@@ -279,7 +279,7 @@ public class Marche {
 			mutex.unlock();
 			return argent_recupere;
 		} else {
-			liste_ventes.remove(o);
+			liste_ventes.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 			int nb_action = joueur.getSolde_actions().get(o.action);
 			joueur.getSolde_actions().put(o.action, nb_action + o.volume);
