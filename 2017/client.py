@@ -133,7 +133,7 @@ class Reseau:
 		r = int(self.__recevoir())
 		self.topbool= True
 		self.__envoyer("FIN") #Pour avoir la duree de la partie
-		self.dureePartie=int(eval(self.__recevoir())['temps'])
+		self.tempsPartie=int(eval(self.__recevoir())['temps'])
 		self.timerInitial=time.time() #lance le 'chronometre' quand le serveur a lance le top
 		return r
 
@@ -288,8 +288,8 @@ class Reseau:
 		self.__estTop()
 		tempsRestant=self.tempsPartie + self.timerInitial - time.time() #tempsPartie-(TempsAct-TempsInitial)
 		if(tempsRestant>0): #Dans ce cas, pas besoin de faire une requête au serveur, on affiche simplement le temps restant
-			return {'temps': tempsRestant}
-		else:#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
-			self.__envoyer("FIN")
-			return eval(self.__recevoir())
+			return {'temps': int(tempsRestant)+1}
+		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
+		self.__envoyer("FIN")
+		return eval(self.__recevoir())
 
