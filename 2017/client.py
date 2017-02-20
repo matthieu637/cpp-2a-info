@@ -42,8 +42,7 @@ class Reseau:
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.connect = False
 		self.topbool = False
-		self.timerInitial = 0
-		self.tempsPartie= 0
+		self.tempsFinPartie= 0
 		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout(5)
 		result = self.sock.connect_ex((host, port))
@@ -133,8 +132,7 @@ class Reseau:
 		r = int(self.__recevoir())
 		self.topbool= True
 		self.__envoyer("FIN") #Pour avoir la duree de la partie
-		self.tempsPartie=int(eval(self.__recevoir())['temps'])
-		self.timerInitial=time.time() #lance le 'chronometre' quand le serveur a lance le top
+		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
 		return r
 
 	def solde(self):
@@ -286,7 +284,7 @@ class Reseau:
 
 			
 		self.__estTop()
-		tempsRestant=self.tempsPartie + self.timerInitial - time.time() #tempsPartie-(TempsAct-TempsInitial)
+		tempsRestant=self.tempsFinPartie - time.time() #fin de partie - maintenant
 		if(tempsRestant>0): #Dans ce cas, pas besoin de faire une requête au serveur, on affiche simplement le temps restant
 			return {'temps': int(tempsRestant)+1}
 		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
