@@ -1,4 +1,5 @@
 import socket
+import time
 
 class Reseau:
 	'''
@@ -41,6 +42,8 @@ class Reseau:
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.connect = False
 		self.topbool = False
+		self.timerInitial = 0
+		self.tempsPartie= 0
 		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout(5)
 		result = self.sock.connect_ex((host, port))
@@ -57,6 +60,10 @@ class Reseau:
 	def __estTop(self):
 		if(not self.topbool):
 			raise RuntimeError("La partie n'est pas encore commencee.")
+	
+	def __notEnd(self):#verifie si la partie n'est pas finie
+		if(self.fin()['temps']<=0): 
+			raise RuntimeError("La partie est finie.")
 	
 	def __envoyer(self, commande):
 		try:
@@ -125,6 +132,9 @@ class Reseau:
 		self.__envoyer("TOP")
 		r = int(self.__recevoir())
 		self.topbool= True
+		self.__envoyer("FIN") #Pour avoir la duree de la partie
+		self.tempsPartie=int(eval(self.__recevoir())['temps'])
+		self.timerInitial=time.time() #lance le 'chronometre' quand le serveur a lance le top
 		return r
 
 	def solde(self):
@@ -132,6 +142,7 @@ class Reseau:
 		Retourne un dictionnaire (string:entier) avec vos actions et vos euros.
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("SOLDE")
 		return eval(self.__recevoir())
 	
@@ -142,6 +153,7 @@ class Reseau:
 		Cela permet de pouvoir les suivre ou les annuler.
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("OPERATIONS")
 		return eval(self.__recevoir())
 
@@ -164,6 +176,7 @@ class Reseau:
 		@type volume: entier
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("ASK "+action+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
@@ -186,6 +199,7 @@ class Reseau:
 		@type volume: entier
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("BID "+action+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
@@ -199,6 +213,7 @@ class Reseau:
 		@type action: string
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("ACHATS "+action)
 		return eval(self.__recevoir())
 	
@@ -212,6 +227,7 @@ class Reseau:
 		@type action: string
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("VENTES "+action)
 		return eval(self.__recevoir())
 
@@ -224,6 +240,7 @@ class Reseau:
 		@type action: string
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("HISTO "+action)
 		return eval(self.__recevoir())
 
@@ -239,6 +256,7 @@ class Reseau:
 		@type id_ordre: entier
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("SUIVRE "+str(id_ordre))
 		return eval(self.__recevoir())
 
@@ -255,6 +273,7 @@ class Reseau:
 		@type id_ordre: entier
 		'''
 		self.__estTop()
+		self.__notEnd()
 		self.__envoyer("ANNULER "+str(id_ordre))
 		return eval(self.__recevoir())
 
@@ -264,7 +283,13 @@ class Reseau:
 		
 		Lorsque la partie est terminee, un classement des joueurs est ajoute dans le dictionnaire (string:liste).
 		'''
+
+			
 		self.__estTop()
+		tempsRestant=self.tempsPartie + self.timerInitial - time.time() #tempsPartie-(TempsAct-TempsInitial)
+		if(tempsRestant>0): #Dans ce cas, pas besoin de faire une requête au serveur, on affiche simplement le temps restant
+			return {'temps': int(tempsRestant)+1}
+		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
 		self.__envoyer("FIN")
 		return eval(self.__recevoir())
 
