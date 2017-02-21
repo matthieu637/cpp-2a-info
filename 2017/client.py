@@ -42,7 +42,7 @@ class Reseau:
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.connect = False
 		self.topbool = False
-		self.histoActions={"Facebook":[],"Google":[],"Trydea":[],"Apple":[]}
+		self.histoActions={}
 		self.tempsFinPartie= 0
 		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout(5)
@@ -132,8 +132,13 @@ class Reseau:
 		self.__envoyer("TOP")
 		r = int(self.__recevoir())
 		self.topbool= True
+		
 		self.__envoyer("FIN") #Pour avoir la duree de la partie
 		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
+		for key in self.solde():
+			if key!='euros':
+				self.histoActions[key]=[] #on ajoute les différentes actions dans le tableau historique du client
+		
 		return r
 
 	def solde(self):
