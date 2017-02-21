@@ -30,7 +30,7 @@ public class Client extends Thread {
 	}
 
 	public void run() {
-		System.out.println("Client connecté");
+		System.out.println("Client connectÃ©");
 
 		Partie current = null;
 		Joueur joueur = null;
@@ -48,7 +48,7 @@ public class Client extends Thread {
 				String[] arguments = userInput.split(" ");
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
 
-				// Utilisateur n'ayant ni créé ni rejoint peut créer
+				// Utilisateur n'ayant ni crÃ©Ã© ni rejoint peut crÃ©er
 				if (userInput.startsWith("CREATE ") && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
 					numero_partie = (int) (Math.random() * 100000);
@@ -102,10 +102,10 @@ public class Client extends Thread {
 				} else if (userInput.startsWith("VENTES ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
-				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1]) && 
+				} else if (userInput.startsWith("HISTO ") && arguments.length == 3 && Action.estValide(arguments[1]) && 
 						(create || join) && current.getMarche().est_ouvert()) {
 					Action a = Action.from(arguments[1]);
-					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
+					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a,Integer.parseInt(arguments[2]))));
 				} else if (userInput.startsWith("ASK ") && arguments.length == 4 && Action.estValide(arguments[1])
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
@@ -177,7 +177,7 @@ public class Client extends Thread {
 		} else if (!create) {
 			client.close();
 		}
-		System.out.println("Client déconnecté");
+		System.out.println("Client dÃ©connectÃ©");
 	}
 
 	private <E, V> String MapToStringPython(Map<E, V> map) {
@@ -209,3 +209,4 @@ public class Client extends Thread {
 		return new String(sb);
 	}
 }
+
