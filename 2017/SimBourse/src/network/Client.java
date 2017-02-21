@@ -30,7 +30,7 @@ public class Client extends Thread {
 	}
 
 	public void run() {
-		System.out.println("Client connectÃ©");
+		System.out.println("Client connecté");
 
 		Partie current = null;
 		Joueur joueur = null;
@@ -177,7 +177,7 @@ public class Client extends Thread {
 		} else if (!create) {
 			client.close();
 		}
-		System.out.println("Client dÃ©connectÃ©");
+		System.out.println("Client déconnecté");
 	}
 
 	private <E, V> String MapToStringPython(Map<E, V> map) {
