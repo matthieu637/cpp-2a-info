@@ -8,18 +8,19 @@ Documentation officielle : https://matthieu637.github.io/cpp-2a-info/client.Rese
 ### Contributions
 Pour les plus motiver, nous vous encourageons à améliorer le projet (il vous faudra un compte sur github, utiliser [git](https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github), [forker le projet et proposer des pull requests](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 
+#### Documentation
 Pour les contributions à la documentation, il est inutile de modifier les fichiers du répertoire /docs.
 Ils sont générés à l'aide du script 2017/docgen et du fichier 2017/client.py.
 Il suffit donc de modifier les commentaires présents dans le fichier 2017/client.py, pour avoir un aperçu html de vos modifications vous pouvez appeler le script 2017/docgen (nécessite l'exécutable epydoc).
 
-
+#### Serveur
 Pour les contributions au serveur, il est conseillé d'utiliser [l'IDE Eclipse](https://eclipse.org/downloads/) et d'[importer le projet SimBourse](http://stackoverflow.com/questions/6760115/importing-a-github-project-into-eclipse) pour lancer le serveur en local. Il faudra alors préciser au client de se connecter en localhost :
 ```
 r = Reseau('localhost', 23456) #au lieu de de r=Reseau()
 ```
+Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directement disponibles sur le serveur officiel, cela vous permettra d'effectuer des tests en local. Après la validation de votre pull request, le serveur officiel sera relancé avec les nouveaux changements, vous permettant alors de réutiliser r=Reseau().
 
-
-Exemple de contributions possibles (par difficulté) :
+#### Contributions possibles (par difficulté)
 - [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py)
 - [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) 
 - [x] ~~[faire un cache pour la fonction fin avec un compteur local pour diminuer les requêtes serveurs (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminé par [david540](https://github.com/david540)
