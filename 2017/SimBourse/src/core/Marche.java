@@ -1,8 +1,10 @@
 package core;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+
+
 public class Marche {
 	private boolean ouvert;
 	private boolean fini;
@@ -21,7 +25,7 @@ public class Marche {
 	private Map<Action, Set<Ordre>> liste_ventes;
 	private List<Joueur> liste_joueurs;
 	private Set<Integer> liste_id_ordres;
-	private Map<Action, Set<Echange>> historiques;
+	private Map<Action, Set<Echange>> historiques,histoPartiel;
 	private final Lock mutex = new ReentrantLock();
 	private Thread timer = null;
 
@@ -115,8 +119,17 @@ public class Marche {
 		return liste_ventes.get(a);
 	}
 
-	public Set<Echange> getHistoriqueEchanges(Action a) {
-		return historiques.get(a);
+	public Set<Echange> getHistoriqueEchanges(Action a,int n) {
+		List<Echange> list = new ArrayList<>();
+		final Iterator<Echange> i = historiques.get(a).iterator();
+		for(int j=0;j<n;j++)
+			i.next();
+		for (int j=n; j<historiques.get(a).size() && i.hasNext();j++)
+			list.add(i.next());
+		//historiques.get(a)
+		Set<Echange> retour= new LinkedHashSet<>(list);
+		
+		return retour;
 	}
 
 	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
