@@ -171,6 +171,13 @@ public class Marche {
 					joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (vente.prix * volume_vendu));
 					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
 					vente.setVolume(vente.getVolume() - volume_vendu);
+					
+					//ordre restant vide
+					if(vente.getVolume() == 0){
+						Integer id_vente = vente.getId_ordre();
+						joueur_vente.retirerOperation(id_vente);
+						it.remove();
+					}
 
 					//ordre restant vide
 					if(vente.getVolume() == 0){
@@ -304,7 +311,7 @@ public class Marche {
 		}
 
 		if (o instanceof Achat) {
-			liste_achats.remove(o);
+			liste_achats.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 
 			int argent_recupere = (int) (o.prix * o.volume);
@@ -314,7 +321,7 @@ public class Marche {
 			mutex.unlock();
 			return argent_recupere;
 		} else {
-			liste_ventes.remove(o);
+			liste_ventes.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 			int nb_action = joueur.getSolde_actions().get(o.action);
 			joueur.getSolde_actions().put(o.action, nb_action + o.volume);

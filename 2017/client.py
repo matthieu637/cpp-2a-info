@@ -135,10 +135,12 @@ class Reseau:
 		
 		self.__envoyer("FIN") #Pour avoir la duree de la partie
 		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
+
 		for key in self.solde():
 			if key!='euros':
 				self.histoActions[key]=[] #on ajoute les différentes actions dans le tableau historique du client
 		
+
 		return r
 
 	def solde(self):
