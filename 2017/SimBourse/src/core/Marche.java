@@ -25,7 +25,7 @@ public class Marche {
 	private Map<Action, Set<Ordre>> liste_ventes;
 	private List<Joueur> liste_joueurs;
 	private Set<Integer> liste_id_ordres;
-	private Map<Action, Set<Echange>> historiques,histoPartiel;
+	private Map<Action, Set<Echange>> historiques;
 	private final Lock mutex = new ReentrantLock();
 	private Thread timer = null;
 
