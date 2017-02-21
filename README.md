@@ -8,6 +8,11 @@ Documentation officielle : https://matthieu637.github.io/cpp-2a-info/client.Rese
 ### Contributions
 Pour les plus motiver, nous vous encourageons à améliorer le projet (il vous faudra un compte sur github, utiliser [git](https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github), [forker le projet et proposer des pull requests](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 
+Attention à garder vos [branches à jour](https://help.github.com/articles/syncing-a-fork/#platform-linux)
+avant de pull request au risque que nos branches master divergent (https://github.com/matthieu637/cpp-2a-info/network). Cela vous permettra également de résoudre les conflits avant tout pull request.
+
+Pour reporter des bugs, l'interface dédiée se trouve ici : https://github.com/matthieu637/cpp-2a-info/issues (différent du pull request)
+
 #### Documentation
 Pour les contributions à la documentation, il est inutile de modifier les fichiers du répertoire /docs.
 Ils sont générés à l'aide du script 2017/docgen et du fichier 2017/client.py.
@@ -24,7 +29,7 @@ Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directemen
 - [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py)
 - [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) 
 - [x] ~~[faire un cache pour la fonction fin avec un compteur local pour diminuer les requêtes serveurs (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminé par [david540](https://github.com/david540)
-- [x] ~~[ajouter un code d'erreur pour un appel à fonction alors que la partie est finie (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminé par [david540](https://github.com/david540)
+- [x] ~~[ajouter un code d'erreur pour un appel à fonction alors que la partie est finie (client)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminé par [david540](https://github.com/david540)
 - [ ] documenter le code java pour tenter de le comprendre : SHIFT + ALT + J sur le nom d'une méthode dans eclipse (serveur)
 - [ ] ajouter le type de l'ordre dans les tuples reçus par la fonction historique (serveur)
 - [ ] ajouter un argument pour limiter la taille des listes reçues dans historiques, achats et ventes pour diminuer la taille des messages réseaux (client+serveur)
