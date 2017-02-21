@@ -48,7 +48,7 @@ public class Client extends Thread {
 				String[] arguments = userInput.split(" ");
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
 
-				// Utilisateur n'ayant ni crÃ©Ã© ni rejoint peut crÃ©er
+				// Utilisateur n'ayant ni créé ni rejoint peut créer
 				if (userInput.startsWith("CREATE ") && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
 					numero_partie = (int) (Math.random() * 100000);
