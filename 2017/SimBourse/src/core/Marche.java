@@ -1,10 +1,8 @@
 package core;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -119,17 +117,26 @@ public class Marche {
 		return liste_ventes.get(a);
 	}
 
-	public Set<Echange> getHistoriqueEchanges(Action a,int n) {
-		List<Echange> list = new ArrayList<>();
-		final Iterator<Echange> i = historiques.get(a).iterator();
-		for(int j=0;j<n;j++)
-			i.next();
-		for (int j=n; j<historiques.get(a).size() && i.hasNext();j++)
-			list.add(i.next());
-		//historiques.get(a)
-		Set<Echange> retour= new LinkedHashSet<>(list);
+	
+	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
+		/**
+		 * @param a : le nom de l'action
+		 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+		 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
+		 */
 		
-		return retour;
+		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
+		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
+		
+		//on crée un iterateur parcourant 'historiques' dans le sens décroissant
+		final Iterator<Echange> i = ((TreeSet<Echange>) historiques.get(a)).descendingIterator();
+		for (int j=0; j<tailleH-n && i.hasNext();j++)
+			//on ajoute dans la liste chainée les éléments au sens décroissants de 'historiques'
+			//au début de la liste chainée à chaque fois pour que les éléments apparaissent dans le bon sens
+			list.addFirst(i.next());
+		
+		//on retourne la liste chainée
+		return list;
 	}
 
 	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
@@ -165,6 +172,14 @@ public class Marche {
 					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
 					vente.setVolume(vente.getVolume() - volume_vendu);
 
+					//ordre restant vide
+					if(vente.getVolume() == 0){
+						Integer id_vente = vente.getId_ordre();
+						joueur_vente.retirerOperation(id_vente);
+						it.remove();
+					}
+					
+					
 					mutex.unlock();
 					return 0;
 				}
@@ -230,6 +245,13 @@ public class Marche {
 					// achat.setArgent_paye(achat.getArgent_paye() + (int) (achat.prix * volume_vendu));
 					achat.setVolume(achat.getVolume() - volume_vente);
 
+					//ordre restant vide
+					if(achat.getVolume() == 0){
+						Integer id_achat = achat.getId_ordre();
+						joueur_achat.retirerOperation(id_achat);
+						it.remove();
+					}
+					
 					mutex.unlock();
 					return 0;
 				}
@@ -242,8 +264,8 @@ public class Marche {
 				achat.setVolume(achat.getVolume() - volume_vente);
 
 				// remove
-				Integer id_vente = achat.getId_ordre();
-				joueur_achat.retirerOperation(id_vente);
+				Integer id_achat = achat.getId_ordre();
+				joueur_achat.retirerOperation(id_achat);
 				it.remove();
 
 				volume_vente -= volume_vendu;
