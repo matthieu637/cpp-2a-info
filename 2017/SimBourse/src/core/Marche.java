@@ -13,6 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+
+
 public class Marche {
 	private boolean ouvert;
 	private boolean fini;
@@ -115,8 +117,26 @@ public class Marche {
 		return liste_ventes.get(a);
 	}
 
-	public Set<Echange> getHistoriqueEchanges(Action a) {
-		return historiques.get(a);
+	
+	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
+		/**
+		 * @param a : le nom de l'action
+		 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+		 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
+		 */
+		
+		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
+		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
+		
+		//on crée un iterateur parcourant 'historiques' dans le sens décroissant
+		final Iterator<Echange> i = ((TreeSet<Echange>) historiques.get(a)).descendingIterator();
+		for (int j=0; j<tailleH-n && i.hasNext();j++)
+			//on ajoute dans la liste chainée les éléments au sens décroissants de 'historiques'
+			//au début de la liste chainée à chaque fois pour que les éléments apparaissent dans le bon sens
+			list.addFirst(i.next());
+		
+		//on retourne la liste chainée
+		return list;
 	}
 
 	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
@@ -159,6 +179,14 @@ public class Marche {
 						it.remove();
 					}
 
+					//ordre restant vide
+					if(vente.getVolume() == 0){
+						Integer id_vente = vente.getId_ordre();
+						joueur_vente.retirerOperation(id_vente);
+						it.remove();
+					}
+					
+					
 					mutex.unlock();
 					return 0;
 				}

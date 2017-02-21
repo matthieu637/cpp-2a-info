@@ -102,10 +102,10 @@ public class Client extends Thread {
 				} else if (userInput.startsWith("VENTES ") && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
-				} else if (userInput.startsWith("HISTO ") && arguments.length == 2 && Action.estValide(arguments[1]) && 
-						(create || join) && current.getMarche().est_ouvert()) {
+				} else if (userInput.startsWith("HISTO ") && arguments.length == 3 && Action.estValide(arguments[1]) &&
+						StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()) {
 					Action a = Action.from(arguments[1]);
-					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a)));
+					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a,Integer.parseInt(arguments[2]))));
 				} else if (userInput.startsWith("ASK ") && arguments.length == 4 && Action.estValide(arguments[1])
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					Action a = Action.from(arguments[1]);
