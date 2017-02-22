@@ -22,19 +22,21 @@ public class Client extends Thread {
 	private Socket client;
 	private DispatcherServeur serveur;
 	
-	public static final String Top = "1";
-	public static final String SOLDE = "2";
-	public static final String OPERATIONS = "3";
-	public static final String ACHATS = "4 ";
-	public static final String VENTES = "5 ";
-	public static final String HISTO = "6 "; //on définit un dictionnaire qui permettra une communication 
-	public static final String ASK = "7 ";   //client/serveur avec des messages très courts
-	public static final String BID = "8 ";	//sans perdre de lisibilité du code
-	public static final String SUIVRE = "9 ";
-	public static final String ANNULER = "A ";
-	public static final String FIN = "B";
-	public static final String CREATE="C ";
-	public static final String JOIN="D ";
+	private static final String Top = "1";
+	private static final String SOLDE = "2";
+	private static final String OPERATIONS = "3";
+	private static final String ACHATS = "4 ";
+	private static final String VENTES = "5 ";
+	private static final String HISTO = "6 "; //on définit un dictionnaire qui permettra une communication 
+	private static final String ASK = "7 ";   //client/serveur avec des messages très courts
+	private static final String BID = "8 ";	//sans perdre de lisibilité du code
+	private static final String SUIVRE = "9 ";
+	private static final String ANNULER = "A ";
+	private static final String FIN = "B";
+	private static final String CREATE="C ";
+	private static final String JOIN="D ";
+	private String[] nomAction;
+	private int nombreActions;
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -45,7 +47,8 @@ public class Client extends Thread {
 
 	public void run() {
 		System.out.println("Client connecté");
-
+		nomAction=Action.nomActions();
+		nombreActions=nomAction.length;
 		Partie current = null;
 		Joueur joueur = null;
 		int numero_partie = -1;
@@ -110,25 +113,30 @@ public class Client extends Thread {
 					envoyer(out, begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 				} else if (userInput.startsWith(OPERATIONS) && peut_jouer) {
 					envoyer(out, String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
-				} else if (userInput.startsWith(ACHATS) && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
-					Action a = Action.from(arguments[1]);
+				} else if (userInput.startsWith(ACHATS) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])
+						&& Integer.parseInt(arguments[1])<nombreActions && Integer.parseInt(arguments[1])>=0 && peut_jouer) {
+					Action a = Action.from(nomAction[Integer.parseInt(arguments[1])]);
 					envoyer(out, String.valueOf(current.getMarche().getListeAchats(a)));
-				} else if (userInput.startsWith(VENTES) && arguments.length == 2 && Action.estValide(arguments[1]) && peut_jouer) {
-					Action a = Action.from(arguments[1]);
+				} else if (userInput.startsWith(VENTES) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])
+						&& Integer.parseInt(arguments[1])<nombreActions && Integer.parseInt(arguments[1])>=0 && peut_jouer) {
+					Action a = Action.from(nomAction[Integer.parseInt(arguments[1])]);
 					envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
-				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && Action.estValide(arguments[1]) &&
+				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
+						&& Integer.parseInt(arguments[1])<nombreActions && Integer.parseInt(arguments[1])>=0 &&
 						StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()) {
-					Action a = Action.from(arguments[1]);
+					Action a = Action.from(nomAction[Integer.parseInt(arguments[1])]);
 					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a,Integer.parseInt(arguments[2]))));
-				} else if (userInput.startsWith(ASK) && arguments.length == 4 && Action.estValide(arguments[1])
+				} else if (userInput.startsWith(ASK) && arguments.length == 4 && StringUtils.isNumeric(arguments[1])
+						&& Integer.parseInt(arguments[1])<nombreActions && Integer.parseInt(arguments[1])>=0
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
-					Action a = Action.from(arguments[1]);
+					Action a = Action.from(nomAction[Integer.parseInt(arguments[1])]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
-				} else if (userInput.startsWith(BID) && arguments.length == 4 && Action.estValide(arguments[1])
+				} else if (userInput.startsWith(BID) && arguments.length == 4 && StringUtils.isNumeric(arguments[1])
+						&& Integer.parseInt(arguments[1])<nombreActions && Integer.parseInt(arguments[1])>=0
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
-					Action a = Action.from(arguments[1]);
+					Action a = Action.from(nomAction[Integer.parseInt(arguments[1])]);
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
