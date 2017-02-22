@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-
 import socket
 import time
 
@@ -10,14 +8,14 @@ class Reseau:
 	'''
 	1. Introduction
 	
-	Cette documentation a pour but de vous aidez à utiliser la class Reseau (qui fait le lien entre votre programme et le serveur) développé par Matthieu Zimmer pour la simulation de bourse du S4. En POO (programmation orientée objet), une class est un ensemble de fonctions prédéfinies. Dans notre cas, cette class permettre de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
+	Cette documentation a pour but de vous aider à utiliser la class Reseau (qui fait le lien entre votre programme et le serveur) développée par Matthieu Zimmer pour la simulation de bourse du S4. En POO (programmation orientée objet), une class est un ensemble de fonctions prédéfinies. Dans notre cas, cette class permet de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
 	Pour plus d’informations:
 	
 	U{https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes}
 
 	2. Préliminaires
 	
-	Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abords importer la class (après l’avoir télécharger). Pour cela, il faut ce fichier dans le MEME dossier que le fichier courant puis dans le fichier courant on commence par:
+	Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abord importer la class (après l’avoir téléchargée). Pour cela, il faut metre ce fichier dans le MEME dossier que le fichier courant puis dans le fichier courant, on commence par:
 		>>> from client import Reseau
 		r=Reseau() #On travaillera par la suite avec la variable r
 	
@@ -32,14 +30,14 @@ class Reseau:
 	
 	On récupère le numéro afin de le transmettre oralement aux autres joueurs qui eux devront rejoindre la partie.
 
-	B{Attention: Celui qui crée la partie n’a pas besoin de la rejoindre, il est directement considérer comme un joueur}
+	B{Attention: Celui qui crée la partie n’a pas besoin de la rejoindre, il est directement considéré comme un joueur}
 	
 	4. Rejoindre la partie
 	
-	Une fois la partie crée par l’un des participants, les autres doivent pouvoir la rejoindre:
+	Une fois la partie créée par l’un des participants, les autres doivent pouvoir la rejoindre:
 	Premièrement, on rejoint la partie, en indiquant son numéro et le pseudo que l’on souhaite, par exemple,
 
-	>>> r.rejoindrePartie(4488,MatthieuDevallé)
+	>>> r.rejoindrePartie(4488,'MatthieuDevallé')
 
 	Puis on doit se synchroniser avec les autres joueurs:
 
@@ -49,11 +47,11 @@ class Reseau:
 		>>> r.rejoindrePartie(numéro,"pseudo")
 		r.top()
 		
-	B{Attention: On ne reprends pas la main tant que le créateur n’a pas lui même taper C{r.top}()}
+	B{Attention: On ne reprend pas la main tant que le créateur n’a pas lui même tapé C{r.top}()}
 	
 	5. Lancement de la partie
 	
-	Une fois que tous les joueurs ont rejoint, le créateur entre à son tour qui lance la partie:
+	Une fois que tous les joueurs ont rejoint la partie, le créateur entre à son tour qui lance la partie:
 	
 	>>> r.top() #Libère les autres joueurs
 
@@ -65,8 +63,8 @@ class Reseau:
 			- dans le cas où j1 (ou j2) a vendu les deux types d'actions, il gagne
 			- dans le cas où j1 (ou j2) a vendu au moins un type d'action et pas l'autre, il gagne
 			- dans le cas où les deux n'ont que de l'argent, le plus riche gagne
-			- dans le cas où les deux ont plusieurs actions, on compare leurs nombre d'action et leur argent, le plus riche en action gagne sauf si ils ont le même nombre d'actions (le plus riche gagne)
-			- dans le meilleur cas, si ils ont vendus deux types d'actions, on compare leur nombre d'action ainsi que leur argent, le plus riche gagne
+			- dans le cas où les deux ont plusieurs actions, on compare leur nombre d'action et leur argent, le plus riche en action gagne sauf si ils ont le même nombre d'actions (le plus riche gagne)
+			- dans le meilleur cas, s'ils ont vendu deux types d'actions, on compare leur nombre d'action ainsi que leur argent, le plus riche gagne
 			
 	'''
 	
@@ -119,7 +117,7 @@ class Reseau:
 
 	def creerPartie(self, nom):
 		'''
-		Crée la partie et renvoie l’id a communiqué oralement aux autres joueurs.
+		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
 		
 		@param nom: nom du joueur qui crée la partie
 		@type nom: string
@@ -145,7 +143,7 @@ class Reseau:
 			- 0 si tout c'est bien passé.
 			- -1 si le numero de partie n'existe pas
 			- -2 si le nom de joueur est déja pris
-			- -3 si la partie est déja lancé (top)
+			- -3 si la partie est déja lancée (top)
 			- -4 si les types ne sont pas respectés
 		
 		Exemple:
@@ -196,7 +194,7 @@ class Reseau:
 
 	def solde(self):
 		'''
-		Permet de voir notre prote-feuille d’actions et notre argent disponible
+		Permet de voir notre porte-feuille d’actions et notre argent disponible
 		Renvoie un dictionnaire (string:entier).
 		
 		Exemple:
@@ -211,12 +209,13 @@ class Reseau:
 	
 	def operationsEnCours(self):
 		'''
-		Retroune une liste d’entier, qui correspondent aux identifiants des ordres précédements transmis et qui ne sont pas encore terminer: on peut donc les suivres et les annuler.
+		Retourne une liste d’entiers, qui correspondent aux identifiants des ordres précédemment transmis et qui ne sont pas encore terminés: on peut donc les suivre et les annuler.
 
 		Exemple:
 
-		>>> r.rejoindrePartie(31416,"MatthieuDev")
-		0 #Forcement, ça marche
+		>>> R.operationsEnCours()
+		[62098581, 20555477]
+
 		'''
 		self.__estTop()
 		self.__notEnd()
@@ -290,8 +289,8 @@ class Reseau:
 		
 		Exemple:
 
-		>>> r.ventes("Trydea")
-		[(Matthieu, 23,15), (Ryan,20,10), (Paul, 17,23)]
+		>>> r.achats("Trydea")
+		[('Matthieu', 23,15), ('Ryan',20,10), ('Paul', 17,23)]
 		
 		@param action: nom de l'action
 		@type action: string
@@ -311,8 +310,10 @@ class Reseau:
 	
 		Exemple:
 
-		>>> r.bid("Trydea", 50, 10)
-		0
+		>>> r.ventes('Facebook')
+		[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]
+
+		
 
 		@param action: nom de l'action
 		@type action: string
@@ -324,13 +325,13 @@ class Reseau:
 
 	def historiques(self, action):
 		'''
-		Permet de lister tous les échanges déjà effectuer sur une actions.
-		Retourne une liste de tuples trier par ordre chronologique. Sous la forme: C{(nom_vendeur, nom_acheteur, prix, volume)}
+		Permet de lister tous les échanges déjà effectués sur une action.
+		Retourne une liste de tuples triée par ordre chronologique. Sous la forme: C{(nom_vendeur, nom_acheteur, prix, volume)}
 		
 		Exemple:
 
 		>>> r.historiques("Trydea")
-		[(Matthieu,Mukhlis,10,10), (Térence, Ryan, 15,20), (Matthieu, Ryan, 20,3)]
+		[('Matthieu','Mukhlis',10,10), ('Térence', 'Ryan', 15,20), ('Matthieu', 'Ryan', 20,3)]
 		
 		@param action: nom de l'action
 		@type action: string
@@ -344,7 +345,7 @@ class Reseau:
 
 	def suivreOperation(self, id_ordre):
 		'''
-		Permet de voir le volume restant pour un ordre transmis précédement.
+		Permet de voir le volume restant pour un ordre transmis précédemment.
 		
 		Retourne:
 			- 0 si l’ordre n’existe plus ou est terminé
@@ -370,7 +371,7 @@ class Reseau:
 		
 		Retourne:
 			- 11 si l’ordre n’existe plus ou est termine
-			- 4 si les types ne sont pas respectes
+			- 4 si les types ne sont pas respectés
 			- le volume d’action restant si c’est un ordre de vente
 			- les euros dépensés si c’est ordre d’achat
 		
@@ -388,17 +389,17 @@ class Reseau:
 
 	def fin(self):
 		'''
-		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminé, affiche le classement (string:liste).
+		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
 
 		Exemple:
 
 		>>> r.fin()
-		{10} #Il reste 10 secondes avant la fin de la partie.
+		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
 		
 		OU
 
 		>>> r.fin()
-		{Devallé, Benkhedda, Eshamuddin} #Le classement de fin de partie.
+		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
 		'''
 
 			
