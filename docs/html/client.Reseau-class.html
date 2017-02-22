@@ -51,40 +51,94 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Reseau</h1><p class="nomargin-top"></p>
 <p>Fait le lien entre votre programme et le serveur.</p>
-  <p>Pour utiliser ces fonctions, il faut commencer par le bloc suivant (en
-  s'assurant que le fichier client.py se trouve dans le meme 
-  repertoire):</p>
+  <p>Cette documentation a pour but de vous aider &#224; utiliser la classe 
+  Reseau (qui fait le lien entre votre programme et le serveur). En POO 
+  (programmation orient&#233;e objet), une classe est un ensemble de fonctions 
+  pr&#233;d&#233;finies. Dans notre cas, cette classe permet de communiquer avec le 
+  serveur &#8220;boursier&#8221; &#233;crit en Java afin d&#8217;acheter, de vendre ... Pour plus 
+  d&#8217;informations:</p>
+  <p><a 
+  href="https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes"
+  
+  target="_top">https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes</a></p>
+  <h1 class="heading">Pr&#233;liminaires</h1>
+    <p>Avant de pouvoir rejoindre ou cr&#233;er une partie, il faut tout d&#8217;abord
+    importer la class (apr&#232;s l&#8217;avoir <a 
+    href="https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py"
+    target="_top">t&#233;l&#233;charg&#233;e</a> : clic droit, enregistr&#233; le lien sous). 
+    Pour cela, il faut metre ce fichier dans le m&#234;me dossier que le fichier
+    courant puis dans le fichier courant, on commence par:</p>
 <pre class="py-doctest">
 <span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> client <span class="py-keyword">import</span> Reseau
-<span class="py-output">r=Reseau()</span>
-<span class="py-output">#on travaille ensuite sur la variable r</span></pre>
-  <p>Une fois la connexion effectue, il faut decider si vous serez le 
-  createur de la partie ou si vous allez la rejoindre. Celui qui cree la 
-  partie n'a pas besoin de la rejoindre, il est automatiquement dedans.</p>
-  <p>Pour la creation :</p>
+<span class="py-output">r=Reseau() #On travaillera par la suite avec la variable r</span></pre>
+    <p><b>Attention: Le fichier client.py ne doit JAMAIS &#234;tre modifi&#233; 
+    !</b></p>
+  <h1 class="heading">Cr&#233;ation d&#8217;une partie</h1>
+    <p>Une fois que la connexion est effectu&#233;e, on doit pouvoir choisir 
+    entre cr&#233;er une partie ou en rejoindre une (&#224; faire vous m&#234;me...). Pour
+    cr&#233;er une partie:</p>
 <pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.creerPartie(<span class="py-string">'monNom'</span>)
-<span class="py-output">48858</span></pre>
-  <p>Pour rejoindre (le nombre 48858 est donne a titre d'exemple, on 
-  utilisera celui du createur) :</p>
+<span class="py-prompt">&gt;&gt;&gt; </span>num_partie=r.creerPartie(<span class="py-string">&quot;monNom&quot;</span>) <span class="py-comment">#On cr&#233;e la partie</span>
+<span class="py-output">print(num_partie) #On r&#233;cup&#232;re son num&#233;ro</span></pre>
+    <p>On r&#233;cup&#232;re le num&#233;ro afin de le transmettre oralement aux autres 
+    joueurs qui eux devront rejoindre la partie.</p>
+    <p><b>Attention: Celui qui cr&#233;e la partie n&#8217;a pas besoin de la 
+    rejoindre, il est directement consid&#233;r&#233; comme un joueur</b></p>
+  <h1 class="heading">Rejoindre la partie</h1>
+    <p>Une fois la partie cr&#233;&#233;e par l&#8217;un des participants, les autres 
+    doivent pouvoir la rejoindre: Premi&#232;rement, on rejoint la partie, en 
+    indiquant son num&#233;ro et le pseudo que l&#8217;on souhaite, par exemple,</p>
 <pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.rejoindrePartie(48858, <span class="py-string">'monNom'</span>)</pre>
-  <p>Lorsque tous les utilisateurs ont rejoint la partie, il faut se 
-  synchroniser pour le top depart. Pour cela, ceux qui ont rejoint la 
-  partie utiliseront :</p>
+<span class="py-prompt">&gt;&gt;&gt; </span>r.rejoindrePartie(4488,<span class="py-string">'MatthieuDevall&#233;'</span>)</pre>
+    <p>Puis on doit se synchroniser avec les autres joueurs:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.top()</pre>
+    <p>On a donc le code suivant pour rejoindre une partie:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.rejoindrePartie(num&#233;ro_partie,<span class="py-string">&quot;pseudo&quot;</span>)
+<span class="py-output">r.top()</span></pre>
+    <p><b>Attention: On ne reprend pas la main tant que le cr&#233;ateur n&#8217;a pas
+    lui m&#234;me tap&#233; <code>r.top</code>()</b></p>
+  <h1 class="heading">Synchronisation pour le d&#233;part</h1>
+    <p>Lorsque tous les utilisateurs ont rejoint la partie, il faut se 
+    synchroniser pour le top depart. Pour cela, ceux qui ont rejoint la 
+    partie utiliseront :</p>
 <pre class="py-doctest">
 <span class="py-prompt">&gt;&gt;&gt; </span>r.top() <span class="py-comment">#ne rend pas la main tant que le createur n'a pas lance</span></pre>
-  <p>Le createur utilise a son tour :</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.top() <span class="py-comment">#libere les autres utilisateurs</span></pre>
-  <p>qui declenche le debut de la partie pour 10 minutes et debloque les 
-  autres utilisateurs qui etaient en attente.</p>
-  <p>A partir de la, createur et utilisateurs ont acces aux memes fonctions
-  du jeu.</p>
+    <p>Une fois que tous les joueurs ont rejoint la partie, le cr&#233;ateur 
+    entre &#224; son tour qui lance la partie:</p>
+    <p>A partir de la, createur et utilisateurs ont acces aux memes 
+    fonctions du jeu.</p>
 <pre class="py-doctest">
 <span class="py-prompt">&gt;&gt;&gt; </span>r.solde()
 <span class="py-output">{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}</span></pre>
-  <p>A vous de jouer.</p>
+    <p>A partir de ce moment, il n&#8217;y a plus de diff&#233;rence entre le cr&#233;ateur
+    et les autres.</p>
+  <h1 class="heading">Informations sur le classement final</h1>
+    <p>Il y a plusieurs cas (on note j1 et j2 les joueurs):</p>
+    <ul>
+      <li>
+        dans le cas o&#249; j1 (ou j2) a vendu les deux types d'actions, il 
+        gagne
+      </li>
+      <li>
+        dans le cas o&#249; j1 (ou j2) a vendu au moins un type d'action et pas 
+        l'autre, il gagne
+      </li>
+      <li>
+        dans le cas o&#249; les deux n'ont que de l'argent, le plus riche gagne
+      </li>
+      <li>
+        dans le cas o&#249; les deux ont plusieurs actions, on compare leur 
+        nombre d'action et leur argent, le plus riche en action gagne sauf 
+        si ils ont le m&#234;me nombre d'actions (le plus riche gagne)
+      </li>
+      <li>
+        dans le meilleur cas, s'ils ont vendu deux types d'actions, on 
+        compare leur nombre d'action ainsi que leur argent, le plus riche 
+        gagne
+      </li>
+    </ul>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -120,8 +174,8 @@
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#creerPartie" class="summary-sig-name">creerPartie</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">nom</span>)</span><br />
-      Renvoie un numero de partie unique a communiquer oralement avec vos 
-      concurrents</td>
+      Cr&#233;e la partie et renvoie l&#8217;id &#224; communiqur oralement aux autres 
+      joueurs.</td>
           <td align="right" valign="top">
             
             
@@ -173,9 +227,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="solde"></a><span class="summary-sig-name">solde</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Retourne un dictionnaire (string:entier) avec vos actions et vos 
-      euros.</td>
+          <td><span class="summary-sig"><a href="client.Reseau-class.html#solde" class="summary-sig-name">solde</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Permet de voir notre porte-feuille d&#8217;actions et notre argent 
+      disponible Renvoie un dictionnaire (string:entier).</td>
           <td align="right" valign="top">
             
             
@@ -192,9 +246,9 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#operationsEnCours" class="summary-sig-name">operationsEnCours</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Retourne une liste d'entier qui correspondent aux identifiants des 
-      ordres que vous avez soumis predecemment et qui sont toujours 
-      ouverts.</td>
+      Retourne une liste d&#8217;entiers, qui correspondent aux identifiants des 
+      ordres pr&#233;c&#233;demment transmis et qui ne sont pas encore termin&#233;s: on 
+      peut donc les suivre et les annuler.</td>
           <td align="right" valign="top">
             
             
@@ -252,8 +306,8 @@
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#achats" class="summary-sig-name">achats</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">action</span>)</span><br />
-      Liste tous les ordres d'achats ouverts de tous les utilisateurs pour 
-      une action donnee.</td>
+      Liste tous les ordres d&#8217;achats pour tous les joueurs sur une action 
+      donn&#233;e.</td>
           <td align="right" valign="top">
             
             
@@ -290,7 +344,7 @@
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#historiques" class="summary-sig-name">historiques</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">action</span>)</span><br />
-      Liste tous les echanges qui ont deja ete effectues sur une action.</td>
+      Permet de lister tous les &#233;changes d&#233;j&#224; effectu&#233;s sur une action.</td>
           <td align="right" valign="top">
             
             
@@ -308,7 +362,7 @@
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#suivreOperation" class="summary-sig-name">suivreOperation</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">id_ordre</span>)</span><br />
-      Permet de voir le volume restant dans un ordre precedemment soumis.</td>
+      Permet de voir le volume restant pour un ordre transmis pr&#233;c&#233;demment.</td>
           <td align="right" valign="top">
             
             
@@ -326,8 +380,8 @@
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#annulerOperation" class="summary-sig-name">annulerOperation</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">id_ordre</span>)</span><br />
-      Permer d'annuler un ordre precedemment soumis pour recuperer les 
-      fonds provisionnes.</td>
+      Annule un ordre transmis pr&#233;c&#233;demment afin de r&#233;cup&#233;rer les fonds 
+      provisionn&#233;s.</td>
           <td align="right" valign="top">
             
             
@@ -344,8 +398,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#fin" class="summary-sig-name">fin</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Renvoie un dictionnaire contenant le temps restant (en seconde) pour 
-      la partie en cours (string:entier).</td>
+      Renvoie un dictionnaire le temps restant (en s) avant la fin de la 
+      partie (string:entier).</td>
           <td align="right" valign="top">
             
             
@@ -380,8 +434,12 @@
     </td>
   </tr></table>
   
-  <p>Renvoie un numero de partie unique a communiquer oralement avec vos 
-  concurrents</p>
+  <p>Cr&#233;e la partie et renvoie l&#8217;id &#224; communiqur oralement aux autres 
+  joueurs. Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>id=r.creerPartie(<span class="py-string">&quot;MatthieuDevall&#233;&quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span>(id)
+<span class="py-output">31416 #id de la partie</span></pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -415,13 +473,13 @@
       -1 si le numero de partie n'existe pas
     </li>
     <li>
-      -2 si le nom de joueur est deja pris
+      -2 si le nom de joueur est d&#233;ja pris
     </li>
     <li>
-      -3 si la partie est deja lance (top)
+      -3 si la partie est d&#233;ja lanc&#233;e (top)
     </li>
     <li>
-      -4 si les types ne sont pas respecte
+      -4 si les types ne sont pas respect&#233;s
     </li>
   </ul>
   <dl class="fields">
@@ -454,6 +512,30 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="solde"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">solde</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Permet de voir notre porte-feuille d&#8217;actions et notre argent 
+  disponible Renvoie un dictionnaire (string:entier).</p>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.solde()
+<span class="py-output">{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}</span></pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="operationsEnCours"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -468,9 +550,13 @@
     </td>
   </tr></table>
   
-  <p>Retourne une liste d'entier qui correspondent aux identifiants des 
-  ordres que vous avez soumis predecemment et qui sont toujours ouverts. 
-  Cela permet de pouvoir les suivre ou les annuler.</p>
+  <p>Retourne une liste d&#8217;entiers, qui correspondent aux identifiants des 
+  ordres pr&#233;c&#233;demment transmis et qui ne sont pas encore termin&#233;s: on peut 
+  donc les suivre et les annuler.</p>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>R.operationsEnCours()
+<span class="py-output">[62098581, 20555477]</span></pre>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -590,10 +676,21 @@
     </td>
   </tr></table>
   
-  <p>Liste tous les ordres d'achats ouverts de tous les utilisateurs pour 
-  une action donnee. Renvoie une liste de tuple (nom_acheteur, prix, 
-  volume) triee par le prix le plus avantageux. Si l'action n'existe pas 
-  renvoie -4;</p>
+  <p>Liste tous les ordres d&#8217;achats pour tous les joueurs sur une action 
+  donn&#233;e. Retourne:</p>
+  <ul>
+    <li>
+      -4 si l&#8217;action n&#8217;existe pas
+    </li>
+    <li>
+      une liste de tuples tri&#233;e par ordre de prix avantageux sous la forme:
+      <code>(nom_acheteur, prix, volume)</code>
+    </li>
+  </ul>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.achats(<span class="py-string">&quot;Trydea&quot;</span>)
+<span class="py-output">[('Matthieu', 23,15), ('Ryan',20,10), ('Paul', 17,23)]</span></pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -622,11 +719,24 @@
   une action donnee. Renvoie une liste de tuple (nom_acheteur, prix, 
   volume) triee par le prix le plus avantageux. Si l'action n'existe pas 
   renvoie -4;</p>
+  <p>Retourne:</p>
+  <ul>
+    <li>
+      -4 si l&#8217;action n&#8217;existe pas
+    </li>
+    <li>
+      une liste de tuples tri&#233;e par ordre de prix avantageux sous la forme:
+      <code>(nom_acheteur, prix, volume)</code>
+    </li>
+  </ul>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.ventes(<span class="py-string">'Facebook'</span>)
+<span class="py-output">[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]</span></pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>action</code></strong> (string) - le nom de l'action pour laquelle vous voulez voir les offres de 
-          ventes</li>
+        <li><strong class="pname"><code>action</code></strong> (string) - nom de l'action</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -646,9 +756,13 @@
     </td>
   </tr></table>
   
-  <p>Liste tous les echanges qui ont deja ete effectues sur une action. 
-  Renvoie une liste de tuple (nom_vendeur, nom_acheteur, prix, volume) 
-  triee par ordre chronologique.</p>
+  <p>Permet de lister tous les &#233;changes d&#233;j&#224; effectu&#233;s sur une action. 
+  Retourne une liste de tuples tri&#233;e par ordre chronologique. Sous la 
+  forme: <code>(nom_vendeur, nom_acheteur, prix, volume)</code></p>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.historiques(<span class="py-string">&quot;Trydea&quot;</span>)
+<span class="py-output">[('Matthieu','Mukhlis',10,10), ('T&#233;rence', 'Ryan', 15,20), ('Matthieu', 'Ryan', 20,3)]</span></pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -672,14 +786,15 @@
     </td>
   </tr></table>
   
-  <p>Permet de voir le volume restant dans un ordre precedemment soumis. 
-  Renvoie :</p>
+  <p>Permet de voir le volume restant pour un ordre transmis 
+  pr&#233;c&#233;demment.</p>
+  <p>Retourne:</p>
   <ul>
     <li>
-      0 si l'ordre n'existe plus ou est termine
+      0 si l&#8217;ordre n&#8217;existe plus ou est termin&#233;
     </li>
     <li>
-      -4 si les types ne sont pas respectes
+      4 si les types ne sont pas respect&#233;s
     </li>
     <li>
       sinon le volume restant en achat/vente.
@@ -708,26 +823,31 @@
     </td>
   </tr></table>
   
-  <p>Permer d'annuler un ordre precedemment soumis pour recuperer les fonds
-  provisionnes. Renvoie :</p>
+  <p>Annule un ordre transmis pr&#233;c&#233;demment afin de r&#233;cup&#233;rer les fonds 
+  provisionn&#233;s.</p>
+  <p>Retourne:</p>
   <ul>
     <li>
-      -11 si l'ordre n'existe plus ou est termine
+      11 si l&#8217;ordre n&#8217;existe plus ou est termine
     </li>
     <li>
-      -4 si les types ne sont pas respectes
+      4 si les types ne sont pas respect&#233;s
     </li>
     <li>
-      le volume restant si ordre de vente
+      le volume d&#8217;action restant si c&#8217;est un ordre de vente
     </li>
     <li>
-      les euros recuperes si ordre d'achat
+      les euros d&#233;pens&#233;s si c&#8217;est ordre d&#8217;achat
     </li>
   </ul>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.annulerOrdre(31416)</pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>id_ordre</code></strong> (entier) - idenfiant unique de l'ordre a suivre</li>
+        <li><strong class="pname"><code>id_ordre</code></strong> (entier) - : id de l&#8217;odre (r&#233;cup&#233;rer &#224; partir de la fonction 
+          operationsEnCours())</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -746,10 +866,17 @@
     </td>
   </tr></table>
   
-  <p>Renvoie un dictionnaire contenant le temps restant (en seconde) pour 
-  la partie en cours (string:entier).</p>
-  <p>Lorsque la partie est terminee, un classement des joueurs est ajoute 
-  dans le dictionnaire (string:liste).</p>
+  <p>Renvoie un dictionnaire le temps restant (en s) avant la fin de la 
+  partie (string:entier). Si la partie est termin&#233;e, affiche le classement 
+  (string:liste).</p>
+  <p>Exemple:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.fin()
+<span class="py-output">{'temps': 10} #Il reste 10 secondes avant la fin de la partie.</span></pre>
+  <p>OU</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>r.fin()
+<span class="py-output">{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.</span></pre>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -781,7 +908,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Feb 16 17:44:00 2017
+    Generated by Epydoc 3.0.1 on Wed Feb 22 13:52:33 2017
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

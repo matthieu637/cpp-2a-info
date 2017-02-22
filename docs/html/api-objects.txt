@@ -4,10 +4,11 @@ client.Reseau	client.Reseau-class.html
 client.Reseau.annulerOperation	client.Reseau-class.html#annulerOperation
 client.Reseau.operationsEnCours	client.Reseau-class.html#operationsEnCours
 client.Reseau.achats	client.Reseau-class.html#achats
+client.Reseau.ask	client.Reseau-class.html#ask
 client.Reseau.bid	client.Reseau-class.html#bid
 client.Reseau.ventes	client.Reseau-class.html#ventes
 client.Reseau.rejoindrePartie	client.Reseau-class.html#rejoindrePartie
-client.Reseau.ask	client.Reseau-class.html#ask
+client.Reseau.__notEnd	client.Reseau-class.html#__notEnd
 client.Reseau.suivreOperation	client.Reseau-class.html#suivreOperation
 client.Reseau.creerPartie	client.Reseau-class.html#creerPartie
 client.Reseau.historiques	client.Reseau-class.html#historiques
