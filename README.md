@@ -13,6 +13,7 @@ avant de pull request au risque que nos branches master divergent (https://githu
 ```
 git remote add upstream https://github.com/matthieu637/cpp-2a-info.git
 git pull upstream master
+git push origin master
 ```
 
 Pour reporter des bugs, l'interface dédiée se trouve ici : https://github.com/matthieu637/cpp-2a-info/issues (différent du pull request)
