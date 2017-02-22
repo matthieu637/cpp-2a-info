@@ -118,16 +118,17 @@ class Reseau:
 	def creerPartie(self, nom):
 		'''
 		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
+		Exemple:
+
+		>>> id=r.creerPartie("MatthieuDevallé")
+		>>> print(id)
+		31416 #id de la partie
 		
 		@param nom: nom du joueur qui crée la partie
 		@type nom: string
 		
 		
-		Exemple:
-
-			>>> id=r.creerPartie("MatthieuDevallé")
-			>>> print(id)
-			31416 #id de la partie
+	
 		'''
 		self.__estConnect()
 		self.__envoyer("CREATE "+nom)
@@ -285,7 +286,7 @@ class Reseau:
 		Liste tous les ordres d’achats pour tous les joueurs sur une action donnée.
 		Retourne:
 			- -4 si l’action n’existe pas
-			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{nom_acheteur, prix, volume)}
+			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{(nom_acheteur, prix, volume)}
 		
 		Exemple:
 
