@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-
 import socket
 import time
 
@@ -12,12 +11,12 @@ class Reseau:
 	
 	Cette documentation a pour but de vous aider à utiliser la classe Reseau (qui fait le lien entre votre programme et le serveur). En POO (programmation orientée objet), une classe est un ensemble de fonctions prédéfinies. Dans notre cas, cette classe permet de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
 	Pour plus d’informations:
-	
+  
 	U{https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes}
 
 	Préliminaires
 	=============
-	
+
 		Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abord importer la class (après l’avoir 
 		U{téléchargée<https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py>} : clic droit, enregistré le lien sous). 
 		Pour cela, il faut metre ce fichier dans le même dossier que le fichier courant puis dans le fichier courant, on commence par:
@@ -363,6 +362,8 @@ class Reseau:
 		@param action: le nom de l'action
 		@type action: string
 		'''
+		action=action.lower()
+		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -398,7 +399,7 @@ class Reseau:
 		
 		Retourne:
 			- 11 si l’ordre n’existe plus ou est termine
-			- 4 si les types ne sont pas respectes
+			- 4 si les types ne sont pas respectés
 			- le volume d’action restant si c’est un ordre de vente
 			- les euros dépensés si c’est ordre d’achat
 		
@@ -416,18 +417,19 @@ class Reseau:
 
 	def fin(self):
 		'''
-		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminé, affiche le classement (string:liste).
+		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
 
 		Exemple:
 
 		>>> r.fin()
-		{10} #Il reste 10 secondes avant la fin de la partie.
+
+		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
 		
 		OU
 
 		>>> r.fin()
-		{Devallé, Benkhedda, Eshamuddin} #Le classement de fin de partie.
-		'''
+
+		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
 
 			
 		self.__estTop()
