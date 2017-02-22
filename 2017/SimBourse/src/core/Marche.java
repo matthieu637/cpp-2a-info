@@ -117,14 +117,12 @@ public class Marche {
 		return liste_ventes.get(a);
 	}
 
-	
+	/**
+	 * @param a : le nom de l'action
+	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+	 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
+	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
-		/**
-		 * @param a : le nom de l'action
-		 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
-		 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
-		 */
-		
 		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
 		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
 		
@@ -179,14 +177,6 @@ public class Marche {
 						it.remove();
 					}
 
-					//ordre restant vide
-					if(vente.getVolume() == 0){
-						Integer id_vente = vente.getId_ordre();
-						joueur_vente.retirerOperation(id_vente);
-						it.remove();
-					}
-					
-					
 					mutex.unlock();
 					return 0;
 				}
