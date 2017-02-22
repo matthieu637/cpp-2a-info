@@ -33,6 +33,7 @@ r = Reseau('localhost', 23456) #au lieu de de r=Reseau()
 Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directement disponibles sur le serveur officiel, cela vous permettra d'effectuer des tests en local. Après la validation de votre pull request, le serveur officiel sera relancé avec les nouveaux changements, vous permettant alors de réutiliser r=Reseau().
 
 #### Contributions possibles (par difficulté)
+- [ ] faire un graphique [de ce type](http://bigbrowser.blog.lemonde.fr/files/2014/07/TuOuVous-530x405.jpg) pour expliquer le classement des joueurs
 - [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py)
 - [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) 
 - [ ] rendre l'argument action insensible à la casse dans la fonction historiques (client.py) : pouvoir utiliser r.historiques('facebook') sans déclencher d'erreur
