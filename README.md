@@ -34,8 +34,8 @@ Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directemen
 
 #### Contributions possibles (par difficulté)
 - [ ] faire un graphique [de ce type](http://bigbrowser.blog.lemonde.fr/files/2014/07/TuOuVous-530x405.jpg) pour expliquer le classement des joueurs
-- [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py)
-- [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) 
+- [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
+- [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
 - [ ] rendre l'argument action insensible à la casse dans la fonction historiques (client.py) : pouvoir utiliser r.historiques('facebook') sans déclencher d'erreur
 - [x] ~~[faire un cache pour la fonction fin avec un compteur local pour diminuer les requêtes serveurs (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminée par [david540](https://github.com/david540)
 - [x] ~~[ajouter un code d'erreur pour un appel à fonction alors que la partie est finie (client)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminée par [david540](https://github.com/david540)
