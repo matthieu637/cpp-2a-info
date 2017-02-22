@@ -8,67 +8,69 @@ class Reseau:
 	'''
 	Fait le lien entre votre programme et le serveur.
 	
-	Cette documentation a pour but de vous aider à utiliser la class Reseau (qui fait le lien entre votre programme et le serveur) développée par Matthieu Zimmer pour la simulation de bourse du S4. En POO (programmation orientée objet), une class est un ensemble de fonctions prédéfinies. Dans notre cas, cette class permet de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
+	Cette documentation a pour but de vous aider à utiliser la classe Reseau (qui fait le lien entre votre programme et le serveur) développée par Matthieu Zimmer pour la simulation de bourse du S4. En POO (programmation orientée objet), une classe est un ensemble de fonctions prédéfinies. Dans notre cas, cette classe permet de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
 	Pour plus d’informations:
 	
 	U{https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes}
 
-	2. Préliminaires
+	Préliminaires
+	=============
 	
-	Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abord importer la class (après l’avoir téléchargée). Pour cela, il faut metre ce fichier dans le MEME dossier que le fichier courant puis dans le fichier courant, on commence par:
-		>>> from client import Reseau
-		r=Reseau() #On travaillera par la suite avec la variable r
-	
-	B{Attention: Le fichier client.py ne doit JAMAIS être modifié !}
-	
-	3. Création d’une partie
-	
-	Une fois que la connexion est effectuée, on doit pouvoir choisir entre créer une partie ou en rejoindre une (à faire vous même...).
-	Pour créer une partie:
-		>>> num_partie=r.creerPartie("monNom") #On crée la partie
-		print(num_partie) #On récupère son numéro
-	
-	On récupère le numéro afin de le transmettre oralement aux autres joueurs qui eux devront rejoindre la partie.
-
-	B{Attention: Celui qui crée la partie n’a pas besoin de la rejoindre, il est directement considéré comme un joueur}
-	
-	4. Rejoindre la partie
-	
-	Une fois la partie créée par l’un des participants, les autres doivent pouvoir la rejoindre:
-	Premièrement, on rejoint la partie, en indiquant son numéro et le pseudo que l’on souhaite, par exemple,
-
-	>>> r.rejoindrePartie(4488,'MatthieuDevallé')
-
-	Puis on doit se synchroniser avec les autres joueurs:
-
-	>>> r.top()
-
-	On a donc le code suivant pour rejoindre une partie:
-		>>> r.rejoindrePartie(numéro,"pseudo")
-		r.top()
+		Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abord importer la class (après l’avoir 
+		U{téléchargée<https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py>} : clic droit, enregistré le lien sous). 
+		Pour cela, il faut metre ce fichier dans le même dossier que le fichier courant puis dans le fichier courant, on commence par:
+			>>> from client import Reseau
+			r=Reseau() #On travaillera par la suite avec la variable r
 		
-	B{Attention: On ne reprend pas la main tant que le créateur n’a pas lui même tapé C{r.top}()}
+		B{Attention: Le fichier client.py ne doit JAMAIS être modifié !}
 	
-	Pour la creation :
-		>>> r.creerPartie('monNom')
-		48858
+	Création d’une partie
+	=====================
+	
+		Une fois que la connexion est effectuée, on doit pouvoir choisir entre créer une partie ou en rejoindre une (à faire vous même...).
+		Pour créer une partie:
+			>>> num_partie=r.creerPartie("monNom") #On crée la partie
+			print(num_partie) #On récupère son numéro
 		
-	Pour rejoindre (le nombre 48858 est donne a titre d'exemple, on utilisera celui du createur) :
-		>>> r.rejoindrePartie(48858, 'monNom')
+		On récupère le numéro afin de le transmettre oralement aux autres joueurs qui eux devront rejoindre la partie.
+	
+		B{Attention: Celui qui crée la partie n’a pas besoin de la rejoindre, il est directement considéré comme un joueur}
 		
-	Lorsque tous les utilisateurs ont rejoint la partie, il faut se synchroniser pour le top depart.
-	Pour cela, ceux qui ont rejoint la partie utiliseront :
-		>>> r.top() #ne rend pas la main tant que le createur n'a pas lance
+	Rejoindre la partie
+	===================
+		
+		Une fois la partie créée par l’un des participants, les autres doivent pouvoir la rejoindre:
+		Premièrement, on rejoint la partie, en indiquant son numéro et le pseudo que l’on souhaite, par exemple,
 	
-	Une fois que tous les joueurs ont rejoint la partie, le créateur entre à son tour qui lance la partie:
+		>>> r.rejoindrePartie(4488,'MatthieuDevallé')
 	
-	A partir de la, createur et utilisateurs ont acces aux memes fonctions du jeu.
-		>>> r.solde()
-		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
+		Puis on doit se synchroniser avec les autres joueurs:
+	
+		>>> r.top()
+	
+		On a donc le code suivant pour rejoindre une partie:
+			>>> r.rejoindrePartie(numéro_partie,"pseudo")
+			r.top()
+			
+		B{Attention: On ne reprend pas la main tant que le créateur n’a pas lui même tapé C{r.top}()}
+	
+	Synchronisation pour le départ
+	==============================
 
-	A partir de ce moment, il n’y a plus de différence entre le créateur et les autres.
+		Lorsque tous les utilisateurs ont rejoint la partie, il faut se synchroniser pour le top depart.
+		Pour cela, ceux qui ont rejoint la partie utiliseront :
+			>>> r.top() #ne rend pas la main tant que le createur n'a pas lance
+		
+		Une fois que tous les joueurs ont rejoint la partie, le créateur entre à son tour qui lance la partie:
+		
+		A partir de la, createur et utilisateurs ont acces aux memes fonctions du jeu.
+			>>> r.solde()
+			{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 	
-	6. Informations sur le classement final
+		A partir de ce moment, il n’y a plus de différence entre le créateur et les autres.
+		
+	Informations sur le classement final
+	====================================
 		
 		Il y a plusieurs cas (on note j1 et j2 les joueurs):
 			- dans le cas où j1 (ou j2) a vendu les deux types d'actions, il gagne
