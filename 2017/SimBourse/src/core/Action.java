@@ -11,12 +11,6 @@ public enum Action {
 	private Action(String name) {
 		this.name = name;
 	}
-	private static int nombreActions(){
-		int compteur=0;
-		for (Action a : Action.values())
-			compteur++;
-		return compteur;
-	}
 	public static boolean estValide(String s) {
 		for(Action a : Action.values())
 			if(a.name.equalsIgnoreCase(s))
@@ -31,14 +25,22 @@ public enum Action {
 		System.out.println("ERROR Action.from " + s);
 		return null;
 	}
-	public static String[] nomActions() {
-		String[] vectName= new String[nombreActions()];
-		int compteur=0;
-		for(Action a : Action.values()){
-			vectName[compteur]=a.name;
-			compteur++;
+	public static int[] nomActions() {
+		int n=Action.values().length;
+		String[] vectName= new String[n];
+		int[] vectPos= new int[n]; 
+		for(int i=0;i<n;i++){
+			vectName[i]=Action.values()[i].name;
 		}
 		Arrays.sort(vectName);
-		return vectName;
+		
+		for(int i=0;i<n;i++){
+			for(int k=0;k<n;k++)
+				if(vectName[k]==Action.values()[i].name){
+					vectPos[k]=i;
+					break;
+				}
+		}
+		return vectPos;
 	}
 }
