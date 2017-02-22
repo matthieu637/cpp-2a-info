@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
+
 import socket
 import time
 
 class Reseau:
 	'''
-	
 	1. Introduction
 	
 	Cette documentation a pour but de vous aidez à utiliser la class Reseau (qui fait le lien entre votre programme et le serveur) développé par Matthieu Zimmer pour la simulation de bourse du S4. En POO (programmation orientée objet), une class est un ensemble de fonctions prédéfinies. Dans notre cas, cette class permettre de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
@@ -68,12 +68,12 @@ class Reseau:
 			- dans le cas où les deux ont plusieurs actions, on compare leurs nombre d'action et leur argent, le plus riche en action gagne sauf si ils ont le même nombre d'actions (le plus riche gagne)
 			- dans le meilleur cas, si ils ont vendus deux types d'actions, on compare leur nombre d'action ainsi que leur argent, le plus riche gagne
 			
-		
 	'''
 	
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.connect = False
 		self.topbool = False
+		self.histoActions={}
 		self.tempsFinPartie= 0
 		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.settimeout(5)
@@ -130,7 +130,6 @@ class Reseau:
 			>>> id=r.creerPartie("MatthieuDevallé")
 			>>> print(id)
 			31416 #id de la partie
-
 		'''
 		self.__estConnect()
 		self.__envoyer("CREATE "+nom)
@@ -158,7 +157,6 @@ class Reseau:
 		@type id_partie: entier
 		@param nom: le pseudo du joueur qui rejoint la partie
 		@type nom: string
-		
 		'''
 		self.__estConnect()
 		self.__envoyer("JOIN "+str(id_partie)+" "+nom)
@@ -179,15 +177,21 @@ class Reseau:
 			>>> r.top()
 		
 		Renvoie toujours 0.
-		
 		'''
 		if(not self.connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
 		self.__envoyer("TOP")
 		r = int(self.__recevoir())
 		self.topbool= True
+		
 		self.__envoyer("FIN") #Pour avoir la duree de la partie
 		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
+
+		for key in self.solde():
+			if key!='euros':
+				self.histoActions[key]=[] #on ajoute les différentes actions dans le tableau historique du client
+		
+
 		return r
 
 	def solde(self):
@@ -199,7 +203,6 @@ class Reseau:
 
 		>>> r.solde()
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
-		
 		'''
 		self.__estTop()
 		self.__notEnd()
@@ -214,7 +217,6 @@ class Reseau:
 
 		>>> r.rejoindrePartie(31416,"MatthieuDev")
 		0 #Forcement, ça marche
-
 		'''
 		self.__estTop()
 		self.__notEnd()
@@ -332,12 +334,13 @@ class Reseau:
 		
 		@param action: nom de l'action
 		@type action: string
-		
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer("HISTO "+action)
-		return eval(self.__recevoir())
+		self.__envoyer("HISTO "+action+" "+str(len(self.histoActions[action])))
+		self.histoActions[action]+=(eval(self.__recevoir()))
+		return self.histoActions[action]
+		#return eval(self.__recevoir())
 
 	def suivreOperation(self, id_ordre):
 		'''
@@ -396,8 +399,6 @@ class Reseau:
 
 		>>> r.fin()
 		{Devallé, Benkhedda, Eshamuddin} #Le classement de fin de partie.
-		
-		
 		'''
 
 			
