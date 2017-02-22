@@ -43,7 +43,7 @@ Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directemen
 - [ ] diminuer la taille des messages réseaux en utilisant des nombres à la place de chaîne pour représenter les différents types d'actions (client+serveur)
 - [ ] ajouter le type de l'ordre dans les tuples reçus par la fonction historique (serveur)
 - [ ] ajouter un argument facultatif pour limiter la taille des listes reçues dans achats et ventes afin de diminuer la taille des messages réseaux (client+serveur)
-- [x] ~~ajouter un cache pour la fonction historique pour réduire la taille de la liste à passer au réseau (client+serveur)~~ ([idée émise et terminée](https://github.com/matthieu637/cpp-2a-info/pull/2) par [david540](https://github.com/david540))
+- [x] ~~[ajouter un cache pour la fonction historique pour réduire la taille de la liste à passer au réseau (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/2)~~ ([idée émise](https://github.com/matthieu637/cpp-2a-info/pull/1) et terminée par [david540](https://github.com/david540))
 
 Pour les contributions suivantes (les plus difficiles), il est inutile, pour le moment, d'implémenter uniquement ces fonctions dans le client (avec de multiples requêtes au serveur). L'intérêt étant qu'elles soient justement exécutées au plus vite du côté serveur avant les autres requêtes. Si elles ne sont pas terminées avant la compétition, chaque étudiant pourra alors décider de les implémenter du côté de son client (pas besoin de partager votre solution).
 - [ ] ajouter des ordres "meilleurs prix" : écoule (achète/vend) x actions jusqu'à épuisement des x actions (client+serveur)
