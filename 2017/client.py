@@ -71,10 +71,11 @@ class Reseau:
 	'''
 	
 	#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts
-	message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
-	"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D "}
+	
 	
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
+		self.message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
+		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D "}
 		self.connect = False
 		self.topbool = False
 		self.histoActions={}
@@ -136,7 +137,7 @@ class Reseau:
 			31416 #id de la partie
 		'''
 		self.__estConnect()
-		self.__envoyer(message["CREATE"]+nom)
+		self.__envoyer(self.message["CREATE"]+nom)
 		id_partie = int(self.__recevoir())
 		self.connect = True
 		return id_partie
@@ -163,7 +164,7 @@ class Reseau:
 		@type nom: string
 		'''
 		self.__estConnect()
-		self.__envoyer(message["JOIN"]+str(id_partie)+" "+nom)
+		self.__envoyer(self.message["JOIN"]+str(id_partie)+" "+nom)
 		ok = self.__recevoir()
 		self.connect = True
 		return int(ok)
@@ -184,10 +185,10 @@ class Reseau:
 		'''
 		if(not self.connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
-		self.__envoyer(message["TOP"]) 
+		self.__envoyer(self.message["TOP"]) 
 		r = int(self.__recevoir())
 		self.topbool= True
-		self.__envoyer(message["FIN"]) # Pour avoir la duree de la partie
+		self.__envoyer(self.message["FIN"]) # Pour avoir la duree de la partie
 		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
 
 		for key in self.solde():
@@ -209,7 +210,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["SOLDE"])
+		self.__envoyer(self.message["SOLDE"])
 		return eval(self.__recevoir())
 	
 	def operationsEnCours(self):
@@ -223,7 +224,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["OPERATIONS"])
+		self.__envoyer(self.message["OPERATIONS"])
 		return eval(self.__recevoir())
 
 	def ask(self, action, prix, volume):
@@ -252,7 +253,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["ASK"]+action+" "+str(prix)+" "+str(volume))
+		self.__envoyer(self.message["ASK"]+action+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
 	def bid(self, action, prix, volume):
@@ -281,7 +282,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["BID"]+action+" "+str(prix)+" "+str(volume))
+		self.__envoyer(self.message["BID"]+action+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
 	def achats(self, action):
@@ -301,7 +302,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["ACHATS"]+action)
+		self.__envoyer(self.message["ACHATS"]+action)
 		return eval(self.__recevoir())
 	
 	def ventes(self, action):
@@ -322,7 +323,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["VENTES"]+action)
+		self.__envoyer(self.message["VENTES"]+action)
 		return eval(self.__recevoir())
 
 	def historiques(self, action):
@@ -340,7 +341,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["HISTO"]+action+" "+str(len(self.histoActions[action])))
+		self.__envoyer(self.message["HISTO"]+action+" "+str(len(self.histoActions[action])))
 		self.histoActions[action]+=(eval(self.__recevoir()))
 		return self.histoActions[action]
 		#return eval(self.__recevoir())
@@ -364,7 +365,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["SUIVRE"]+str(id_ordre))
+		self.__envoyer(self.message["SUIVRE"]+str(id_ordre))
 		return eval(self.__recevoir())
 
 	def annulerOperation(self, id_ordre):
@@ -386,7 +387,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(message["ANNULER"]+str(id_ordre))
+		self.__envoyer(self.message["ANNULER"]+str(id_ordre))
 		return eval(self.__recevoir())
 
 	def fin(self):
@@ -410,6 +411,6 @@ class Reseau:
 		if(tempsRestant>0): #Dans ce cas, pas besoin de faire une requête au serveur, on affiche simplement le temps restant
 			return {'temps': int(tempsRestant)+1}
 		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
-		self.__envoyer(message["FIN"])
+		self.__envoyer(self.message["FIN"])
 		return eval(self.__recevoir())
 
