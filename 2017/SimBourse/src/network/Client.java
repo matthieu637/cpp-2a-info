@@ -59,7 +59,6 @@ public class Client extends Thread {
 
 			while ((userInput = in.readLine()) != null) {
 				System.out.println(userInput + "\n");
-				stackAllAction+= userInput + "\n";
 				
 				String[] arguments = userInput.split(" ");
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
@@ -67,7 +66,6 @@ public class Client extends Thread {
 				// Utilisateur n'ayant ni créé ni rejoint peut créer
 				if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
-					stackAllAction="Liste des actions de "+nom+" :\n";
 					numero_partie = (int) (Math.random() * 100000);
 					envoyer(out, String.valueOf(numero_partie));
 					current = new Partie();
@@ -78,7 +76,6 @@ public class Client extends Thread {
 						&& !join) {
 					numero_partie = Integer.parseInt(arguments[1]);
 					String nom = arguments[2];
-					stackAllAction="Liste des actions de "+nom+" :\n";
 
 					if (!serveur.partieExiste(numero_partie)) {
 						envoyer(out, "-1");
