@@ -14,14 +14,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.lang3.tuple.Pair;
 
 
-
 public class Marche {
 	private boolean ouvert;
 	private boolean fini;
 	private long debut;
 	private Map<Action, Set<Ordre>> liste_achats;
 	private Map<Action, Set<Ordre>> liste_ventes;
-	public List<Joueur> liste_joueurs;
+	private List<Joueur> liste_joueurs;
 	private Set<Integer> liste_id_ordres;
 	private Map<Action, Set<Echange>> historiques;
 	private final Lock mutex = new ReentrantLock();
