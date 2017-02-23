@@ -89,8 +89,6 @@ class Reseau:
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
 		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E"}
-		self.decode={"1":"TOP","2":"SOLDE","3":"OPERATIONS","4":"ACHATS","5":"VENTES","6":"HISTO","7":"ASK","8":"BID",
-		"9":"SUIVRE","A":"ANNULER","B":"FIN","C":"CREATE","D":"JOIN","E":"LISTECOUPS"}
 		self.nomAction=[]
 		self.connect = False
 		self.topbool = False
