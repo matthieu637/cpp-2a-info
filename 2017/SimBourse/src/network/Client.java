@@ -27,14 +27,15 @@ public class Client extends Thread {
 	private static final String OPERATIONS = "3";
 	private static final String ACHATS = "4 ";
 	private static final String VENTES = "5 ";
-	private static final String HISTO = "6 "; //on définit un dictionnaire qui permettra une communication 
-	private static final String ASK = "7 ";   //client/serveur avec des messages très courts
-	private static final String BID = "8 ";	//sans perdre de lisibilité du code
+	private static final String HISTO = "6 "; //on dÃ©finit un dictionnaire qui permettra une communication 
+	private static final String ASK = "7 ";   //client/serveur avec des messages trÃ¨s courts
+	private static final String BID = "8 ";	//sans perdre de lisibilitÃ© du code
 	private static final String SUIVRE = "9 ";
 	private static final String ANNULER = "A ";
 	private static final String FIN = "B";
 	private static final String CREATE="C ";
 	private static final String JOIN="D ";
+	private static final String LISTECOUPS="E";
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -44,9 +45,10 @@ public class Client extends Thread {
 	}
 
 	public void run() {
-		System.out.println("Client connecté");
-		int[] nomAction=Action.nomActions();
-		int nombreActions=nomAction.length;
+		System.out.println("Client connectÃ©");
+		String stackAllAction="";
+		//int[] nomAction=Action.nomActions();
+		int nombreActions=Action.values().length;
 		Partie current = null;
 		Joueur joueur = null;
 		int numero_partie = -1;
@@ -60,12 +62,15 @@ public class Client extends Thread {
 
 			while ((userInput = in.readLine()) != null) {
 				System.out.println(userInput + "\n");
+				stackAllAction+= userInput + "\n";
+				
 				String[] arguments = userInput.split(" ");
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
 
-				// Utilisateur n'ayant ni créé ni rejoint peut créer
+				// Utilisateur n'ayant ni crÃ©Ã© ni rejoint peut crÃ©er
 				if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
+					stackAllAction="Liste des actions de "+nom+" :\n";
 					numero_partie = (int) (Math.random() * 100000);
 					envoyer(out, String.valueOf(numero_partie));
 					current = new Partie();
@@ -76,6 +81,7 @@ public class Client extends Thread {
 						&& !join) {
 					numero_partie = Integer.parseInt(arguments[1]);
 					String nom = arguments[2];
+					stackAllAction="Liste des actions de "+nom+" :\n";
 
 					if (!serveur.partieExiste(numero_partie)) {
 						envoyer(out, "-1");
@@ -103,7 +109,11 @@ public class Client extends Thread {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					envoyer(out, "0");
+					String retour="";
+					for(Joueur j: current.getMarche().liste_joueurs )
+						if(j.getNom()!="banque")
+							retour += j.getNom() + " ";
+					envoyer(out, retour.substring(0, retour.length()-1)); //Pour retirer le dernier ' '
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour
 				} else if (userInput.startsWith(SOLDE) && (create || join) && current.getMarche().est_ouvert()) {
@@ -114,27 +124,27 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(ACHATS) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])&& peut_jouer){
 					int arg=Integer.parseInt(arguments[1]);
 					if (arg<nombreActions && arg>=0)  {
-						Action a = Action.values()[nomAction[arg]]; 
+						Action a = Action.values()[arg]; 
 					envoyer(out, String.valueOf(current.getMarche().getListeAchats(a)));
 					}
 				} else if (userInput.startsWith(VENTES) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])&& peut_jouer){
 					int arg=Integer.parseInt(arguments[1]);
 					if(arg<nombreActions && arg>=0)  {
-						Action a = Action.values()[nomAction[arg]]; 
+						Action a = Action.values()[arg]; 
 					envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
 					}
 				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&&StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()){
 					int arg=Integer.parseInt(arguments[1]);
 					if(arg<nombreActions && arg>=0 ){
-						Action a = Action.values()[nomAction[arg]]; 
+						Action a = Action.values()[arg]; 
 					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a,Integer.parseInt(arguments[2]))));
 					}
 				} else if (userInput.startsWith(ASK) && arguments.length == 4 && StringUtils.isNumeric(arguments[1])
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					int arg=Integer.parseInt(arguments[1]);
 					if(arg<nombreActions && arg>=0){
-						Action a = Action.values()[nomAction[arg]]; 
+						Action a = Action.values()[arg]; 
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
@@ -143,7 +153,7 @@ public class Client extends Thread {
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					int arg=Integer.parseInt(arguments[1]);
 					if(arg<nombreActions && arg>=0){
-						Action a = Action.values()[nomAction[arg]]; 
+						Action a = Action.values()[arg]; 
 					float prix = Float.parseFloat(arguments[2]);
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
@@ -154,6 +164,9 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(ANNULER) && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
+				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().tempsEcoule()){
+					System.out.println(stackAllAction);
+					envoyer(out,stackAllAction);
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
@@ -207,7 +220,7 @@ public class Client extends Thread {
 		} else if (!create) {
 			client.close();
 		}
-		System.out.println("Client déconnecté");
+		System.out.println("Client dÃ©connectÃ©");
 	}
 
 	private <E, V> String MapToStringPython(Map<E, V> map) {
