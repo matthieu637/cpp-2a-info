@@ -362,9 +362,6 @@ public class Marche {
 
 		return new String(sb);
 	}
-	public boolean tempsEcoule(){
-		return ((debut + Config.getInstance().TEMPS_PARTIE * 60 * 1000) - System.currentTimeMillis()) <=0;
-	}
 	
 	@Override
 	public String toString() {
