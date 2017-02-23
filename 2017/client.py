@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+
 import socket
 import time
 
@@ -11,12 +12,12 @@ class Reseau:
 	
 	Cette documentation a pour but de vous aider à utiliser la classe Reseau (qui fait le lien entre votre programme et le serveur). En POO (programmation orientée objet), une classe est un ensemble de fonctions prédéfinies. Dans notre cas, cette classe permet de communiquer avec le serveur “boursier” écrit en Java afin d’acheter, de vendre ...
 	Pour plus d’informations:
-  
+	
 	U{https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes}
 
 	Préliminaires
 	=============
-
+	
 		Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abord importer la class (après l’avoir 
 		U{téléchargée<https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py>} : clic droit, enregistré le lien sous). 
 		Pour cela, il faut metre ce fichier dans le même dossier que le fichier courant puis dans le fichier courant, on commence par:
@@ -87,7 +88,9 @@ class Reseau:
 	
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		self.message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
-		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D "}
+		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E"}
+		self.decode={"1":"TOP","2":"SOLDE","3":"OPERATIONS","4":"ACHATS","5":"VENTES","6":"HISTO","7":"ASK","8":"BID",
+		"9":"SUIVRE","A":"ANNULER","B":"FIN","C":"CREATE","D":"JOIN","E":"LISTECOUPS"}
 		self.nomAction=[]
 		self.connect = False
 		self.topbool = False
@@ -195,7 +198,7 @@ class Reseau:
 		if(not self.connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
 		self.__envoyer(self.message["TOP"]) 
-		r = int(self.__recevoir())
+		r = (self.__recevoir())
 		self.topbool= True
 		self.__envoyer(self.message["FIN"]) # Pour avoir la duree de la partie
 		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
@@ -362,8 +365,6 @@ class Reseau:
 		@param action: le nom de l'action
 		@type action: string
 		'''
-		action=action.lower()
-		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -399,7 +400,7 @@ class Reseau:
 		
 		Retourne:
 			- 11 si l’ordre n’existe plus ou est termine
-			- 4 si les types ne sont pas respectés
+			- 4 si les types ne sont pas respectes
 			- le volume d’action restant si c’est un ordre de vente
 			- les euros dépensés si c’est ordre d’achat
 		
@@ -415,21 +416,50 @@ class Reseau:
 		self.__envoyer(self.message["ANNULER"]+str(id_ordre))
 		return eval(self.__recevoir())
 
+	def listeDesCoups(self):
+		self.__estTop()
+		if(self.fin()['temps']>0):
+			print("La partie n'est pas finie")
+			return 
+		self.__envoyer(self.message["LISTECOUPS"])
+		reponse= self.__recevoir()
+		repSplit=reponse.split('\n')
+		for i in range(len(repSplit)):
+			subList=repSplit[i].split(' ')
+			print(subList)
+			if subList[0]=="Liste":
+				continue
+			if len(subList)>=1 and subList[0] in self.decode:
+				subList[0]=self.decode[subList[0]]
+			if len(subList)>=2 and subList[0]!='SUIVRE' and subList[0]!='ANNULER': #si ce n'est pas une annulation ou un suivi d'action ou le mess d'intro
+				try:
+					num=int(subList[1])
+					subList[1]=self.nomAction[int(subList[1])]
+				except:
+					pass
+			repSplit[i]=' '.join(subList)
+		reponse='\n'.join(repSplit)
+		
+		print(reponse)
+
+		
+	
+		
+
 	def fin(self):
 		'''
-		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
+		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminé, affiche le classement (string:liste).
 
 		Exemple:
 
 		>>> r.fin()
-
-		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
+		{10} #Il reste 10 secondes avant la fin de la partie.
 		
 		OU
 
 		>>> r.fin()
-
-		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
+		{Devallé, Benkhedda, Eshamuddin} #Le classement de fin de partie.
+		'''
 
 			
 		self.__estTop()
