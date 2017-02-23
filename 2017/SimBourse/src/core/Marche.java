@@ -362,14 +362,17 @@ public class Marche {
 
 		return new String(sb);
 	}
-
+	public boolean tempsEcoule(){
+		return ((debut + Config.getInstance().TEMPS_PARTIE * 60 * 1000) - System.currentTimeMillis()) <=0;
+	}
+	
 	@Override
 	public String toString() {
 		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
 				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
 				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
 	}
-
+	
 	public void destroy(){
 		if(timer != null){
 			timer.interrupt();
