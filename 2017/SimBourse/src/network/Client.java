@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import core.Action;
 import core.Config;
 import core.Joueur;
+import core.Operation;
 
 public class Client extends Thread {
 	private Socket client;
@@ -35,6 +36,7 @@ public class Client extends Thread {
 	private static final String FIN = "B";
 	private static final String CREATE="C ";
 	private static final String JOIN="D ";
+	private static final String LISTECOUPS="E";
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -103,9 +105,9 @@ public class Client extends Thread {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);;
+					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);
 					sb.append("[");
-					for(Joueur j: current.getMarche().getListe_joueurs())
+					for(Joueur j: current.getMarche().getListe_joueurs() )
 						if(j.getNom()!="banque"){
 							sb.append("'");
 							sb.append(j.getNom());
@@ -164,6 +166,8 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(ANNULER) && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
+				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
+					envoyer(out, String.valueOf(current.getMarche().getListeOperations()));
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
