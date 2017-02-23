@@ -414,6 +414,22 @@ class Reseau:
 		self.__envoyer(self.message["ANNULER"]+str(id_ordre))
 		return eval(self.__recevoir())
 
+	def listeDesCoups(self):
+		'''
+		Retourne un dictionnaire avec pour clé : 'ListeCoups' qui contient une liste des actions de tous les joueurs de la partie sous la forme :
+		['Achat', 'David', 'Facebook', 8.0, 10] pour un achat de 10 Facebook à 8.0 euros
+		['Vente', 'David', 'Facebook', 10.0, 4] pour une vente de 4 Facebook à 10.0 euros
+		['AnnulationAchat', 'David', 'Trydea', 4.0, 10] pour une annulation d'achat de 10 Trydea à 4.0 euros
+		['AnnulationVente', 'David', 'Trydea', 4.0, 10] pour une annulation de vente de 10 Trydea à 4.0 euros
+		'''
+		self.__estTop()
+		if(self.fin()['temps']>0):
+			print("La partie n'est pas finie")
+			return 
+		self.__envoyer(self.message["LISTECOUPS"])
+		reponse= self.__recevoir()
+		return eval(reponse)
+			
 	def fin(self):
 		'''
 		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminé, affiche le classement (string:liste).
