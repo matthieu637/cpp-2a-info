@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import core.Action;
 import core.Config;
 import core.Joueur;
+import core.Operation;
 
 public class Client extends Thread {
 	private Socket client;
@@ -104,16 +105,16 @@ public class Client extends Thread {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);;
-					sb.append("[");
-					for(Joueur j: current.getMarche().getListe_joueurs())
+					StringBuffer sb = new StringBuffer(current.getMarche().liste_joueurs.size() * 100);;
+					sb.append("{'Joueurs':[");
+					for(Joueur j: current.getMarche().liste_joueurs )
 						if(j.getNom()!="banque"){
 							sb.append("'");
 							sb.append(j.getNom());
 							sb.append("',");
 						}
 					sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
-					sb.append("]"); 
+					sb.append("]}"); 
 					envoyer(out, new String(sb)); 
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour
@@ -166,7 +167,15 @@ public class Client extends Thread {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
 				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
-					envoyer(out,current.getMarche().getListeOperations());
+					StringBuffer sb = new StringBuffer(current.getMarche().getListeOperations().size() * 150);
+					sb.append("{'ListeCoups':[");
+					for(Operation o : current.getMarche().getListeOperations()){
+						sb.append(o.toString());
+						sb.append(",");
+					}
+					sb.deleteCharAt(sb.length()-1);
+					sb.append("]}");
+					envoyer(out,new String(sb));
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
