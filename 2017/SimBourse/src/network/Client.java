@@ -35,6 +35,7 @@ public class Client extends Thread {
 	private static final String FIN = "B";
 	private static final String CREATE="C ";
 	private static final String JOIN="D ";
+	private static final String LISTECOUPS="E";
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -164,6 +165,8 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(ANNULER) && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
+				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
+					envoyer(out,current.getMarche().getListeOperations());
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
