@@ -252,6 +252,8 @@ class Reseau:
 		@param volume: le nombre d'action que vous voulez acheter
 		@type volume: entier
 		'''
+		action=action.lower()
+		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -280,6 +282,8 @@ class Reseau:
 		@param volume: le nombre d'action que vous voulez vendre
 		@type volume: entier
 		'''
+		action=action.lower()
+		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -305,6 +309,8 @@ class Reseau:
 		@param action: le nom de l'action pour laquelle vous voulez voir les offres d'achats
 		@type action: string
 		'''
+		action=action.lower()
+		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -335,6 +341,8 @@ class Reseau:
 		@param action: nom de l'action
 		@type action: string
 		'''
+		action=action.lower()
+		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
