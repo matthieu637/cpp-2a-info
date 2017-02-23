@@ -103,16 +103,16 @@ public class Client extends Thread {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					StringBuffer sb = new StringBuffer(current.getMarche().liste_joueurs.size() * 100);;
-					sb.append("{'Joueurs':[");
-					for(Joueur j: current.getMarche().liste_joueurs )
+					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);;
+					sb.append("[");
+					for(Joueur j: current.getMarche().getListe_joueurs())
 						if(j.getNom()!="banque"){
 							sb.append("'");
 							sb.append(j.getNom());
 							sb.append("',");
 						}
 					sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
-					sb.append("]}"); 
+					sb.append("]"); 
 					envoyer(out, new String(sb)); 
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour

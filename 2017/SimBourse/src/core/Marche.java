@@ -362,17 +362,21 @@ public class Marche {
 
 		return new String(sb);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
 				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
 				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
 	}
-	
+
 	public void destroy(){
 		if(timer != null){
 			timer.interrupt();
 		}
+	}
+
+	public List<Joueur> getListe_joueurs() {
+		return liste_joueurs;
 	}
 }

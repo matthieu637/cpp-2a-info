@@ -1,16 +1,14 @@
 package core;
-import java.util.Arrays;
-
 
 public enum Action {
 	//les actions sont à mettre dans l'ordre alphabétique !
 	Apple("Apple"), Facebook("Facebook"), Google("Google"), Trydea("Trydea"); 
 	private String name;
-	
 
 	private Action(String name) {
 		this.name = name;
 	}
+
 	public static boolean estValide(String s) {
 		for(Action a : Action.values())
 			if(a.name.equalsIgnoreCase(s))
@@ -26,4 +24,3 @@ public enum Action {
 		return null;
 	}
 }
-
