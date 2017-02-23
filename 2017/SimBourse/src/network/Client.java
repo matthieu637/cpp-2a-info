@@ -106,7 +106,7 @@ public class Client extends Thread {
 							envoyer(outAdvers, "0");
 						}
 					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);
-					sb.append("{'Joueurs':[");
+					sb.append("[");
 					for(Joueur j: current.getMarche().getListe_joueurs() )
 						if(j.getNom()!="banque"){
 							sb.append("'");
@@ -114,7 +114,7 @@ public class Client extends Thread {
 							sb.append("',");
 						}
 					sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
-					sb.append("]}"); 
+					sb.append("]"); 
 					envoyer(out, new String(sb)); 
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour
@@ -168,13 +168,13 @@ public class Client extends Thread {
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
 				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
 					StringBuffer sb = new StringBuffer(current.getMarche().getListeOperations().size() * 150);
-					sb.append("{'ListeCoups':[");
+					sb.append("[");
 					for(Operation o : current.getMarche().getListeOperations()){
 						sb.append(o.toString());
 						sb.append(",");
 					}
 					sb.deleteCharAt(sb.length()-1);
-					sb.append("]}");
+					sb.append("]");
 					envoyer(out,new String(sb));
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
