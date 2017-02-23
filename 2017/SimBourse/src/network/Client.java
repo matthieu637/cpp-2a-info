@@ -167,15 +167,7 @@ public class Client extends Thread {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
 				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
-					StringBuffer sb = new StringBuffer(current.getMarche().getListeOperations().size() * 150);
-					sb.append("[");
-					for(Operation o : current.getMarche().getListeOperations()){
-						sb.append(o.toString());
-						sb.append(",");
-					}
-					sb.deleteCharAt(sb.length()-1);
-					sb.append("]");
-					envoyer(out,new String(sb));
+					envoyer(out, String.valueOf(current.getMarche().getListeOperations()));
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
