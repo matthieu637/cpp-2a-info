@@ -27,15 +27,14 @@ public class Client extends Thread {
 	private static final String OPERATIONS = "3";
 	private static final String ACHATS = "4 ";
 	private static final String VENTES = "5 ";
-	private static final String HISTO = "6 "; //on dÃ©finit un dictionnaire qui permettra une communication 
-	private static final String ASK = "7 ";   //client/serveur avec des messages trÃ¨s courts
-	private static final String BID = "8 ";	//sans perdre de lisibilitÃ© du code
+	private static final String HISTO = "6 "; //on définit un dictionnaire qui permettra une communication 
+	private static final String ASK = "7 ";   //client/serveur avec des messages très courts
+	private static final String BID = "8 ";	//sans perdre de lisibilité du code
 	private static final String SUIVRE = "9 ";
 	private static final String ANNULER = "A ";
 	private static final String FIN = "B";
 	private static final String CREATE="C ";
 	private static final String JOIN="D ";
-	private static final String LISTECOUPS="E";
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -45,9 +44,7 @@ public class Client extends Thread {
 	}
 
 	public void run() {
-		System.out.println("Client connectÃ©");
-		String stackAllAction="";
-		//int[] nomAction=Action.nomActions();
+		System.out.println("Client connecté");
 		int nombreActions=Action.values().length;
 		Partie current = null;
 		Joueur joueur = null;
@@ -67,7 +64,7 @@ public class Client extends Thread {
 				String[] arguments = userInput.split(" ");
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
 
-				// Utilisateur n'ayant ni crÃ©Ã© ni rejoint peut crÃ©er
+				// Utilisateur n'ayant ni créé ni rejoint peut créer
 				if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
 					stackAllAction="Liste des actions de "+nom+" :\n";
@@ -109,11 +106,17 @@ public class Client extends Thread {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					String retour="";
+					StringBuffer sb = new StringBuffer(current.getMarche().liste_joueurs.size() * 100);;
+					sb.append("{'Joueurs':[");
 					for(Joueur j: current.getMarche().liste_joueurs )
-						if(j.getNom()!="banque")
-							retour += j.getNom() + " ";
-					envoyer(out, retour.substring(0, retour.length()-1)); //Pour retirer le dernier ' '
+						if(j.getNom()!="banque"){
+							sb.append("'");
+							sb.append(j.getNom());
+							sb.append("',");
+						}
+					sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
+					sb.append("]}"); 
+					envoyer(out, new String(sb)); 
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour
 				} else if (userInput.startsWith(SOLDE) && (create || join) && current.getMarche().est_ouvert()) {
@@ -164,9 +167,6 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(ANNULER) && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
-				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().tempsEcoule()){
-					System.out.println(stackAllAction);
-					envoyer(out,stackAllAction);
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
@@ -220,7 +220,7 @@ public class Client extends Thread {
 		} else if (!create) {
 			client.close();
 		}
-		System.out.println("Client dÃ©connectÃ©");
+		System.out.println("Client déconnecté");
 	}
 
 	private <E, V> String MapToStringPython(Map<E, V> map) {
