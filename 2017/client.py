@@ -198,6 +198,7 @@ class Reseau:
 
 		for key in self.solde():
 			if key!='euros':
+				key=key.lower()
 				self.nomAction.append(key)
 				self.histoActions[key]=[] #on ajoute les différentes actions dans le tableau historique du client
 		self.nomAction.sort()
@@ -253,7 +254,6 @@ class Reseau:
 		@type volume: entier
 		'''
 		action=action.lower()
-		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -283,7 +283,6 @@ class Reseau:
 		@type volume: entier
 		'''
 		action=action.lower()
-		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -310,7 +309,6 @@ class Reseau:
 		@type action: string
 		'''
 		action=action.lower()
-		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -342,7 +340,6 @@ class Reseau:
 		@type action: string
 		'''
 		action=action.lower()
-		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -367,7 +364,6 @@ class Reseau:
 		@type action: string
 		'''
 		action=action.lower()
-		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -442,4 +438,3 @@ class Reseau:
 		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
 		self.__envoyer(self.message["FIN"])
 		return eval(self.__recevoir())
-
