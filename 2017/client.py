@@ -413,7 +413,7 @@ class Reseau:
 
 	def listeDesCoups(self):
 		'''
-		Retourne un dictionnaire avec pour clé : 'ListeCoups' qui contient une liste des actions de tous les joueurs de la partie sous la forme :
+		Retourne une liste qui contient les operations effectuées par tous les joueurs de la partie sous la forme :
 		['Achat', 'David', 'Facebook', 8.0, 10] pour un achat de 10 Facebook à 8.0 euros
 		['Vente', 'David', 'Facebook', 10.0, 4] pour une vente de 4 Facebook à 10.0 euros
 		['AnnulationAchat', 'David', 'Trydea', 4.0, 10] pour une annulation d'achat de 10 Trydea à 4.0 euros
