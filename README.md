@@ -3,8 +3,6 @@ CPP - Prépa des INP - Nancy | Projet Informatique 2ème année
 
 Documentation officielle : https://matthieu637.github.io/cpp-2a-info/client.Reseau-class.html
 
-[Documentation alternative (non vérifiée)](http://documentation-matthieu-devalle.readthedocs.io) par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
-
 ### Contributions (la suite ne concernent que les personnes voulant aller plus loin avant la compétition)
 Pour les plus motiver, nous vous encourageons à améliorer le projet (il vous faudra un compte sur github, utiliser [git](https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github), [forker le projet et proposer des pull requests](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 
