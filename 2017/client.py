@@ -430,7 +430,7 @@ class Reseau:
 		if(self.fin()['temps']>0):
 			print("La partie n'est pas finie")
 			return 
-		self.__envoyer(self.message["LISTECOUPS"])
+		self.__envoyer(self.__message["LISTECOUPS"])
 		return eval(self.__recevoir())
 	
 	def fin(self):
