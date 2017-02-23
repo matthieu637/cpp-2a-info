@@ -373,6 +373,7 @@ public class Marche {
 
 		return new String(sb);
 	}
+  
 	public String getListeOperations(){
 		StringBuffer sb = new StringBuffer(liste_Operations.size() * 150);
 		sb.append("{'ListeCoups':[");
@@ -396,5 +397,9 @@ public class Marche {
 		if(timer != null){
 			timer.interrupt();
 		}
+	}
+
+	public List<Joueur> getListe_joueurs() {
+		return liste_joueurs;
 	}
 }

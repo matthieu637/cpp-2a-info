@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-
 import socket
 import time
 
@@ -81,12 +79,9 @@ class Reseau:
 			- dans le cas où les deux ont plusieurs actions, on compare leur nombre d'action et leur argent, le plus riche en action gagne sauf si ils ont le même nombre d'actions (le plus riche gagne)
 			- dans le meilleur cas, s'ils ont vendu deux types d'actions, on compare leur nombre d'action ainsi que leur argent, le plus riche gagne
 			
-	'''
-	
-	#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts
-	
-	
+	'''	
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
+		#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts		
 		self.message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
 		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E"}
 		self.nomAction=[]
@@ -191,7 +186,7 @@ class Reseau:
 		
 		Si vous avez cree, donne le top depart aux autres.
 		
-		Renvoie toujours 0.
+		Renvoie 0 pour ceux qui rejoignent et la liste des noms des joueurs pour le créateur
 		'''
 		if(not self.connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
@@ -363,6 +358,8 @@ class Reseau:
 		@param action: le nom de l'action
 		@type action: string
 		'''
+		action=action.lower()
+		action=action.replace(action[0],action[0].upper(),1) #On change (en majuscule) le premier caractère de la chaine
 		self.__estTop()
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
@@ -398,7 +395,7 @@ class Reseau:
 		
 		Retourne:
 			- 11 si l’ordre n’existe plus ou est termine
-			- 4 si les types ne sont pas respectes
+			- 4 si les types ne sont pas respectés
 			- le volume d’action restant si c’est un ordre de vente
 			- les euros dépensés si c’est ordre d’achat
 		
@@ -431,17 +428,17 @@ class Reseau:
 			
 	def fin(self):
 		'''
-		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminé, affiche le classement (string:liste).
+		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
 
 		Exemple:
 
 		>>> r.fin()
-		{10} #Il reste 10 secondes avant la fin de la partie.
+		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
 		
 		OU
 
 		>>> r.fin()
-		{Devallé, Benkhedda, Eshamuddin} #Le classement de fin de partie.
+		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
 		'''
 
 			
@@ -452,3 +449,4 @@ class Reseau:
 		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
 		self.__envoyer(self.message["FIN"])
 		return eval(self.__recevoir())
+

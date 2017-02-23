@@ -3,16 +3,17 @@ CPP - Prépa des INP - Nancy | Projet Informatique 2ème année
 
 Documentation officielle : https://matthieu637.github.io/cpp-2a-info/client.Reseau-class.html
 
-[Documentation alternative (non vérifiée)](http://documentation-matthieu-devalle.readthedocs.io) par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
-
 ### Contributions (la suite ne concernent que les personnes voulant aller plus loin avant la compétition)
 Pour les plus motiver, nous vous encourageons à améliorer le projet (il vous faudra un compte sur github, utiliser [git](https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github), [forker le projet et proposer des pull requests](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 
 Attention à garder vos [branches à jour](https://help.github.com/articles/syncing-a-fork/#platform-linux)
 avant de pull request au risque que nos branches master divergent (https://github.com/matthieu637/cpp-2a-info/network). Cela vous permettra également de résoudre les conflits avant tout pull request :
 ```
+#ajoute le projet officiel à votre fork
 git remote add upstream https://github.com/matthieu637/cpp-2a-info.git
+#récupère les modifications du projet officiel (qui peuvent également provenir d'autres étudiants)
 git pull upstream master
+#envoyer la fusion à votre fork github
 git push origin master
 ```
 
@@ -33,19 +34,27 @@ r = Reseau('localhost', 23456) #au lieu de de r=Reseau()
 ```
 Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directement disponibles sur le serveur officiel, cela vous permettra d'effectuer des tests en local. Après la validation de votre pull request, le serveur officiel sera relancé avec les nouveaux changements, vous permettant alors de réutiliser r=Reseau().
 
-#### Contributions possibles (par difficulté)
+#### Contributions possibles (triées par difficulté, * : prioritaire )
 - [ ] faire un graphique [de ce type](http://bigbrowser.blog.lemonde.fr/files/2014/07/TuOuVous-530x405.jpg) pour expliquer le classement des joueurs
 - [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
 - [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
-- [x] ~~rendre l'argument action insensible à la casse dans la fonction historiques (client.py) : pouvoir utiliser r.historiques('facebook') sans déclencher d'erreur~~ terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
-- [x] ~~[faire un cache pour la fonction fin avec un compteur local pour diminuer les requêtes serveurs (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminée par [david540](https://github.com/david540)
-- [x] ~~[ajouter un code d'erreur pour un appel à fonction alors que la partie est finie (client)](https://github.com/matthieu637/cpp-2a-info/pull/1)~~ terminée par [david540](https://github.com/david540)
+- [x] [rendre l'argument action insensible à la casse dans la fonction historiques (client.py) : pouvoir utiliser r.historiques('facebook') sans déclencher d'erreur](https://github.com/matthieu637/cpp-2a-info/pull/4) terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
+- [ ] rendre l'argument action insensible à la casse dans toutes les fonctions (client.py)
+- [x] [faire un cache pour la fonction fin avec un compteur local pour diminuer les requêtes serveurs (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/1) terminée par [david540](https://github.com/david540)
+- [x] [ajouter un code d'erreur pour un appel à fonction alors que la partie est finie (client)](https://github.com/matthieu637/cpp-2a-info/pull/5) terminée par [david540](https://github.com/david540)
 - [ ] documenter le code java pour tenter de le comprendre : SHIFT + ALT + J sur le nom d'une méthode dans eclipse (serveur)
-- [ ] diminuer la taille des messages réseaux en transformant les ordres réseaux en nombres (client+serveur) : "CREATE" devient "1", "JOIN" devient "2", ...
-- [ ] diminuer la taille des messages réseaux en utilisant des nombres à la place de chaîne pour représenter les différents types d'actions (client+serveur)
+- [ ] optimiser l'ordre de traitement des requêtes sur le serveur en modifiant le positionnement dans les if/else if de network.Client::run() (serveur) : la création de partie, rejoindre, top et fin sont des appels rares qui devraient être en fin de séquence de test pour éviter de les tester à chaque fois
+- [x] [diminuer la taille des messages réseaux en transformant les ordres réseaux en nombres (client+serveur) : "CREATE" devient "1", "JOIN" devient "2", ...](https://github.com/matthieu637/cpp-2a-info/pull/6) terminée par [david540](https://github.com/david540)
+- [x] [diminuer la taille des messages réseaux en utilisant des nombres à la place de chaîne pour représenter les différents types d'actions (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/6) terminée par [david540](https://github.com/david540)
 - [ ] ajouter le type de l'ordre dans les tuples reçus par la fonction historique (serveur)
+- [x] *** [changer le retour de la fonction top() pour le créateur de la partie. Au lieu de renvoyer 0, cela retourne la liste des personnes qui ont rejoint la partie pour qu'il puisse vérifier qu'il n'y ait pas de fraudes. Par exemple un élève qui rejoindrait 2 fois la partie pour tricher. (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/6) terminée par [david540](https://github.com/david540)
+- [ ] ** ajouter un premier message envoyé par le serveur représentant la version du serveur. Si le client n'a pas la même version, alors une erreur est levée pour prévenir l'étudiant que son fichier client.py n'est plus à jour (client+serveur)
+- [ ] * ajouter une fonction listeDesCoups() ne pouvant être appellé qu'une fois la partie terminée. Elle listera l'ensemble des coups (achat, ventes, annulation) que tous les joueurs ont envoyés durant une partie. Cela permettra d'apprendre de ses erreurs et potentiellement d'appliquer des techniques d'apprentissages statistiques sur ces données. (client+serveur)
+  - [ ] * faire écrire au serveur la liste des coups de l'ensemble des parties dans un fichier qui pourra être ensuite distribué aux étudiants (serveur)
 - [ ] ajouter un argument facultatif pour limiter la taille des listes reçues dans achats et ventes afin de diminuer la taille des messages réseaux (client+serveur)
-- [x] ~~[ajouter un cache pour la fonction historique pour réduire la taille de la liste à passer au réseau (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/2)~~ ([idée émise](https://github.com/matthieu637/cpp-2a-info/pull/1) et terminée par [david540](https://github.com/david540))
+- [x] [ajouter un cache pour la fonction historique pour réduire la taille de la liste à passer au réseau (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/2) ([idée émise](https://github.com/matthieu637/cpp-2a-info/pull/1) et terminée par [david540](https://github.com/david540))
+- [ ] réduire la taille des messages réseaux en codant le nom des joueurs par des nombres. La première fois qu'un nom est envoyé sur le réseau, il est écrit en clair, les prochains fois, seul un nombre le représentera. (client+serveur)
+- [ ] rendre le traitement des requêtes réseaux optimal. Passage de O(n) à O(1) en remplacant la succession de comparaison de chaîne par un accès direct dans un tableau : idée similaire à l'optimisation qui a eu lieu pour les actions. Exemple : Create est dans la case 0 du tableau, JOIN est la case 1, ... Il faut créer autant de classe qu'il y a de requêtes différentes. (serveur)
 
 Pour les contributions suivantes (les plus difficiles), il est inutile, pour le moment, d'implémenter uniquement ces fonctions dans le client (avec de multiples requêtes au serveur). L'intérêt étant qu'elles soient justement exécutées au plus vite du côté serveur avant les autres requêtes. Si elles ne sont pas terminées avant la compétition, chaque étudiant pourra alors décider de les implémenter du côté de son client (pas besoin de partager votre solution).
 - [ ] ajouter des ordres "meilleurs prix" : écoule (achète/vend) x actions jusqu'à épuisement des x actions (client+serveur)
