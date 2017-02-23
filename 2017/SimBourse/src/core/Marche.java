@@ -21,11 +21,12 @@ public class Marche {
 	private long debut;
 	private Map<Action, Set<Ordre>> liste_achats;
 	private Map<Action, Set<Ordre>> liste_ventes;
-	private List<Joueur> liste_joueurs;
+	public List<Joueur> liste_joueurs;
 	private Set<Integer> liste_id_ordres;
 	private Map<Action, Set<Echange>> historiques;
 	private final Lock mutex = new ReentrantLock();
 	private Thread timer = null;
+	private List<String> liste_Operations;
 
 	public Marche() {
 		ouvert = false;
@@ -33,6 +34,7 @@ public class Marche {
 		liste_achats = new HashMap<>();
 		liste_ventes = new HashMap<>();
 		historiques = new HashMap<>();
+		liste_Operations = new LinkedList<String>();
 		for (Action a : Action.values()) {
 			liste_achats.put(a, new TreeSet<Ordre>());
 			liste_ventes.put(a, new TreeSet<Ordre>());
@@ -116,10 +118,10 @@ public class Marche {
 	public Set<Ordre> getListeVentes(Action a) {
 		return liste_ventes.get(a);
 	}
-
+	
 	/**
 	 * @param a : le nom de l'action
-	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
 	 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
 	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
@@ -138,13 +140,16 @@ public class Marche {
 	}
 
 	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
+		
 		if (volume_achat <= 0.0)
 			return -5;
 		if (prix_achat <= 0.0)
 			return -6;
 
 		mutex.lock();
-		int argent_joueur = joueur_achat.getSolde_euros();
+		if (joueur_achat.getNom()!="banque")
+			liste_Operations.add("['Achat','"+joueur_achat.getNom()+"','"+ a.name() +"',"+ Float.toString(prix_achat) +","+ Integer.toString(volume_achat)+"]");
+		int argent_joueur= joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
 		if (argent_joueur < argent_engage) {
 			mutex.unlock();
@@ -217,6 +222,8 @@ public class Marche {
 			return -9;
 
 		mutex.lock();
+		if (joueur_vente.getNom()!="banque")
+			liste_Operations.add("['Vente','"+joueur_vente.getNom()+"','"+ a.name() +"',"+ Float.toString(prix_vente) +","+ Integer.toString(volume_vente)+"]");
 		int volume_joueur = joueur_vente.getSolde_actions().get(a);
 		if (volume_joueur < volume_vente) {
 			mutex.unlock();
@@ -301,6 +308,8 @@ public class Marche {
 		}
 
 		if (o instanceof Achat) {
+			if (joueur.getNom()!="banque")
+				liste_Operations.add("['AnnulationAchat','"+joueur.getNom()+"','"+o.action.toString()+"',"+Float.toString(o.prix)+","+Integer.toString(o.volume)+"]");
 			liste_achats.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 
@@ -311,6 +320,8 @@ public class Marche {
 			mutex.unlock();
 			return argent_recupere;
 		} else {
+			if (joueur.getNom()!="banque")
+				liste_Operations.add("['AnnulationVente','"+joueur.getNom()+"','"+o.action.toString()+"',"+Float.toString(o.prix)+","+Integer.toString(o.volume)+"]");
 			liste_ventes.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 			int nb_action = joueur.getSolde_actions().get(o.action);
@@ -362,14 +373,25 @@ public class Marche {
 
 		return new String(sb);
 	}
-	
+	public String getListeOperations(){
+		StringBuffer sb = new StringBuffer(liste_Operations.size() * 150);
+		sb.append("{'ListeCoups':[");
+		for(String s : liste_Operations){
+			sb.append(s);
+			sb.append(",");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		sb.append("] }");
+		return new String(sb);
+	}
+
 	@Override
 	public String toString() {
 		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
 				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
 				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
 	}
-	
+
 	public void destroy(){
 		if(timer != null){
 			timer.interrupt();
