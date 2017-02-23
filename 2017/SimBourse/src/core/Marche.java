@@ -146,8 +146,6 @@ public class Marche {
 			return -6;
 
 		mutex.lock();
-		if (!joueur_achat.getNom().equals("banque"))
-			liste_Operations.add(new Operation("Achat",joueur_achat.getNom(),a.toString(),prix_achat,volume_achat));
 		int argent_joueur= joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
 		if (argent_joueur < argent_engage) {
@@ -155,6 +153,9 @@ public class Marche {
 			return -7;
 		}
 
+		if (!joueur_achat.getNom().equals("banque"))
+			liste_Operations.add(new Operation("Achat",joueur_achat.getNom(),a.toString(),prix_achat,volume_achat));
+		
 		Iterator<Ordre> it = liste_ventes.get(a).iterator();
 
 		while (it.hasNext() && volume_achat > 0) {
@@ -221,14 +222,15 @@ public class Marche {
 			return -9;
 
 		mutex.lock();
-		if (!joueur_vente.getNom().equals("banque"))
-			liste_Operations.add(new Operation("Vente",joueur_vente.getNom(),a.toString(),prix_vente,volume_vente));
 		int volume_joueur = joueur_vente.getSolde_actions().get(a);
 		if (volume_joueur < volume_vente) {
 			mutex.unlock();
 			return -10;
 		}
 
+		if (!joueur_vente.getNom().equals("banque"))
+			liste_Operations.add(new Operation("Vente",joueur_vente.getNom(),a.toString(),prix_vente,volume_vente));
+		
 		joueur_vente.getSolde_actions().put(a, volume_joueur - volume_vente);
 		Iterator<Ordre> it = liste_achats.get(a).iterator();
 
