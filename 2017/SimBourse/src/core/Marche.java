@@ -26,7 +26,7 @@ public class Marche {
 	private Map<Action, Set<Echange>> historiques;
 	private final Lock mutex = new ReentrantLock();
 	private Thread timer = null;
-	private List<String> liste_Operations;
+	private List<Operation> liste_Operations;
 
 	public Marche() {
 		ouvert = false;
@@ -34,7 +34,7 @@ public class Marche {
 		liste_achats = new HashMap<>();
 		liste_ventes = new HashMap<>();
 		historiques = new HashMap<>();
-		liste_Operations = new LinkedList<String>();
+		liste_Operations = new LinkedList<Operation>();
 		for (Action a : Action.values()) {
 			liste_achats.put(a, new TreeSet<Ordre>());
 			liste_ventes.put(a, new TreeSet<Ordre>());
@@ -147,8 +147,8 @@ public class Marche {
 			return -6;
 
 		mutex.lock();
-		if (joueur_achat.getNom()!="banque")
-			liste_Operations.add("['Achat','"+joueur_achat.getNom()+"','"+ a.name() +"',"+ Float.toString(prix_achat) +","+ Integer.toString(volume_achat)+"]");
+		if (!joueur_achat.getNom().equals("banque"))
+			liste_Operations.add(new Operation("Achat",joueur_achat.getNom(),a.toString(),prix_achat,volume_achat));
 		int argent_joueur= joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
 		if (argent_joueur < argent_engage) {
@@ -222,8 +222,8 @@ public class Marche {
 			return -9;
 
 		mutex.lock();
-		if (joueur_vente.getNom()!="banque")
-			liste_Operations.add("['Vente','"+joueur_vente.getNom()+"','"+ a.name() +"',"+ Float.toString(prix_vente) +","+ Integer.toString(volume_vente)+"]");
+		if (!joueur_vente.getNom().equals("banque"))
+			liste_Operations.add(new Operation("Vente",joueur_vente.getNom(),a.toString(),prix_vente,volume_vente));
 		int volume_joueur = joueur_vente.getSolde_actions().get(a);
 		if (volume_joueur < volume_vente) {
 			mutex.unlock();
@@ -308,8 +308,8 @@ public class Marche {
 		}
 
 		if (o instanceof Achat) {
-			if (joueur.getNom()!="banque")
-				liste_Operations.add("['AnnulationAchat','"+joueur.getNom()+"','"+o.action.toString()+"',"+Float.toString(o.prix)+","+Integer.toString(o.volume)+"]");
+			if (!joueur.getNom().equals("banque"))
+				liste_Operations.add(new Operation("AnnulationAchat",joueur.getNom(),o.action.toString(),o.prix,o.volume));
 			liste_achats.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 
@@ -320,8 +320,8 @@ public class Marche {
 			mutex.unlock();
 			return argent_recupere;
 		} else {
-			if (joueur.getNom()!="banque")
-				liste_Operations.add("['AnnulationVente','"+joueur.getNom()+"','"+o.action.toString()+"',"+Float.toString(o.prix)+","+Integer.toString(o.volume)+"]");
+			if (!joueur.getNom().equals("banque"))
+				liste_Operations.add(new Operation("AnnulationVente",joueur.getNom(),o.action.toString(),o.prix,o.volume));
 			liste_ventes.get(o.action).remove(o);
 			joueur.retirerOperation(ordre_id);
 			int nb_action = joueur.getSolde_actions().get(o.action);
@@ -373,17 +373,9 @@ public class Marche {
 
 		return new String(sb);
 	}
-  
-	public String getListeOperations(){
-		StringBuffer sb = new StringBuffer(liste_Operations.size() * 150);
-		sb.append("{'ListeCoups':[");
-		for(String s : liste_Operations){
-			sb.append(s);
-			sb.append(",");
-		}
-		sb.deleteCharAt(sb.length()-1);
-		sb.append("] }");
-		return new String(sb);
+	
+	public List<Operation> getListeOperations(){
+		return liste_Operations;
 	}
 
 	@Override
@@ -397,9 +389,5 @@ public class Marche {
 		if(timer != null){
 			timer.interrupt();
 		}
-	}
-
-	public List<Joueur> getListe_joueurs() {
-		return liste_joueurs;
 	}
 }
