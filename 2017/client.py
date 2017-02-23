@@ -427,8 +427,7 @@ class Reseau:
 			print("La partie n'est pas finie")
 			return 
 		self.__envoyer(self.message["LISTECOUPS"])
-		reponse= self.__recevoir()
-		return eval(reponse)
+		return eval(self.__recevoir())
 			
 	def fin(self):
 		'''
