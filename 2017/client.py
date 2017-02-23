@@ -416,36 +416,6 @@ class Reseau:
 		self.__envoyer(self.message["ANNULER"]+str(id_ordre))
 		return eval(self.__recevoir())
 
-	def listeDesCoups(self):
-		self.__estTop()
-		if(self.fin()['temps']>0):
-			print("La partie n'est pas finie")
-			return 
-		self.__envoyer(self.message["LISTECOUPS"])
-		reponse= self.__recevoir()
-		repSplit=reponse.split('\n')
-		for i in range(len(repSplit)):
-			subList=repSplit[i].split(' ')
-			print(subList)
-			if subList[0]=="Liste":
-				continue
-			if len(subList)>=1 and subList[0] in self.decode:
-				subList[0]=self.decode[subList[0]]
-			if len(subList)>=2 and subList[0]!='SUIVRE' and subList[0]!='ANNULER': #si ce n'est pas une annulation ou un suivi d'action ou le mess d'intro
-				try:
-					num=int(subList[1])
-					subList[1]=self.nomAction[int(subList[1])]
-				except:
-					pass
-			repSplit[i]=' '.join(subList)
-		reponse='\n'.join(repSplit)
-		
-		print(reponse)
-
-		
-	
-		
-
 	def fin(self):
 		'''
 		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminé, affiche le classement (string:liste).
