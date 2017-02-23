@@ -376,6 +376,10 @@ public class Marche {
 	public List<Operation> getListeOperations(){
 		return liste_Operations;
 	}
+	
+	public List<Joueur> getListe_joueurs(){
+		return liste_joueurs;
+	}
 
 	@Override
 	public String toString() {
