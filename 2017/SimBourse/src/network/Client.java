@@ -105,9 +105,9 @@ public class Client extends Thread {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					StringBuffer sb = new StringBuffer(current.getMarche().liste_joueurs.size() * 100);;
+					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);
 					sb.append("{'Joueurs':[");
-					for(Joueur j: current.getMarche().liste_joueurs )
+					for(Joueur j: current.getMarche().getListe_joueurs() )
 						if(j.getNom()!="banque"){
 							sb.append("'");
 							sb.append(j.getNom());
