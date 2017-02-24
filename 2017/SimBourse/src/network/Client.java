@@ -17,7 +17,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import core.Action;
 import core.Config;
 import core.Joueur;
-import core.Operation;
 
 public class Client extends Thread {
 	private Socket client;
@@ -37,6 +36,7 @@ public class Client extends Thread {
 	private static final String CREATE="C ";
 	private static final String JOIN="D ";
 	private static final String LISTECOUPS="E";
+	private static final String VERSIONSERVEUR="version 1.0";
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -56,6 +56,7 @@ public class Client extends Thread {
 			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
+			envoyer(out,VERSIONSERVEUR);
 			String userInput;
 			boolean join = false;
 
