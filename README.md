@@ -42,7 +42,7 @@ Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directemen
 - [x] [rendre l'argument action insensible à la casse dans toutes les fonctions (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/8) terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
 - [x] [faire un cache pour la fonction fin avec un compteur local pour diminuer les requêtes serveurs (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/1) terminée par [david540](https://github.com/david540)
 - [x] [ajouter un code d'erreur pour un appel à fonction alors que la partie est finie (client)](https://github.com/matthieu637/cpp-2a-info/pull/5) terminée par [david540](https://github.com/david540)
-- [ ] [corriger le bug #9](https://github.com/matthieu637/cpp-2a-info/issues/9) (client.py)
+- [x] [corriger le bug #9](https://github.com/matthieu637/cpp-2a-info/issues/9) (client.py) terminée par [david540](https://github.com/david540)
 - [ ] documenter le code java pour tenter de le comprendre : SHIFT + ALT + J sur le nom d'une méthode dans eclipse (serveur)
 - [ ] vérifier que le créateur de partie ne peut pas s'appeller 'banque' (serveur)
 - [ ] vérifier que les caractères envoyés pour les noms des joueurs ne contient que des lettres et pas de caractères spéciaux (serveur)
