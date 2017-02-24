@@ -127,7 +127,7 @@ public class Marche {
 	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
 		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
-		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainÃ©e que l'on va remplir
+		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
 		
 		//on crée un iterateur parcourant 'historiques' dans le sens décroissant
 		final Iterator<Echange> i = ((TreeSet<Echange>) historiques.get(a)).descendingIterator();
