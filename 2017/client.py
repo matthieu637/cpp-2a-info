@@ -83,6 +83,7 @@ class Reseau:
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		#membre publique
 		self.nomAction=[]
+		self.versionClient= "version 1.0"
 		#membres privés
 		#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts		
 		self.__message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
@@ -100,6 +101,12 @@ class Reseau:
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
 		self.__sock.settimeout(None)
+		versionServeur=self.__recevoir()
+		if versionServeur==self.versionClient:
+			print("Connecté")
+		else:
+			raise RuntimeError("La version de votre client ne correspond pas avec la version du serveur: \n client.py: " 
+			+ self.versionClient+ "\n serveur: "+versionServeur)
 
 	def __estConnect(self):
 		if(self.__connect):
