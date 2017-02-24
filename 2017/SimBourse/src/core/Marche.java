@@ -1,5 +1,7 @@
 package core;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -120,7 +122,7 @@ public class Marche {
 	
 	/**
 	 * @param a : le nom de l'action
-	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
 	 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
 	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
@@ -390,7 +392,16 @@ public class Marche {
 				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
 	}
 
-	public void destroy(){
+	public synchronized void destroy(){
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(Config.getInstance().CHEMIN_FICHIER, true));
+			writer.write(String.valueOf(liste_Operations));
+			writer.write("\r\n");
+			
+			writer.close();
+		}catch (Exception e){
+	         e.printStackTrace();
+	    }
 		if(timer != null){
 			timer.interrupt();
 		}
