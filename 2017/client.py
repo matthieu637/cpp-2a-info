@@ -150,6 +150,8 @@ class Reseau:
 		>>> id=r.creerPartie("MatthieuDevallé")
 		>>> print(id)
 		31416 #id de la partie
+		En cas d'erreur(Exemple pseudo avec des espaces):
+			Renvoie -4
 		
 		@param nom: le nom du joueur qui cree la partie
 		@type nom: string
@@ -160,9 +162,8 @@ class Reseau:
 		self.__estConnect()
 		self.__envoyer(self.__message["CREATE"]+nom)
 		id_partie = int(self.__recevoir())
-		if id_partie<0:
-			raise RuntimeError("Il y a eu une erreur dans la creation de la partie, certainement pseudo invalide!")
-		self.__connect = True
+		if id_partie>=0:
+			self.__connect = True
 		return id_partie
 	
 	def rejoindrePartie(self, id_partie, nom):
@@ -182,9 +183,8 @@ class Reseau:
 		self.__estConnect()
 		self.__envoyer(self.__message["JOIN"]+str(id_partie)+" "+nom)
 		ok = int(self.__recevoir())
-		if ok<0:
-			raise RuntimeError("Il y a eu une erreur pour rejoindre la partie, certainement pseudo invalide!")
-		self.__connect = True
+		if ok==0:
+			self.__connect = True
 		return ok
 
 	def top(self):
