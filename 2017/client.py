@@ -160,6 +160,8 @@ class Reseau:
 		self.__estConnect()
 		self.__envoyer(self.__message["CREATE"]+nom)
 		id_partie = int(self.__recevoir())
+		if id_partie<0:
+			raise RuntimeError("Il y a eu une erreur dans la creation de la partie, certainement pseudo invalide!")
 		self.__connect = True
 		return id_partie
 	
@@ -179,9 +181,11 @@ class Reseau:
 		'''
 		self.__estConnect()
 		self.__envoyer(self.__message["JOIN"]+str(id_partie)+" "+nom)
-		ok = self.__recevoir()
+		ok = int(self.__recevoir())
+		if ok<0:
+			raise RuntimeError("Il y a eu une erreur pour rejoindre la partie, certainement pseudo invalide!")
 		self.__connect = True
-		return int(ok)
+		return ok
 
 	def top(self):
 		'''
