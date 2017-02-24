@@ -91,7 +91,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.0"
+		self.__versionClient="1.1"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
