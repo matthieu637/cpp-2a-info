@@ -1,12 +1,7 @@
 package core;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -132,7 +127,7 @@ public class Marche {
 	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
 		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
-		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
+		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainÃ©e que l'on va remplir
 		
 		//on crée un iterateur parcourant 'historiques' dans le sens décroissant
 		final Iterator<Echange> i = ((TreeSet<Echange>) historiques.get(a)).descendingIterator();
@@ -397,18 +392,14 @@ public class Marche {
 				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
 	}
 
-	public void destroy(){
+	public synchronized void destroy(){
 		try {
-			Charset charset = Charset.forName("UTF-8");
-			Writer writer = new OutputStreamWriter(new FileOutputStream(new File("OperationsDernierePartie.txt")), charset);
-			for (Operation operation : liste_Operations){
-				writer.write(operation.toString());
-				writer.write("\r\n");
-			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(Config.getInstance().CHEMIN_FICHIER, true));
+			writer.write(String.valueOf(liste_Operations));
+			writer.write("\r\n");
+			
 			writer.close();
-		}catch (FileNotFoundException e) {
-		      e.printStackTrace();
-		}catch (IOException e) {
+		}catch (Exception e){
 	         e.printStackTrace();
 	    }
 		if(timer != null){
