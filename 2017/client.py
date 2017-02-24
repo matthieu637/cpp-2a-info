@@ -91,7 +91,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient= "version 1.0"
+		self.__versionClient="1.0"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -101,12 +101,8 @@ class Reseau:
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
 		self.__sock.settimeout(None)
-		versionServeur=self.__recevoir()
-		if versionServeur==self.__versionClient:
-			print("Connecté")
-		else:
-			raise RuntimeError("La version de votre client ne correspond pas avec la version du serveur: \n client.py: " 
-			+ self.__versionClient+ "\n serveur: "+versionServeur)
+		if self.__recevoir()!=self.__versionClient:
+			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
 
 	def __estConnect(self):
 		if(self.__connect):
