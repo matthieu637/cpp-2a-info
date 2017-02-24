@@ -1,5 +1,12 @@
 package core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -120,7 +127,7 @@ public class Marche {
 	
 	/**
 	 * @param a : le nom de l'action
-	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
 	 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
 	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
@@ -391,6 +398,19 @@ public class Marche {
 	}
 
 	public void destroy(){
+		try {
+			Charset charset = Charset.forName("UTF-8");
+			Writer writer = new OutputStreamWriter(new FileOutputStream(new File("OperationsDernierePartie.txt")), charset);
+			for (Operation operation : liste_Operations){
+				writer.write(operation.toString());
+				writer.write("\r\n");
+			}
+			writer.close();
+		}catch (FileNotFoundException e) {
+		      e.printStackTrace();
+		}catch (IOException e) {
+	         e.printStackTrace();
+	    }
 		if(timer != null){
 			timer.interrupt();
 		}
