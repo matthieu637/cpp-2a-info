@@ -81,29 +81,32 @@ class Reseau:
 			
 	'''	
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
-		#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts		
-		self.message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
-		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E"}
+		#membre publique
 		self.nomAction=[]
-		self.connect = False
-		self.topbool = False
-		self.histoActions={}
-		self.tempsFinPartie= 0
-		self.sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.settimeout(5)
-		result = self.sock.connect_ex((host, port))
+		#membres privés
+		#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts		
+		self.__message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
+		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E"}
+		self.__connect = False
+		self.__topbool = False
+		self.__histoActions={}
+		self.__tempsFinPartie= 0
+		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		#connexion
+		self.__sock.settimeout(5)
+		result = self.__sock.connect_ex((host, port))
 		if result != 0 and host == "matthieu-zimmer.net":
-			result = self.sock.connect_ex(("paris.matthieu-zimmer.net", 80))
+			result = self.__sock.connect_ex(("paris.matthieu-zimmer.net", 80))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
-		self.sock.settimeout(None)
+		self.__sock.settimeout(None)
 
 	def __estConnect(self):
-		if(self.connect):
+		if(self.__connect):
 			raise RuntimeError("Vous etes deja connecte.")
 
 	def __estTop(self):
-		if(not self.topbool):
+		if(not self.__topbool):
 			raise RuntimeError("La partie n'est pas encore commencee.")
 	
 	def __notEnd(self):#verifie si la partie n'est pas finie
@@ -112,7 +115,7 @@ class Reseau:
 	
 	def __envoyer(self, commande):
 		try:
-			sent = self.sock.send((commande+"\n").encode())
+			sent = self.__sock.send((commande+"\n").encode())
 			if sent == 0:
 				raise RuntimeError("Connexion perdu. _1", commande)	
 		except (ConnectionRefusedError):
@@ -120,10 +123,10 @@ class Reseau:
 
 	def __recevoir(self):
 		try:
-			length = self.sock.recv(8)
+			length = self.__sock.recv(8)
 			if length == b'':
 				raise RuntimeError("Connexion perdu. _5")
-			back = self.sock.recv(int(length.decode()))
+			back = self.__sock.recv(int(length.decode()))
 			if back == b'':
 				raise RuntimeError("Connexion perdu. _3")
 			return back.decode()
@@ -155,9 +158,9 @@ class Reseau:
 	
 		'''
 		self.__estConnect()
-		self.__envoyer(self.message["CREATE"]+nom)
+		self.__envoyer(self.__message["CREATE"]+nom)
 		id_partie = int(self.__recevoir())
-		self.connect = True
+		self.__connect = True
 		return id_partie
 	
 	def rejoindrePartie(self, id_partie, nom):
@@ -175,9 +178,9 @@ class Reseau:
 		@type nom: string
 		'''
 		self.__estConnect()
-		self.__envoyer(self.message["JOIN"]+str(id_partie)+" "+nom)
+		self.__envoyer(self.__message["JOIN"]+str(id_partie)+" "+nom)
 		ok = self.__recevoir()
-		self.connect = True
+		self.__connect = True
 		return int(ok)
 
 	def top(self):
@@ -188,19 +191,19 @@ class Reseau:
 		
 		Renvoie 0 pour ceux qui rejoignent et la liste des noms des joueurs pour le créateur
 		'''
-		if(not self.connect):
+		if(not self.__connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
-		self.__envoyer(self.message["TOP"]) 
+		self.__envoyer(self.__message["TOP"]) 
 		r = (self.__recevoir())
-		self.topbool= True
-		self.__envoyer(self.message["FIN"]) # Pour avoir la duree de la partie
-		self.tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
+		self.__topbool= True
+		self.__envoyer(self.__message["FIN"]) # Pour avoir la duree de la partie
+		self.__tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top
 
 		for key in self.solde():
 			if key!='euros':
 				key=key.lower()
 				self.nomAction.append(key)
-				self.histoActions[key]=[] #on ajoute les différentes actions dans le tableau historique du client
+				self.__histoActions[key]=[] #on ajoute les différentes actions dans le tableau historique du client
 		self.nomAction.sort()
 
 		return r
@@ -217,7 +220,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(self.message["SOLDE"])
+		self.__envoyer(self.__message["SOLDE"])
 		return eval(self.__recevoir())
 	
 	def operationsEnCours(self):
@@ -232,7 +235,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(self.message["OPERATIONS"])
+		self.__envoyer(self.__message["OPERATIONS"])
 		return eval(self.__recevoir())
 
 	def ask(self, action, prix, volume):
@@ -261,7 +264,7 @@ class Reseau:
 		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.message["ASK"]+str(numAction)+" "+str(prix)+" "+str(volume))
+		self.__envoyer(self.__message["ASK"]+str(numAction)+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
 	def bid(self, action, prix, volume):
@@ -290,7 +293,7 @@ class Reseau:
 		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.message["BID"]+str(numAction)+" "+str(prix)+" "+str(volume))
+		self.__envoyer(self.__message["BID"]+str(numAction)+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
 	def achats(self, action):
@@ -316,7 +319,7 @@ class Reseau:
 		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.message["ACHATS"]+str(numAction))
+		self.__envoyer(self.__message["ACHATS"]+str(numAction))
 		return eval(self.__recevoir())
 	
 	def ventes(self, action):
@@ -347,7 +350,7 @@ class Reseau:
 		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.message["VENTES"]+str(numAction))
+		self.__envoyer(self.__message["VENTES"]+str(numAction))
 		return eval(self.__recevoir())
 
 	def historiques(self, action):
@@ -371,9 +374,9 @@ class Reseau:
 		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.message["HISTO"]+str(numAction)+" "+str(len(self.histoActions[action])))
-		self.histoActions[action]+=(eval(self.__recevoir()))
-		return self.histoActions[action]
+		self.__envoyer(self.__message["HISTO"]+str(numAction)+" "+str(len(self.__histoActions[action])))
+		self.__histoActions[action]+=(eval(self.__recevoir()))
+		return self.__histoActions[action]
 		#return eval(self.__recevoir())
 
 	def suivreOperation(self, id_ordre):
@@ -390,7 +393,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(self.message["SUIVRE"]+str(id_ordre))
+		self.__envoyer(self.__message["SUIVRE"]+str(id_ordre))
 		return eval(self.__recevoir())
 
 	def annulerOperation(self, id_ordre):
@@ -412,7 +415,7 @@ class Reseau:
 		'''
 		self.__estTop()
 		self.__notEnd()
-		self.__envoyer(self.message["ANNULER"]+str(id_ordre))
+		self.__envoyer(self.__message["ANNULER"]+str(id_ordre))
 		return eval(self.__recevoir())
 
 	def listeDesCoups(self):
@@ -427,7 +430,7 @@ class Reseau:
 		if(self.fin()['temps']>0):
 			print("La partie n'est pas finie")
 			return 
-		self.__envoyer(self.message["LISTECOUPS"])
+		self.__envoyer(self.__message["LISTECOUPS"])
 		return eval(self.__recevoir())
 	
 	def fin(self):
@@ -447,9 +450,9 @@ class Reseau:
 
 			
 		self.__estTop()
-		tempsRestant=self.tempsFinPartie - time.time() #fin de partie - maintenant
+		tempsRestant=self.__tempsFinPartie - time.time() #fin de partie - maintenant
 		if(tempsRestant>0): #Dans ce cas, pas besoin de faire une requête au serveur, on affiche simplement le temps restant
 			return {'temps': int(tempsRestant)+1}
 		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
-		self.__envoyer(self.message["FIN"])
+		self.__envoyer(self.__message["FIN"])
 		return eval(self.__recevoir())
