@@ -3,6 +3,8 @@ CPP - Prépa des INP - Nancy | Projet Informatique 2ème année
 
 Documentation officielle : https://matthieu637.github.io/cpp-2a-info/client.Reseau-class.html
 
+Log (historique de toutes les parties) : https://matthieu-zimmer.net/~matthieu/courses/simbourse.log
+
 ### Contributions (la suite ne concernent que les personnes voulant aller plus loin avant la compétition)
 Pour les plus motiver, nous vous encourageons à améliorer le projet (il vous faudra un compte sur github, utiliser [git](https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github), [forker le projet et proposer des pull requests](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 
@@ -53,7 +55,8 @@ Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directemen
 - [x] *** [changer le retour de la fonction top() pour le créateur de la partie. Au lieu de renvoyer 0, cela retourne la liste des personnes qui ont rejoint la partie pour qu'il puisse vérifier qu'il n'y ait pas de fraudes. Par exemple un élève qui rejoindrait 2 fois la partie pour tricher. (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/6) terminée par [david540](https://github.com/david540)
 - [x] ** [ajouter un premier message envoyé par le serveur représentant la version du serveur. Si le client n'a pas la même version, alors une erreur est levée pour prévenir l'étudiant que son fichier client.py n'est plus à jour (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/10) terminée par [david540](https://github.com/david540)
 - [x] * [ajouter une fonction listeDesCoups() ne pouvant être appellé qu'une fois la partie terminée. Elle listera l'ensemble des coups (achat, ventes, annulation) que tous les joueurs ont envoyés durant une partie. Cela permettra d'apprendre de ses erreurs et potentiellement d'appliquer des techniques d'apprentissages statistiques sur ces données.](https://github.com/matthieu637/cpp-2a-info/pull/7) (client+serveur) terminée par [david540](https://github.com/david540)
-  - [ ] * faire écrire au serveur la liste des coups de l'ensemble des parties dans un fichier qui pourra être ensuite distribué aux étudiants (serveur)
+  - [x] * [faire écrire au serveur la liste des coups de l'ensemble des parties dans un fichier qui pourra être ensuite distribué aux étudiants (serveur)](https://github.com/matthieu637/cpp-2a-info/pull/12) terminée par [david540](https://github.com/david540)
+  - [ ] ne logger que les parties qui contiennent plus d'un joueur, ajouter le classement de fin de partie aux logs. Format : {'coups': ListeDesCoups, 'classement' : ListeClassement}. 
 - [ ] ajouter un argument facultatif pour limiter la taille des listes reçues dans achats et ventes afin de diminuer la taille des messages réseaux (client+serveur)
 - [x] [ajouter un cache pour la fonction historique pour réduire la taille de la liste à passer au réseau (client+serveur)](https://github.com/matthieu637/cpp-2a-info/pull/2) ([idée émise](https://github.com/matthieu637/cpp-2a-info/pull/1) et terminée par [david540](https://github.com/david540))
 - [ ] réduire la taille des messages réseaux en codant le nom des joueurs par des nombres. La première fois qu'un nom est envoyé sur le réseau, il est écrit en clair, les prochains fois, seul un nombre le représentera. (client+serveur)
