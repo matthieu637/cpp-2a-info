@@ -351,7 +351,7 @@ class Reseau:
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
 		numAction=self.__chercherNumAction(action)
-		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
+		if numAction==-1 or nbMaxElemListe <0: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
 		self.__envoyer(self.__message["VENTES"]+str(numAction)+" "+str(nbMaxElemListe))
