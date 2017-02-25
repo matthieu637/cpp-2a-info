@@ -11,24 +11,29 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 
 public class Marche {
-	private boolean ouvert;
-	private boolean fini;
+	private volatile boolean ouvert;
+	private volatile boolean fini;
 	private long debut;
 	private Map<Action, Set<Ordre>> liste_achats;
 	private Map<Action, Set<Ordre>> liste_ventes;
 	private List<Joueur> liste_joueurs;
 	private Set<Integer> liste_id_ordres;
-	private Map<Action, Set<Echange>> historiques;
-	private final Lock mutex = new ReentrantLock();
+	private Map<Action, TreeSet<Echange>> historiques;
+	private final ReadWriteLock mutex_ordre = new ReentrantReadWriteLock();
+	private final Lock mutex_ordre_read = mutex_ordre.readLock();
+	private final Lock mutex_ordre_write = mutex_ordre.writeLock();
 	private Thread timer = null;
 	private List<Operation> liste_Operations;
-
+	private long echange_unique = 0;
+	private long ordre_unique = 0;
+	
 	public Marche() {
 		ouvert = false;
 		fini = false;
@@ -99,6 +104,7 @@ public class Marche {
 		return fini;
 	}
 
+	// synchronized pour les rares appels de gestion de joueur
 	public synchronized Joueur creer_joueur(String nom) {
 		Joueur j = new Joueur(nom);
 		liste_joueurs.add(j);
@@ -112,12 +118,19 @@ public class Marche {
 		return true;
 	}
 
-	public Set<Ordre> getListeAchats(Action a) {
-		return liste_achats.get(a);
+	//synchronized est moins efficace car il bloque les lectures concurrentes
+	public String getListeAchatsString(Action a) {
+		mutex_ordre_read.lock();
+		String r = String.valueOf(liste_achats.get(a));
+		mutex_ordre_read.unlock();
+		return r;
 	}
 
-	public Set<Ordre> getListeVentes(Action a) {
-		return liste_ventes.get(a);
+	public String getListeVentesString(Action a) {
+		mutex_ordre_read.lock();
+		String r = String.valueOf(liste_ventes.get(a));
+		mutex_ordre_read.unlock();
+		return r;
 	}
 	
 	/**
@@ -125,33 +138,34 @@ public class Marche {
 	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
 	 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
 	 */
-	public LinkedList<Echange> getHistoriqueEchanges(Action a,int n) {
+	public LinkedList<Echange> getHistoriqueEchanges(Action a, int n) {
+		mutex_ordre_read.lock();
 		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
 		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
 		
 		//on crée un iterateur parcourant 'historiques' dans le sens décroissant
-		final Iterator<Echange> i = ((TreeSet<Echange>) historiques.get(a)).descendingIterator();
+		final Iterator<Echange> i = historiques.get(a).descendingIterator();
 		for (int j=0; j<tailleH-n && i.hasNext();j++)
 			//on ajoute dans la liste chainée les éléments au sens décroissants de 'historiques'
 			//au début de la liste chainée à chaque fois pour que les éléments apparaissent dans le bon sens
 			list.addFirst(i.next());
 		
+		mutex_ordre_read.unlock();
 		//on retourne la liste chainée
 		return list;
 	}
 
 	public int achat(Joueur joueur_achat, Action a, float prix_achat, int volume_achat) {
-		
 		if (volume_achat <= 0.0)
 			return -5;
 		if (prix_achat <= 0.0)
 			return -6;
 
-		mutex.lock();
+		mutex_ordre_write.lock();
 		int argent_joueur= joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
 		if (argent_joueur < argent_engage) {
-			mutex.unlock();
+			mutex_ordre_write.unlock();
 			return -7;
 		}
 
@@ -165,7 +179,7 @@ public class Marche {
 			Joueur joueur_vente = vente.getJoueur();
 
 			if (prix_achat >= vente.prix) {
-				Echange e = new Echange(joueur_vente, joueur_achat, vente.prix, Math.min(vente.volume, volume_achat));
+				Echange e = new Echange(joueur_vente, joueur_achat, vente.prix, Math.min(vente.volume, volume_achat), echange_unique++);
 				historiques.get(a).add(e);
 
 				// l'achat est complete
@@ -184,7 +198,7 @@ public class Marche {
 						it.remove();
 					}
 
-					mutex.unlock();
+					mutex_ordre_write.unlock();
 					return 0;
 				}
 				// volume_achat > vente.volume
@@ -210,23 +224,23 @@ public class Marche {
 		joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (prix_achat * volume_achat));
 
 		int id = creer_id_ordre();
-		Ordre achat = new Achat(id, a, prix_achat, volume_achat, joueur_achat);
+		Ordre achat = new Achat(id, a, prix_achat, volume_achat, joueur_achat, ordre_unique++);
 		liste_achats.get(a).add(achat);
 		joueur_achat.getOperationsOuvertes().add(Pair.of(id, achat));
-		mutex.unlock();
+		mutex_ordre_write.unlock();
 		return id;
 	}
 
-	public Object vend(Joueur joueur_vente, Action a, float prix_vente, int volume_vente) {
+	public int vend(Joueur joueur_vente, Action a, float prix_vente, int volume_vente) {
 		if (volume_vente <= 0.0)
 			return -8;
 		if (prix_vente <= 0.0)
 			return -9;
 
-		mutex.lock();
+		mutex_ordre_write.lock();
 		int volume_joueur = joueur_vente.getSolde_actions().get(a);
 		if (volume_joueur < volume_vente) {
-			mutex.unlock();
+			mutex_ordre_write.unlock();
 			return -10;
 		}
 
@@ -241,7 +255,7 @@ public class Marche {
 			Joueur joueur_achat = achat.getJoueur();
 
 			if (prix_vente <= achat.prix) {
-				Echange e = new Echange(joueur_vente, joueur_achat, achat.prix, Math.min(achat.volume, volume_vente));
+				Echange e = new Echange(joueur_vente, joueur_achat, achat.prix, Math.min(achat.volume, volume_vente), echange_unique++);
 				historiques.get(a).add(e);
 
 				// la vente est complete
@@ -259,7 +273,7 @@ public class Marche {
 						it.remove();
 					}
 					
-					mutex.unlock();
+					mutex_ordre_write.unlock();
 					return 0;
 				}
 				// volume_vente > vente.volume
@@ -281,32 +295,32 @@ public class Marche {
 		}
 
 		int id = creer_id_ordre();
-		Ordre vente = new Vente(id, a, prix_vente, volume_vente, joueur_vente);
+		Ordre vente = new Vente(id, a, prix_vente, volume_vente, joueur_vente, ordre_unique++);
 		liste_ventes.get(a).add(vente);
 		joueur_vente.getOperationsOuvertes().add(Pair.of(id, vente));
-		mutex.unlock();
+		mutex_ordre_write.unlock();
 
 		return id;
 	}
 
 	public int suivre(Joueur joueur, Integer ordre) {
-		mutex.lock();
+		mutex_ordre_read.lock();
 		Ordre o = joueur.contientOperation(ordre);
 		if (o == null) {
-			mutex.unlock();
+			mutex_ordre_read.unlock();
 			return 0;
 		}
 
 		int vol = o.getVolume();
-		mutex.unlock();
+		mutex_ordre_read.unlock();
 		return vol;
 	}
 
 	public int annuler(Joueur joueur, int ordre_id) {
-		mutex.lock();
+		mutex_ordre_write.lock();
 		Ordre o = joueur.contientOperation(ordre_id);
 		if (o == null) {
-			mutex.unlock();
+			mutex_ordre_write.unlock();
 			return -11;
 		}
 
@@ -320,7 +334,7 @@ public class Marche {
 			if (argent_recupere > 0)
 				joueur.setSolde_euros(joueur.getSolde_euros() + argent_recupere);
 
-			mutex.unlock();
+			mutex_ordre_write.unlock();
 			return argent_recupere;
 		} else {
 			if (!joueur.getNom().equals("banque"))
@@ -330,12 +344,13 @@ public class Marche {
 			int nb_action = joueur.getSolde_actions().get(o.action);
 			joueur.getSolde_actions().put(o.action, nb_action + o.volume);
 
-			mutex.unlock();
+			mutex_ordre_write.unlock();
 			return o.volume;
 		}
 	}
 
-	private synchronized int creer_id_ordre() {
+	//appel déjà protégé, synchronized inutile
+	private int creer_id_ordre() {
 		int numero_partie = (int) (Math.random() * 100000000);
 		while (liste_id_ordres.contains((Integer) numero_partie))
 			numero_partie = (int) (Math.random() * 100000000);
@@ -363,36 +378,52 @@ public class Marche {
 		sb.append(String.valueOf(secondes));
 		if (fini) {
 			sb.append(",'classement':[");
-			Collections.sort(liste_joueurs);
-			for(Joueur j : liste_joueurs){
-				sb.append("'");
-				sb.append(j.getNom());
-				sb.append("',");
+			synchronized(this){
+				Collections.sort(liste_joueurs);
 			}
-			sb.deleteCharAt(sb.length()-1);
-			sb.append("]");
+			String ljs = getListeJoueursString();
+			sb.append(ljs);
 		}
 		sb.append("}");
 
 		return new String(sb);
 	}
 	
-	public List<Operation> getListeOperations(){
-		return liste_Operations;
+	public String getListeOperationsString(){
+		mutex_ordre_read.lock();
+		String r = String.valueOf(liste_Operations);
+		mutex_ordre_read.unlock();
+		return r;
 	}
 	
-	public List<Joueur> getListe_joueurs(){
-		return liste_joueurs;
+	//synchronized non nécessaire seul le créateur l'utilise
+	// ou lors de fin(), la liste ne change pas
+	public String getListeJoueursString(){
+		StringBuffer sb = new StringBuffer(liste_joueurs.size() * 100);
+		sb.append("[");
+		for(Joueur j: liste_joueurs )
+			if(!j.getNom().equals("banque")){
+				sb.append("'");
+				sb.append(j.getNom());
+				sb.append("',");
+			}
+		sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
+		sb.append("]");
+		
+		return new String(sb);
 	}
 
 	@Override
 	public String toString() {
 		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
 				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
-				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex + "]";
+				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex_ordre + "]";
 	}
 
-	public synchronized void destroy(){
+	public void destroy(){
+		//un seul appel
+		//lock nécessaire pour être sur que les opérations sont protégées
+		mutex_ordre_write.lock();
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(Config.getInstance().CHEMIN_FICHIER, true));
 			writer.write(String.valueOf(liste_Operations));
@@ -405,5 +436,6 @@ public class Marche {
 		if(timer != null){
 			timer.interrupt();
 		}
+		mutex_ordre_write.unlock();
 	}
 }

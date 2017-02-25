@@ -6,18 +6,14 @@ public class Echange implements Comparable<Echange> {
 	private final float prix;
 	private final float volume;
 	private final long temps;
-	
-	private static Long temps_increment = (long) 0;
 
-	public Echange(Joueur vendeur, Joueur acheteur, float prix, float volume) {
+	public Echange(Joueur vendeur, Joueur acheteur, float prix, float volume, long temps) {
 		super();
 		this.vendeur = vendeur;
 		this.acheteur = acheteur;
 		this.prix = prix;
 		this.volume = volume;
-		synchronized (temps_increment) {
-			this.temps = temps_increment++;
-		}
+		this.temps = temps;
 	}
 
 	public Joueur getVendeur() {

@@ -9,10 +9,8 @@ public abstract class Ordre implements Comparable<Ordre> {
 	protected final int volume_initial;
 	protected final Joueur joueur;
 	protected final long temps;
-	
-	private static Long temps_increment = (long) 0;
 
-	public Ordre(int id_ordre, Action action, float prix, int volume, Joueur joueur) {
+	public Ordre(int id_ordre, Action action, float prix, int volume, Joueur joueur, long temps) {
 		super();
 		this.id_ordre = id_ordre;
 		this.action = action;
@@ -20,9 +18,7 @@ public abstract class Ordre implements Comparable<Ordre> {
 		this.volume = volume;
 		this.volume_initial = volume;
 		this.joueur = joueur;
-		synchronized (temps_increment) {
-			this.temps = temps_increment++;
-		}
+		this.temps = temps;
 	}
 
 	public int getId_ordre() {
