@@ -112,12 +112,18 @@ public class Marche {
 		return true;
 	}
 
-	public Set<Ordre> getListeAchats(Action a) {
+	public synchronized Set<Ordre> getListeAchats(Action a) {
 		return liste_achats.get(a);
 	}
+	public synchronized List<Ordre> getListeAchats(Action a,  int longueurMaxListe) {
+		return (new LinkedList<Ordre>(liste_achats.get(a))).subList(0, longueurMaxListe);
+	}
 
-	public Set<Ordre> getListeVentes(Action a) {
+	public synchronized Set<Ordre> getListeVentes(Action a) {
 		return liste_ventes.get(a);
+	}
+	public synchronized List<Ordre> getListeVentes(Action a,  int longueurMaxListe) {
+		return (new LinkedList<Ordre>(liste_ventes.get(a))).subList(0, longueurMaxListe);
 	}
 	
 	/**
