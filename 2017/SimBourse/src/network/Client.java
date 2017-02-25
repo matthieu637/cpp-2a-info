@@ -123,17 +123,25 @@ public class Client extends Thread {
 					envoyer(out, begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 				} else if (userInput.startsWith(OPERATIONS) && peut_jouer) {
 					envoyer(out, String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
-				} else if (userInput.startsWith(ACHATS) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])&& peut_jouer){
-					int arg=Integer.parseInt(arguments[1]);
-					if (arg<nombreActions && arg>=0)  {
-						Action a = Action.values()[arg]; 
-					envoyer(out, String.valueOf(current.getMarche().getListeAchats(a)));
+				} else if (userInput.startsWith(ACHATS) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
+					int arg1=Integer.parseInt(arguments[1]);
+					if (arg1<nombreActions && arg1>=0)  {
+						int arg2=Integer.parseInt(arguments[2]);
+						Action a = Action.values()[arg1]; 
+						if(arg2<=0 || arg2>current.getMarche().getListeAchats(a).size())
+							envoyer(out, String.valueOf(current.getMarche().getListeAchats(a)));
+						else
+							envoyer(out, String.valueOf(current.getMarche().getListeAchats(a,arg2)));
 					}
-				} else if (userInput.startsWith(VENTES) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])&& peut_jouer){
-					int arg=Integer.parseInt(arguments[1]);
-					if(arg<nombreActions && arg>=0)  {
-						Action a = Action.values()[arg]; 
-					envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
+				} else if (userInput.startsWith(VENTES) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
+					int arg1=Integer.parseInt(arguments[1]);
+					if(arg1<nombreActions && arg1>=0)  {
+						int arg2=Integer.parseInt(arguments[2]);
+						Action a = Action.values()[arg1]; 
+						if(arg2<=0 || arg2>current.getMarche().getListeVentes(a).size())
+							envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
+						else
+							envoyer(out, String.valueOf(current.getMarche().getListeVentes(a,arg2)));
 					}
 				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&&StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()){
