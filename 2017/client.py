@@ -91,7 +91,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.2"
+		self.__versionClient="1.4"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -129,10 +129,23 @@ class Reseau:
 			length = self.__sock.recv(8)
 			if length == b'':
 				raise RuntimeError("Connexion perdu. _5")
-			back = self.__sock.recv(int(length.decode()))
-			if back == b'':
-				raise RuntimeError("Connexion perdu. _3")
-			return back.decode()
+			length=int(length.decode())
+			result=''
+			while True:
+				keep = length - len(result)
+				if keep > 4096:
+					back = self.__sock.recv(4096)
+					if back == b'':
+						raise RuntimeError("Connexion perdu. _3")
+					result += back.decode()
+				else:
+					back = self.__sock.recv(keep)
+					if back == b'':
+						raise RuntimeError("Connexion perdu. _6")
+					result += back.decode()
+					break
+				
+			return result
 		except (ConnectionRefusedError):
 			raise RuntimeError("Connexion perdu. _4")
 			
@@ -154,7 +167,7 @@ class Reseau:
 		>>> print(id)
 		31416 #id de la partie
 		En cas d'erreur(Exemple pseudo avec des espaces):
-			Renvoie -4
+		Renvoie -4
 		
 		@param nom: le nom du joueur qui cree la partie
 		@type nom: string
@@ -221,6 +234,7 @@ class Reseau:
 		Renvoie un dictionnaire (string:entier).
 		
 		Exemple:
+
 		>>> r.solde()
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 		'''
@@ -311,9 +325,12 @@ class Reseau:
 		Exemple:
 		>>> r.achats("Trydea")
 		[('Matthieu', 23,15), ('Ryan',20,10), ('Paul', 17,23)]
+		r.achats("Trydea", 5)
 		
 		@param action: le nom de l'action pour laquelle vous voulez voir les offres d'achats
 		@type action: string
+		@param nbMaxElemListe : argument facultatif
+		@type nbMaxElemListe: entier
 		'''
 		action=action.lower()
 		self.__estTop()
@@ -343,9 +360,13 @@ class Reseau:
 		Exemple:
 		>>> r.ventes('Facebook')
 		[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]
+		r.ventes('Facebook', 5)
+		
 		
 		@param action: nom de l'action
 		@type action: string
+		@param nbMaxElemListe : argument facultatif
+		@type nbMaxElemListe: entier
 		'''
 		action=action.lower()
 		self.__estTop()

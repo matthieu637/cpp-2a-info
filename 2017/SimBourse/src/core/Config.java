@@ -8,9 +8,11 @@ public class Config {
 	public final int PORT = 23456; //23456 ou 80
 	public final int TEMPS_PARTIE = 10;//en minutes
 	public final int PACKET_SIZE = 8;
+	public final int MAX_PACKET_SIZE_INPUT = 128;
+	public final int RESERVED_SIZE_SEND_PACKET = (int) (Math.pow(10, PACKET_SIZE)-1);
 	public final boolean BANQUE = true;
 	public final String CHEMIN_FICHIER="OperationsHistorique.txt";
-	public final String VERSION = "1.2";
+	public final String VERSION = "1.3";
 	
 	private Config (){
 		

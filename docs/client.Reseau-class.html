@@ -305,9 +305,10 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#achats" class="summary-sig-name">achats</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">action</span>)</span><br />
-      Liste tous les ordres d&#8217;achats pour tous les joueurs sur une action 
-      donn&#233;e.</td>
+        <span class="summary-sig-arg">action</span>,
+        <span class="summary-sig-arg">nbMaxElemListe</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Liste tous les ordres d&#8217;achats avec nbMaxElemListe element de liste 
+      pour tous les joueurs sur une action donn&#233;e.</td>
           <td align="right" valign="top">
             
             
@@ -324,7 +325,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="client.Reseau-class.html#ventes" class="summary-sig-name">ventes</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">action</span>)</span><br />
+        <span class="summary-sig-arg">action</span>,
+        <span class="summary-sig-arg">nbMaxElemListe</span>=<span class="summary-sig-default">0</span>)</span><br />
       Liste tous les ordres de ventes ouverts de tous les utilisateurs pour
       une action donnee.</td>
           <td align="right" valign="top">
@@ -459,11 +461,10 @@
   </tr></table>
   
   <p>Cr&#233;e la partie et renvoie l&#8217;id &#224; communiqur oralement aux autres 
-  joueurs. Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>id=r.creerPartie(<span class="py-string">&quot;MatthieuDevall&#233;&quot;</span>)
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span>(id)
-<span class="py-output">31416 #id de la partie</span></pre>
+  joueurs.</p>
+  <p>Exemple: &gt;&gt;&gt; id=r.creerPartie(&quot;MatthieuDevall&#233;&quot;) 
+  &gt;&gt;&gt; print(id) 31416 #id de la partie En cas d'erreur(Exemple 
+  pseudo avec des espaces): Renvoie -4</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -578,10 +579,7 @@
   <p>Retourne une liste d&#8217;entiers, qui correspondent aux identifiants des 
   ordres pr&#233;c&#233;demment transmis et qui ne sont pas encore termin&#233;s: on peut 
   donc les suivre et les annuler.</p>
-  <p>Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>R.operationsEnCours()
-<span class="py-output">[62098581, 20555477]</span></pre>
+  <p>Exemple: &gt;&gt;&gt; R.operationsEnCours() [62098581, 20555477]</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -694,15 +692,17 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">achats</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">action</span>)</span>
+        <span class="sig-arg">action</span>,
+        <span class="sig-arg">nbMaxElemListe</span>=<span class="sig-default">0</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     >&nbsp;
     </td>
   </tr></table>
   
-  <p>Liste tous les ordres d&#8217;achats pour tous les joueurs sur une action 
-  donn&#233;e. Retourne:</p>
+  <p>Liste tous les ordres d&#8217;achats avec nbMaxElemListe element de liste 
+  pour tous les joueurs sur une action donn&#233;e. Pour pas de limite 
+  d'&#233;l&#233;ments de liste, mettre nbMaxElemListe=0 Retourne:</p>
   <ul>
     <li>
       -4 si l&#8217;action n&#8217;existe pas
@@ -712,15 +712,15 @@
       <code>(nom_acheteur, prix, volume)</code>
     </li>
   </ul>
-  <p>Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.achats(<span class="py-string">&quot;Trydea&quot;</span>)
-<span class="py-output">[('Matthieu', 23,15), ('Ryan',20,10), ('Paul', 17,23)]</span></pre>
+  <p>Exemple: &gt;&gt;&gt; r.achats(&quot;Trydea&quot;) [('Matthieu', 
+  23,15), ('Ryan',20,10), ('Paul', 17,23)] r.achats(&quot;Trydea&quot;, 
+  5)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>action</code></strong> (string) - le nom de l'action pour laquelle vous voulez voir les offres 
           d'achats</li>
+        <li><strong class="pname"><code>nbMaxElemListe</code></strong> (entier) - argument facultatif</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -733,7 +733,8 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">ventes</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">action</span>)</span>
+        <span class="sig-arg">action</span>,
+        <span class="sig-arg">nbMaxElemListe</span>=<span class="sig-default">0</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     >&nbsp;
@@ -741,9 +742,10 @@
   </tr></table>
   
   <p>Liste tous les ordres de ventes ouverts de tous les utilisateurs pour 
-  une action donnee. Renvoie une liste de tuple (nom_acheteur, prix, 
-  volume) triee par le prix le plus avantageux. Si l'action n'existe pas 
-  renvoie -4;</p>
+  une action donnee. Pour pas de limite d'&#233;l&#233;ments de liste, mettre 
+  nbMaxElemListe=0 Renvoie une liste de tuple (nom_acheteur, prix, volume) 
+  triee par le prix le plus avantageux. Si l'action n'existe pas renvoie 
+  -4;</p>
   <p>Retourne:</p>
   <ul>
     <li>
@@ -754,14 +756,13 @@
       <code>(nom_acheteur, prix, volume)</code>
     </li>
   </ul>
-  <p>Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.ventes(<span class="py-string">'Facebook'</span>)
-<span class="py-output">[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]</span></pre>
+  <p>Exemple: &gt;&gt;&gt; r.ventes('Facebook') [('Matthieu', 5.0, 5), 
+  ('banque', 25.0, 40000)] r.ventes('Facebook', 5)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>action</code></strong> (string) - nom de l'action</li>
+        <li><strong class="pname"><code>nbMaxElemListe</code></strong> (entier) - argument facultatif</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -784,10 +785,9 @@
   <p>Permet de lister tous les &#233;changes d&#233;j&#224; effectu&#233;s sur une action. 
   Retourne une liste de tuples tri&#233;e par ordre chronologique. Sous la 
   forme: <code>(nom_vendeur, nom_acheteur, prix, volume)</code></p>
-  <p>Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.historiques(<span class="py-string">&quot;Trydea&quot;</span>)
-<span class="py-output">[('Matthieu','Mukhlis',10,10), ('T&#233;rence', 'Ryan', 15,20), ('Matthieu', 'Ryan', 20,3)]</span></pre>
+  <p>Exemple: &gt;&gt;&gt; r.historiques(&quot;Trydea&quot;) 
+  [('Matthieu','Mukhlis',10,10), ('T&#233;rence', 'Ryan', 15,20), ('Matthieu', 
+  'Ryan', 20,3)]</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -865,9 +865,7 @@
       les euros d&#233;pens&#233;s si c&#8217;est ordre d&#8217;achat
     </li>
   </ul>
-  <p>Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.annulerOrdre(31416)</pre>
+  <p>Exemple: &gt;&gt;&gt; r.annulerOrdre(31416)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -894,14 +892,10 @@
   <p>Renvoie un dictionnaire le temps restant (en s) avant la fin de la 
   partie (string:entier). Si la partie est termin&#233;e, affiche le classement 
   (string:liste).</p>
-  <p>Exemple:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.fin()
-<span class="py-output">{'temps': 10} #Il reste 10 secondes avant la fin de la partie.</span></pre>
-  <p>OU</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.fin()
-<span class="py-output">{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.</span></pre>
+  <p>Exemple: &gt;&gt;&gt; r.fin() {'temps': 10} #Il reste 10 secondes 
+  avant la fin de la partie.</p>
+  <p>OU &gt;&gt;&gt; r.fin() {'classement': ['Matthieu', 
+  'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -933,7 +927,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb 24 12:12:34 2017
+    Generated by Epydoc 3.0.1 on Sun Feb 26 14:07:15 2017
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

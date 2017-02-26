@@ -1,7 +1,6 @@
 package network;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -52,8 +51,8 @@ public class Client extends Thread {
 		int numero_partie = -1;
 		boolean create = false;
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()), Config.getInstance().MAX_PACKET_SIZE_INPUT);
+			OutputStreamWriter out = new OutputStreamWriter(client.getOutputStream());
 
 			envoyer(out, Config.getInstance().VERSION);
 			String userInput;
@@ -103,7 +102,7 @@ public class Client extends Thread {
 					String retour = current.getMarche().getListeJoueursString();
 					for (Socket s : current.getListe_client())
 						if (s != client) {
-							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+							OutputStreamWriter outAdvers = new OutputStreamWriter(s.getOutputStream());
 							envoyer(outAdvers, "0");
 						}
 					envoyer(out, retour); 
@@ -220,10 +219,10 @@ public class Client extends Thread {
 
 	}
 
-	private void envoyer(BufferedWriter out, String packet) throws IOException {
+	private void envoyer(OutputStreamWriter out, String packet) throws IOException {
 		StringBuilder length = new StringBuilder(Config.getInstance().PACKET_SIZE);
 		String llength = String.valueOf(packet.length());
-		if(packet.length() > 99999){
+		if(packet.length() > Config.getInstance().RESERVED_SIZE_SEND_PACKET){
 			System.out.println("ERROR : packet too small");
 			System.err.println("ERROR : packet too small");
 		}
