@@ -91,7 +91,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.1"
+		self.__versionClient="1.2"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -148,8 +148,8 @@ class Reseau:
 	def creerPartie(self, nom):
 		'''
 		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
+		
 		Exemple:
-
 		>>> id=r.creerPartie("MatthieuDevallé")
 		>>> print(id)
 		31416 #id de la partie
@@ -221,7 +221,6 @@ class Reseau:
 		Renvoie un dictionnaire (string:entier).
 		
 		Exemple:
-
 		>>> r.solde()
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 		'''
@@ -233,12 +232,10 @@ class Reseau:
 	def operationsEnCours(self):
 		'''
 		Retourne une liste d’entiers, qui correspondent aux identifiants des ordres précédemment transmis et qui ne sont pas encore terminés: on peut donc les suivre et les annuler.
-
+		
 		Exemple:
-
 		>>> R.operationsEnCours()
 		[62098581, 20555477]
-
 		'''
 		self.__estTop()
 		self.__notEnd()
@@ -303,15 +300,15 @@ class Reseau:
 		self.__envoyer(self.__message["BID"]+str(numAction)+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
-	def achats(self, action):
+	def achats(self, action, nbMaxElemListe=0):
 		'''
-		Liste tous les ordres d’achats pour tous les joueurs sur une action donnée.
+		Liste tous les ordres d’achats avec nbMaxElemListe element de liste pour tous les joueurs sur une action donnée.
+		Pour pas de limite d'éléments de liste, mettre nbMaxElemListe=0
 		Retourne:
 			- -4 si l’action n’existe pas
 			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{(nom_acheteur, prix, volume)}
 		
 		Exemple:
-
 		>>> r.achats("Trydea")
 		[('Matthieu', 23,15), ('Ryan',20,10), ('Paul', 17,23)]
 		
@@ -323,15 +320,19 @@ class Reseau:
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
 		numAction=self.__chercherNumAction(action)
-		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
+		if numAction==-1 or nbMaxElemListe <0: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.__message["ACHATS"]+str(numAction))
+		if nbMaxElemListe==0:
+			self.__envoyer(self.__message["ACHATS"]+str(numAction))
+		else:
+			self.__envoyer(self.__message["ACHATS"]+str(numAction)+" "+str(nbMaxElemListe))
 		return eval(self.__recevoir())
 	
-	def ventes(self, action):
+	def ventes(self, action, nbMaxElemListe=0):
 		'''
 		Liste tous les ordres de ventes ouverts de tous les utilisateurs pour une action donnee.
+		Pour pas de limite d'éléments de liste, mettre nbMaxElemListe=0
 		Renvoie une liste de tuple (nom_acheteur, prix, volume) triee par le prix le plus avantageux.
 		Si l'action n'existe pas renvoie -4;
 		
@@ -340,12 +341,9 @@ class Reseau:
 			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{(nom_acheteur, prix, volume)}
 	
 		Exemple:
-
 		>>> r.ventes('Facebook')
 		[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]
-
 		
-
 		@param action: nom de l'action
 		@type action: string
 		'''
@@ -354,10 +352,13 @@ class Reseau:
 		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
 		numAction=self.__chercherNumAction(action)
-		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
+		if numAction==-1 or nbMaxElemListe <0: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.__message["VENTES"]+str(numAction))
+		if nbMaxElemListe==0:
+			self.__envoyer(self.__message["VENTES"]+str(numAction))
+		else:
+			self.__envoyer(self.__message["VENTES"]+str(numAction)+" "+str(nbMaxElemListe))
 		return eval(self.__recevoir())
 
 	def historiques(self, action):
@@ -366,7 +367,6 @@ class Reseau:
 		Retourne une liste de tuples triée par ordre chronologique. Sous la forme: C{(nom_vendeur, nom_acheteur, prix, volume)}
 		
 		Exemple:
-
 		>>> r.historiques("Trydea")
 		[('Matthieu','Mukhlis',10,10), ('Térence', 'Ryan', 15,20), ('Matthieu', 'Ryan', 20,3)]
 		
@@ -414,7 +414,6 @@ class Reseau:
 			- les euros dépensés si c’est ordre d’achat
 		
 		Exemple:
-		
 		>>> r.annulerOrdre(31416)
 		
 		@param id_ordre: : id de l’odre (récupérer à partir de la fonction operationsEnCours())
@@ -443,14 +442,12 @@ class Reseau:
 	def fin(self):
 		'''
 		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
-
+		
 		Exemple:
-
 		>>> r.fin()
 		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
 		
 		OU
-
 		>>> r.fin()
 		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
 		'''

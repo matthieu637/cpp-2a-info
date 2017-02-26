@@ -10,7 +10,7 @@ public class Config {
 	public final int PACKET_SIZE = 8;
 	public final boolean BANQUE = true;
 	public final String CHEMIN_FICHIER="OperationsHistorique.txt";
-	public final String VERSION = "1.0";
+	public final String VERSION = "1.2";
 	
 	private Config (){
 		
