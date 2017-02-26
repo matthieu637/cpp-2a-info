@@ -29,6 +29,8 @@ public class DispatcherServeur {
 		}
 	}
 
+	//synchronized est plus simple pour ce cas :
+	//peu de concurrence, objet unique, peu d'appel, ...
 	synchronized public boolean partieExiste(int cle) {
 		return liste_partie.containsKey(cle);
 	}
