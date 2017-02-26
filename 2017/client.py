@@ -148,6 +148,7 @@ class Reseau:
 	def creerPartie(self, nom):
 		'''
 		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
+		
 		Exemple:
 		>>> id=r.creerPartie("MatthieuDevallé")
 		>>> print(id)
@@ -220,7 +221,6 @@ class Reseau:
 		Renvoie un dictionnaire (string:entier).
 		
 		Exemple:
-		
 		>>> r.solde()
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 		'''
@@ -232,6 +232,7 @@ class Reseau:
 	def operationsEnCours(self):
 		'''
 		Retourne une liste d’entiers, qui correspondent aux identifiants des ordres précédemment transmis et qui ne sont pas encore terminés: on peut donc les suivre et les annuler.
+		
 		Exemple:
 		>>> R.operationsEnCours()
 		[62098581, 20555477]
@@ -322,7 +323,10 @@ class Reseau:
 		if numAction==-1 or nbMaxElemListe <0: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.__message["ACHATS"]+str(numAction)+" "+str(nbMaxElemListe))
+		if nbMaxElemListe==0:
+			self.__envoyer(self.__message["ACHATS"]+str(numAction))
+		else:
+			self.__envoyer(self.__message["ACHATS"]+str(numAction)+" "+str(nbMaxElemListe))
 		return eval(self.__recevoir())
 	
 	def ventes(self, action, nbMaxElemListe=0):
@@ -351,7 +355,10 @@ class Reseau:
 		if numAction==-1 or nbMaxElemListe <0: #si le nom de l'action n'est pas valide on retourne -4
 			return -4
 		#on envoie le numero de l'action
-		self.__envoyer(self.__message["VENTES"]+str(numAction)+" "+str(nbMaxElemListe))
+		if nbMaxElemListe==0:
+			self.__envoyer(self.__message["VENTES"]+str(numAction))
+		else:
+			self.__envoyer(self.__message["VENTES"]+str(numAction)+" "+str(nbMaxElemListe))
 		return eval(self.__recevoir())
 
 	def historiques(self, action):
@@ -407,7 +414,6 @@ class Reseau:
 			- les euros dépensés si c’est ordre d’achat
 		
 		Exemple:
-		
 		>>> r.annulerOrdre(31416)
 		
 		@param id_ordre: : id de l’odre (récupérer à partir de la fonction operationsEnCours())
@@ -436,6 +442,7 @@ class Reseau:
 	def fin(self):
 		'''
 		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
+		
 		Exemple:
 		>>> r.fin()
 		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
