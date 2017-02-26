@@ -121,14 +121,14 @@ public class Client extends Thread {
 						int arg2=Integer.parseInt(arguments[2]);
 						Action a = Action.values()[arg1]; 
 						envoyer(out, current.getMarche().getListeAchatsString(a,arg2));
-          }
+          				}
 				} else if (userInput.startsWith(VENTES) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
 					int arg1=Integer.parseInt(arguments[1]);
 					if(arg1<nombreActions && arg1>=0)  {
 						int arg2=Integer.parseInt(arguments[2]);
 						Action a = Action.values()[arg1]; 
 						envoyer(out, current.getMarche().getListeVentesString(a,arg2));
-          }
+          				}
 				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&&StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()){
 					int arg=Integer.parseInt(arguments[1]);
