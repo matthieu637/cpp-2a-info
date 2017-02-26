@@ -100,22 +100,13 @@ public class Client extends Thread {
 					join = true;
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
+					String retour = current.getMarche().getListeJoueursString();
 					for (Socket s : current.getListe_client())
 						if (s != client) {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 							envoyer(outAdvers, "0");
 						}
-					StringBuffer sb = new StringBuffer(current.getMarche().getListe_joueurs().size() * 100);
-					sb.append("[");
-					for(Joueur j: current.getMarche().getListe_joueurs() )
-						if(j.getNom()!="banque"){
-							sb.append("'");
-							sb.append(j.getNom());
-							sb.append("',");
-						}
-					sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
-					sb.append("]"); 
-					envoyer(out, new String(sb)); 
+					envoyer(out, retour); 
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour
 				} else if (userInput.startsWith(SOLDE) && (create || join) && current.getMarche().est_ouvert()) {
@@ -125,23 +116,17 @@ public class Client extends Thread {
 					envoyer(out, String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
 				} else if (userInput.startsWith(ACHATS) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
 					int arg1=Integer.parseInt(arguments[1]);
-					if (arg1<nombreActions && arg1>=0)  {
+					if(arg1<nombreActions && arg1>=0)  {
 						int arg2=Integer.parseInt(arguments[2]);
 						Action a = Action.values()[arg1]; 
-						if(arg2<=0 || arg2>current.getMarche().getListeAchats(a).size())
-							envoyer(out, String.valueOf(current.getMarche().getListeAchats(a)));
-						else
-							envoyer(out, String.valueOf(current.getMarche().getListeAchats(a,arg2)));
+						envoyer(out, current.getMarche().getListeAchatsString(a,arg2));
 					}
 				} else if (userInput.startsWith(VENTES) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
 					int arg1=Integer.parseInt(arguments[1]);
 					if(arg1<nombreActions && arg1>=0)  {
 						int arg2=Integer.parseInt(arguments[2]);
 						Action a = Action.values()[arg1]; 
-						if(arg2<=0 || arg2>current.getMarche().getListeVentes(a).size())
-							envoyer(out, String.valueOf(current.getMarche().getListeVentes(a)));
-						else
-							envoyer(out, String.valueOf(current.getMarche().getListeVentes(a,arg2)));
+						envoyer(out, current.getMarche().getListeVentesString(a,arg2));
 					}
 				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&&StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()){
@@ -175,7 +160,7 @@ public class Client extends Thread {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
 				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
-					envoyer(out, String.valueOf(current.getMarche().getListeOperations()));
+					envoyer(out, current.getMarche().getListeOperationsString());
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
 				} else {
