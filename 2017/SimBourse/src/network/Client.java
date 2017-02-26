@@ -114,21 +114,50 @@ public class Client extends Thread {
 					envoyer(out, begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 				} else if (userInput.startsWith(OPERATIONS) && peut_jouer) {
 					envoyer(out, String.valueOf(ListPairToStringPythonKeyOnly(joueur.getOperationsOuvertes())));
-
-				} else if (userInput.startsWith(ACHATS) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
-					int arg1=Integer.parseInt(arguments[1]);
-					if(arg1<nombreActions && arg1>=0)  {
-						int arg2=Integer.parseInt(arguments[2]);
-						Action a = Action.values()[arg1]; 
-						envoyer(out, current.getMarche().getListeAchatsString(a,arg2));
-          				}
-				} else if (userInput.startsWith(VENTES) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
-					int arg1=Integer.parseInt(arguments[1]);
-					if(arg1<nombreActions && arg1>=0)  {
-						int arg2=Integer.parseInt(arguments[2]);
-						Action a = Action.values()[arg1]; 
-						envoyer(out, current.getMarche().getListeVentesString(a,arg2));
-          				}
+				} else if (userInput.startsWith(ACHATS)){
+					if (arguments.length == 2 && StringUtils.isNumeric(arguments[1])&& peut_jouer){
+						int arg=Integer.parseInt(arguments[1]);
+						if (arg<nombreActions && arg>=0)  {
+							Action a = Action.values()[arg]; 
+						envoyer(out, current.getMarche().getListeAchatsString(a,0));
+						}
+						else
+							envoyer(out, "-4");
+					}
+					else if (arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
+						int arg1=Integer.parseInt(arguments[1]);
+						if(arg1<nombreActions && arg1>=0)  {
+							int arg2=Integer.parseInt(arguments[2]);
+							Action a = Action.values()[arg1]; 
+							envoyer(out, current.getMarche().getListeAchatsString(a,arg2));
+						}
+						else
+							envoyer(out, "-4");
+					}
+					else
+						envoyer(out, "-4");
+				} else if (userInput.startsWith(VENTES)){
+					if(arguments.length == 2 && StringUtils.isNumeric(arguments[1])&& peut_jouer){
+						int arg=Integer.parseInt(arguments[1]);
+						if(arg<nombreActions && arg>=0)  {
+							Action a = Action.values()[arg]; 
+						envoyer(out, current.getMarche().getListeVentesString(a,0));
+						}
+						else
+							envoyer(out, "-4");
+					}
+					else if(arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && StringUtils.isNumeric(arguments[2]) && peut_jouer){
+						int arg1=Integer.parseInt(arguments[1]);
+						if(arg1<nombreActions && arg1>=0)  {
+							int arg2=Integer.parseInt(arguments[2]);
+							Action a = Action.values()[arg1]; 
+							envoyer(out, current.getMarche().getListeVentesString(a,arg2));
+						}
+						else
+							envoyer(out, "-4");
+					}
+					else
+						envoyer(out, "-4");
 				} else if (userInput.startsWith(HISTO) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&&StringUtils.isNumeric(arguments[2]) && (create || join) && current.getMarche().est_ouvert()){
 					int arg=Integer.parseInt(arguments[1]);
@@ -136,6 +165,8 @@ public class Client extends Thread {
 						Action a = Action.values()[arg]; 
 					envoyer(out, String.valueOf(current.getMarche().getHistoriqueEchanges(a,Integer.parseInt(arguments[2]))));
 					}
+					else
+						envoyer(out, "-4");
 				} else if (userInput.startsWith(ASK) && arguments.length == 4 && StringUtils.isNumeric(arguments[1])
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					int arg=Integer.parseInt(arguments[1]);
@@ -145,6 +176,8 @@ public class Client extends Thread {
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
 					}
+					else
+						envoyer(out, "-4");
 				} else if (userInput.startsWith(BID) && arguments.length == 4 && StringUtils.isNumeric(arguments[1])
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					int arg=Integer.parseInt(arguments[1]);
@@ -154,6 +187,8 @@ public class Client extends Thread {
 					int volume = Integer.parseInt(arguments[3]);
 					envoyer(out, String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
 					}
+					else
+						envoyer(out, "-4");
 				} else if (userInput.startsWith(SUIVRE) && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().suivre(joueur, ordre)));
