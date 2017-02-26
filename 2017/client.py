@@ -154,7 +154,7 @@ class Reseau:
 		>>> print(id)
 		31416 #id de la partie
 		En cas d'erreur(Exemple pseudo avec des espaces):
-			Renvoie -4
+		Renvoie -4
 		
 		@param nom: le nom du joueur qui cree la partie
 		@type nom: string
