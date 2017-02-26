@@ -395,7 +395,7 @@ public class Marche {
 			secondes = 0;
 		sb.append(String.valueOf(secondes));
 		if (fini) {
-			sb.append(",'classement':[");
+			sb.append(",'classement':");
 			synchronized(this){
 				Collections.sort(liste_joueurs);
 			}
