@@ -119,6 +119,7 @@ public class Marche {
 	}
 
 	//synchronized est moins efficace car il bloque les lectures concurrentes
+
 	public String getListeAchatsString(Action a, int nbMaxAchats) {
 		mutex_ordre_read.lock();
 		String r;
