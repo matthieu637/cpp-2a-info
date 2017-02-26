@@ -12,6 +12,7 @@ class Reseau:
 	Pour plus d’informations:
 	
 	U{https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes}
+
 	Préliminaires
 	=============
 	
@@ -55,6 +56,7 @@ class Reseau:
 	
 	Synchronisation pour le départ
 	==============================
+
 		Lorsque tous les utilisateurs ont rejoint la partie, il faut se synchroniser pour le top depart.
 		Pour cela, ceux qui ont rejoint la partie utiliseront :
 			>>> r.top() #ne rend pas la main tant que le createur n'a pas lance
@@ -218,11 +220,12 @@ class Reseau:
 		Renvoie un dictionnaire (string:entier).
 		
 		Exemple:
+		
 		>>> r.solde()
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 		'''
 		self.__estTop()
-		#self.__notEnd()
+		self.__notEnd()
 		self.__envoyer(self.__message["SOLDE"])
 		return eval(self.__recevoir())
 	
