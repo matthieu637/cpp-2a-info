@@ -143,7 +143,8 @@ class Reseau:
 					if back == b'':
 						raise RuntimeError("Connexion perdu. _6")
 					result += back.decode()
-					break
+					if length == len(result):
+						break
 				
 			return result
 		except (ConnectionRefusedError):
