@@ -143,23 +143,23 @@ public class Marche {
 	
 	/**
 	 * @param a : le nom de l'action
-	 * @param n : le numÃ©ro de liste Ã  partir duquel il faut envoyer les Ã©lÃ©ments historiques du serveur au client
-	 * @return  : retourne une liste chainÃ©e contenant les Ã©lÃ©ments de 'historiques' voulus
+	 * @param n : le numéro de liste à partir duquel il faut envoyer les éléments historiques du serveur au client
+	 * @return  : retourne une liste chainée contenant les éléments de 'historiques' voulus
 	 */
 	public LinkedList<Echange> getHistoriqueEchanges(Action a, int n) {
 		mutex_ordre_read.lock();
 		int tailleH=historiques.get(a).size(); //Pour calculer une seule fois la taille de la liste
-		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainÃ©e que l'on va remplir
+		LinkedList<Echange> list = new LinkedList<Echange>();//on instancie la liste chainée que l'on va remplir
 		
-		//on crÃ©e un iterateur parcourant 'historiques' dans le sens dÃ©croissant
+		//on crée un iterateur parcourant 'historiques' dans le sens décroissant
 		final Iterator<Echange> i = historiques.get(a).descendingIterator();
 		for (int j=0; j<tailleH-n && i.hasNext();j++)
-			//on ajoute dans la liste chainÃ©e les Ã©lÃ©ments au sens dÃ©croissants de 'historiques'
-			//au dÃ©but de la liste chainÃ©e Ã  chaque fois pour que les Ã©lÃ©ments apparaissent dans le bon sens
+			//on ajoute dans la liste chainée les éléments au sens décroissants de 'historiques'
+			//au début de la liste chainée à chaque fois pour que les éléments apparaissent dans le bon sens
 			list.addFirst(i.next());
 		
 		mutex_ordre_read.unlock();
-		//on retourne la liste chainÃ©e
+		//on retourne la liste chainée
 		return list;
 	}
 
@@ -357,7 +357,7 @@ public class Marche {
 		}
 	}
 
-	//appel dÃ©jÃ  protÃ©gÃ©, synchronized inutile
+	//appel déjà protégé, synchronized inutile
 	private int creer_id_ordre() {
 		int numero_partie = (int) (Math.random() * 100000000);
 		while (liste_id_ordres.contains((Integer) numero_partie))
@@ -404,7 +404,7 @@ public class Marche {
 		return r;
 	}
 	
-	//synchronized non nÃ©cessaire seul le crÃ©ateur l'utilise
+	//synchronized non nécessaire seul le créateur l'utilise
 	// ou lors de fin(), la liste ne change pas
 	public String getListeJoueursString(){
 		StringBuffer sb = new StringBuffer(liste_joueurs.size() * 100);
@@ -430,7 +430,7 @@ public class Marche {
 
 	public void destroy(){
 		//un seul appel
-		//lock nÃ©cessaire pour Ãªtre sur que les opÃ©rations sont protÃ©gÃ©es
+		//lock nécessaire pour être sur que les opérations sont protégées
 		mutex_ordre_write.lock();
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(Config.getInstance().CHEMIN_FICHIER, true));
