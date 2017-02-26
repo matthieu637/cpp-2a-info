@@ -119,14 +119,18 @@ public class Marche {
 	}
 
 	//synchronized est moins efficace car il bloque les lectures concurrentes
-
 	public String getListeAchatsString(Action a, int nbMaxAchats) {
 		mutex_ordre_read.lock();
 		String r;
-		if(nbMaxAchats<=0 || nbMaxAchats>liste_achats.get(a).size())
+		if(nbMaxAchats<=0 || nbMaxAchats>=liste_achats.get(a).size())
 			r = String.valueOf(liste_achats.get(a));
-		else
-			r=String.valueOf(new LinkedList<Ordre>(liste_achats.get(a)).subList(0, nbMaxAchats));
+		else{
+			LinkedList<Ordre> list = new LinkedList<Ordre>();
+			final Iterator<Ordre> i = liste_achats.get(a).iterator();
+			for (int j=0; j<nbMaxAchats && i.hasNext();j++)
+				list.add(i.next());
+			r=String.valueOf(list);
+		}
 		mutex_ordre_read.unlock();
 		return r;
 	}
@@ -136,8 +140,13 @@ public class Marche {
 		String r;
 		if(nbMaxVentes<=0 || nbMaxVentes>liste_ventes.get(a).size())
 			r = String.valueOf(liste_ventes.get(a));
-		else
-			r=String.valueOf(new LinkedList<Ordre>(liste_ventes.get(a)).subList(0, nbMaxVentes));
+		else{
+			LinkedList<Ordre> list = new LinkedList<Ordre>();
+			final Iterator<Ordre> i = liste_ventes.get(a).iterator();
+			for (int j=0; j<nbMaxVentes && i.hasNext();j++)
+				list.add(i.next());
+			r=String.valueOf(list);
+		}
 		mutex_ordre_read.unlock();
 		return r;
 	}
