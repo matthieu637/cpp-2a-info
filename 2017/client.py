@@ -12,7 +12,6 @@ class Reseau:
 	Pour plus d’informations:
 	
 	U{https://openclassrooms.com/courses/apprenez-a-programmer-en-python/premiere-approche-des-classes}
-
 	Préliminaires
 	=============
 	
@@ -56,7 +55,6 @@ class Reseau:
 	
 	Synchronisation pour le départ
 	==============================
-
 		Lorsque tous les utilisateurs ont rejoint la partie, il faut se synchroniser pour le top depart.
 		Pour cela, ceux qui ont rejoint la partie utiliseront :
 			>>> r.top() #ne rend pas la main tant que le createur n'a pas lance
@@ -149,7 +147,6 @@ class Reseau:
 		'''
 		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
 		Exemple:
-
 		>>> id=r.creerPartie("MatthieuDevallé")
 		>>> print(id)
 		31416 #id de la partie
@@ -221,12 +218,11 @@ class Reseau:
 		Renvoie un dictionnaire (string:entier).
 		
 		Exemple:
-
 		>>> r.solde()
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 		'''
 		self.__estTop()
-		self.__notEnd()
+		#self.__notEnd()
 		self.__envoyer(self.__message["SOLDE"])
 		return eval(self.__recevoir())
 	
@@ -234,7 +230,6 @@ class Reseau:
 		'''
 		Retourne une liste d’entiers, qui correspondent aux identifiants des ordres précédemment transmis et qui ne sont pas encore terminés: on peut donc les suivre et les annuler.
 		Exemple:
-
 		>>> R.operationsEnCours()
 		[62098581, 20555477]
 		'''
@@ -301,7 +296,7 @@ class Reseau:
 		self.__envoyer(self.__message["BID"]+str(numAction)+" "+str(prix)+" "+str(volume))
 		return eval(self.__recevoir())
 
-	def achats(self, action, nbMaxElemListe):
+	def achats(self, action, nbMaxElemListe=0):
 		'''
 		Liste tous les ordres d’achats avec nbMaxElemListe element de liste pour tous les joueurs sur une action donnée.
 		Pour pas de limite d'éléments de liste, mettre nbMaxElemListe=0
@@ -327,7 +322,7 @@ class Reseau:
 		self.__envoyer(self.__message["ACHATS"]+str(numAction)+" "+str(nbMaxElemListe))
 		return eval(self.__recevoir())
 	
-	def ventes(self, action, nbMaxElemListe):
+	def ventes(self, action, nbMaxElemListe=0):
 		'''
 		Liste tous les ordres de ventes ouverts de tous les utilisateurs pour une action donnee.
 		Pour pas de limite d'éléments de liste, mettre nbMaxElemListe=0
@@ -339,7 +334,6 @@ class Reseau:
 			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{(nom_acheteur, prix, volume)}
 	
 		Exemple:
-
 		>>> r.ventes('Facebook')
 		[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]
 		
@@ -363,7 +357,6 @@ class Reseau:
 		Retourne une liste de tuples triée par ordre chronologique. Sous la forme: C{(nom_vendeur, nom_acheteur, prix, volume)}
 		
 		Exemple:
-
 		>>> r.historiques("Trydea")
 		[('Matthieu','Mukhlis',10,10), ('Térence', 'Ryan', 15,20), ('Matthieu', 'Ryan', 20,3)]
 		
@@ -440,14 +433,11 @@ class Reseau:
 	def fin(self):
 		'''
 		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
-
 		Exemple:
-
 		>>> r.fin()
 		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
 		
 		OU
-
 		>>> r.fin()
 		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
 		'''
