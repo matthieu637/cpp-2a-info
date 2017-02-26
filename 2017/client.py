@@ -91,7 +91,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.3"
+		self.__versionClient="1.4"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -129,10 +129,23 @@ class Reseau:
 			length = self.__sock.recv(8)
 			if length == b'':
 				raise RuntimeError("Connexion perdu. _5")
-			back = self.__sock.recv(int(length.decode()))
-			if back == b'':
-				raise RuntimeError("Connexion perdu. _3")
-			return back.decode()
+			length=int(length.decode())
+			result=''
+			while True:
+				keep = length - len(result)
+				if keep > 4096:
+					back = self.__sock.recv(4096)
+					if back == b'':
+						raise RuntimeError("Connexion perdu. _3")
+					result += back.decode()
+				else:
+					back = self.__sock.recv(keep)
+					if back == b'':
+						raise RuntimeError("Connexion perdu. _6")
+					result += back.decode()
+					break
+				
+			return result
 		except (ConnectionRefusedError):
 			raise RuntimeError("Connexion perdu. _4")
 			
