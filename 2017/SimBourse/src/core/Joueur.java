@@ -1,5 +1,7 @@
 package core;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -11,14 +13,16 @@ import org.apache.commons.lang3.tuple.Pair;
 public class Joueur implements Comparable<Joueur> {
 
 	private final String nom;
+	private final int initiale_solde_euros;
 	private int solde_euros;
 	private final Map<Action, Integer> solde_actions;
 	private final List<Pair<Integer, Ordre>> operations;
 
-	public Joueur(String nom) {
+	public Joueur(String nom, int solde_euros) {
 		super();
 		this.nom = nom;
-		this.solde_euros = Config.getInstance().SOLDE_EUROS_INIT;
+		this.initiale_solde_euros = solde_euros;
+		this.solde_euros = solde_euros;
 		this.solde_actions = new HashMap<Action, Integer>();
 
 		for (Action a : Action.values())
@@ -64,62 +68,34 @@ public class Joueur implements Comparable<Joueur> {
 			}
 	}
 
-	private int nb_action_unique() {
-		int nb_action_type = 0;
-		for (Action a : Action.values())
-			if (solde_actions.get(a) > 0)
-				nb_action_type++;
-
-		return nb_action_type;
+	private int max2_actions() {
+		ArrayList<Integer> ac = new ArrayList<>(solde_actions.values());
+		Collections.sort(ac);
+		
+		return ac.get(ac.size()-1) + ac.get(ac.size()-2);
 	}
 	
-	private int nb_action_total() {
-		int nb_action_tot = 0;
-		for (Action a : Action.values())
-				nb_action_tot+=solde_actions.get(a);
-
-		return nb_action_tot;
+	private boolean rend90pourcent(){
+		return solde_euros >= (initiale_solde_euros * 0.90f) ;
 	}
 
 	@Override
 	public int compareTo(Joueur o) {
-		int j1_nb_ac = nb_action_unique();
-		int j2_nb_ac = o.nb_action_unique();
+		boolean j1_assez_argent = rend90pourcent();
+		boolean j2_assez_argent = o.rend90pourcent();
 		
-		int j1_tot_ac = nb_action_total();
-		int j2_tot_ac = o.nb_action_total();
-		
-
-		if (j1_nb_ac == 2 && j2_nb_ac == 2) {// meilleur cas
-			int cmp = -Integer.compare(j1_tot_ac, j2_tot_ac);
-			if(cmp == 0)
-				return -Integer.compare(this.solde_euros, o.solde_euros);
-			return cmp;
-		} 
-		
-		if (j1_nb_ac == 2 && j2_nb_ac != 2)// j1 gagne car il a vendu les 2 types
+		if(j1_assez_argent && !j2_assez_argent) //j1 gagne, j2 n'a plus assez d'argent
 			return -1;
-		
-		if (j2_nb_ac == 2 && j1_nb_ac != 2)// j2 gagne car il a vendu les 2 types
+		else if(j2_assez_argent && !j1_assez_argent) //j2 gagne, j1 n'a plus assez d'argent
 			return 1;
-		
-		if (j2_nb_ac == 0 && j1_nb_ac == 0)// les 2 n'ont que de l'argent
-			return -Integer.compare(this.solde_euros, o.solde_euros);
-		
-		if (j1_nb_ac != 4 && j2_nb_ac == 4)// j1 gagne car il a vendu au moins un type d action
-			return -1;
-		
-		if (j1_nb_ac == 4 && j2_nb_ac != 4)// j2 gagne car il a vendu au moins un type d action
-			return 1;
-		
-		if (j1_nb_ac > 0 && j2_nb_ac > 0){ // les 2 ont plusieurs actions (1/3/4)
-			int cmp = -Integer.compare(j1_tot_ac, j2_tot_ac);
+		else { // autre cas, on compare les actions
+			int j1_nb_ac = max2_actions();
+			int j2_nb_ac = o.max2_actions();
+			
+			int cmp = -Integer.compare(j1_nb_ac, j2_nb_ac);
 			if(cmp == 0)
 				return -Integer.compare(this.solde_euros, o.solde_euros);
 			return cmp;
 		}
-		
-		System.out.println("cas non traite "+solde_actions+" "+o.solde_actions);
-		return 0;
 	}
 }

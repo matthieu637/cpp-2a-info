@@ -72,13 +72,12 @@ class Reseau:
 	Informations sur le classement final
 	====================================
 		
-		Il y a plusieurs cas (on note j1 et j2 les joueurs):
-			- dans le cas où j1 (ou j2) a vendu les deux types d'actions, il gagne
-			- dans le cas où j1 (ou j2) a vendu au moins un type d'action et pas l'autre, il gagne
-			- dans le cas où les deux n'ont que de l'argent, le plus riche gagne
-			- dans le cas où les deux ont plusieurs actions, on compare leur nombre d'action et leur argent, le plus riche en action gagne sauf si ils ont le même nombre d'actions (le plus riche gagne)
-			- dans le meilleur cas, s'ils ont vendu deux types d'actions, on compare leur nombre d'action ainsi que leur argent, le plus riche gagne
-			
+			Dans un premier groupe seront d’abord classés les gens qui terminent la partie avec une somme d’argent supérieure ou égale à 90% de la somme d’argent initiale.
+
+			Dans un second groupe seront ensuite classés les gens qui terminent la partie avec une somme d’argent inférieur à 90% de la somme d’argent initiale.
+
+			Dans chacun des groupes, les étudiants seront classés simplement par nombre d’actions possédées à l’issue de la partie, en ne prenant en compte que les 2 types d’actions possédées en plus grand nombre. (par exemple quelqu’un à qui il reste 712 actions Google, 14 actions Facebook, 1500 actions Google et 1500 actions Trydea aura un score de 1500+1500 =3000 actions. Les 712 actions Google et 14 actions Facebook ne compterons pas dans le score final, elles seront d’une certaine manière perdue). Dans le cas d’une égalité de ce score, les étudiants seront départagés avec l’argent restant. Dans le cas d’une nouvelle égalité, les étudiants seront classés égalité et auront la même note.
+
 	'''	
 	def __init__(self, host="matthieu-zimmer.net", port=23456):
 		#membre publique
