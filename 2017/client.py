@@ -90,7 +90,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.5"
+		self.__versionClient="1.6"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -99,6 +99,7 @@ class Reseau:
 			result = self.__sock.connect_ex(("paris.matthieu-zimmer.net", 80))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
+		self.__sock.settimeout(300)
 		self.__sock.settimeout(None)
 		if self.__recevoir()!=self.__versionClient:
 			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
@@ -239,7 +240,6 @@ class Reseau:
 		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 		'''
 		self.__estTop()
-		self.__notEnd()
 		self.__envoyer(self.__message["SOLDE"])
 		return eval(self.__recevoir())
 	
