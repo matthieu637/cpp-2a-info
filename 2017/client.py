@@ -90,7 +90,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.6"
+		self.__versionClient="1.7"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -99,7 +99,7 @@ class Reseau:
 			result = self.__sock.connect_ex(("paris.matthieu-zimmer.net", 80))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
-		self.__sock.settimeout(300)
+		self.__sock.settimeout(300) #windows bug?
 		self.__sock.settimeout(None)
 		if self.__recevoir()!=self.__versionClient:
 			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
@@ -164,17 +164,15 @@ class Reseau:
 		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
 		
 		Exemple:
+
 		>>> id=r.creerPartie("MatthieuDevallé")
-		>>> print(id)
+		print(id)
 		31416 #id de la partie
 		En cas d'erreur(Exemple pseudo avec des espaces):
 		Renvoie -4
 		
 		@param nom: le nom du joueur qui cree la partie
 		@type nom: string
-		
-		
-	
 		'''
 		self.__estConnect()
 		self.__envoyer(self.__message["CREATE"]+nom)
@@ -237,7 +235,7 @@ class Reseau:
 		Exemple:
 
 		>>> r.solde()
-		{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
+		{'Apple': 1000, 'Facebook': 1000, 'Google': 1000, 'Trydea': 1000, 'euros': 1000}
 		'''
 		self.__estTop()
 		self.__envoyer(self.__message["SOLDE"])
@@ -248,6 +246,7 @@ class Reseau:
 		Retourne une liste d’entiers, qui correspondent aux identifiants des ordres précédemment transmis et qui ne sont pas encore terminés: on peut donc les suivre et les annuler.
 		
 		Exemple:
+
 		>>> R.operationsEnCours()
 		[62098581, 20555477]
 		'''
@@ -323,9 +322,11 @@ class Reseau:
 			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{(nom_acheteur, prix, volume)}
 		
 		Exemple:
+
 		>>> r.achats("Trydea")
 		[('Matthieu', 23,15), ('Ryan',20,10), ('Paul', 17,23)]
-		r.achats("Trydea", 5)
+		r.achats("Trydea", 1)
+		[('Matthieu', 23,15)]
 		
 		@param action: le nom de l'action pour laquelle vous voulez voir les offres d'achats
 		@type action: string
@@ -358,10 +359,11 @@ class Reseau:
 			- une liste de tuples triée par ordre de prix avantageux sous la forme: C{(nom_acheteur, prix, volume)}
 	
 		Exemple:
+
 		>>> r.ventes('Facebook')
 		[('Matthieu', 5.0, 5), ('banque', 25.0, 40000)]
-		r.ventes('Facebook', 5)
-		
+		r.ventes('Facebook', 1)
+		[('Matthieu', 5.0, 5)]
 		
 		@param action: nom de l'action
 		@type action: string
@@ -388,6 +390,7 @@ class Reseau:
 		Retourne une liste de tuples triée par ordre chronologique. Sous la forme: C{(nom_vendeur, nom_acheteur, prix, volume)}
 		
 		Exemple:
+
 		>>> r.historiques("Trydea")
 		[('Matthieu','Mukhlis',10,10), ('Térence', 'Ryan', 15,20), ('Matthieu', 'Ryan', 20,3)]
 		
@@ -396,7 +399,6 @@ class Reseau:
 		'''
 		action=action.lower()
 		self.__estTop()
-		self.__notEnd()
 		#recherche du numero de l'action (triee dans l'ordre alphabetique)
 		numAction=self.__chercherNumAction(action)
 		if numAction==-1: #si le nom de l'action n'est pas valide on retourne -4
@@ -413,7 +415,7 @@ class Reseau:
 		
 		Retourne:
 			- 0 si l’ordre n’existe plus ou est terminé
-			- 4 si les types ne sont pas respectés
+			- -4 si les types ne sont pas respectés
 			- sinon le volume restant en achat/vente.
 		
 		@param id_ordre: idenfiant unique de l'ordre a suivre
@@ -429,12 +431,13 @@ class Reseau:
 		Annule un ordre transmis précédemment afin de récupérer les fonds provisionnés.
 		
 		Retourne:
-			- 11 si l’ordre n’existe plus ou est termine
-			- 4 si les types ne sont pas respectés
+			- -11 si l’ordre n’existe plus ou est termine
+			- -4 si les types ne sont pas respectés
 			- le volume d’action restant si c’est un ordre de vente
 			- les euros dépensés si c’est ordre d’achat
 		
 		Exemple:
+		
 		>>> r.annulerOrdre(31416)
 		
 		@param id_ordre: : id de l’odre (récupérer à partir de la fonction operationsEnCours())
@@ -465,15 +468,15 @@ class Reseau:
 		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
 		
 		Exemple:
+
 		>>> r.fin()
 		{'temps': 10} #Il reste 10 secondes avant la fin de la partie.
 		
-		OU
+		ou
+
 		>>> r.fin()
 		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
 		'''
-
-			
 		self.__estTop()
 		tempsRestant=self.__tempsFinPartie - time.time() #fin de partie - maintenant
 		if(tempsRestant>0): #Dans ce cas, pas besoin de faire une requête au serveur, on affiche simplement le temps restant
