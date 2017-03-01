@@ -59,7 +59,7 @@ public class Client extends Thread {
 			boolean join = false;
 
 			while ((userInput = in.readLine()) != null) {
-				System.out.println(userInput + "\n");
+				//System.out.println(userInput + "\n");
 				
 				String[] arguments = userInput.split(" ");
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();

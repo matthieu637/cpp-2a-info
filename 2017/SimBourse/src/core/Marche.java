@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
@@ -33,6 +34,7 @@ public class Marche {
 	private List<Operation> liste_Operations;
 	private long echange_unique = 0;
 	private long ordre_unique = 0;
+	private final int initial_euros;
 	
 	public Marche() {
 		ouvert = false;
@@ -49,12 +51,18 @@ public class Marche {
 		liste_joueurs = new LinkedList<>();
 		liste_id_ordres = new TreeSet<>();
 		
+		Random r = new Random();
+		int pow = Config.getInstance().POW_EURO_INIT_MIN + 
+				r.nextInt(Config.getInstance().POW_EURO_INIT_MAX - Config.getInstance().POW_EURO_INIT_MIN + 1);
+		initial_euros = (int) Math.pow(10, pow);
+		
 		if(Config.getInstance().BANQUE){
 			Joueur banque = creer_joueur("banque");
 			banque.setSolde_euros(Integer.MAX_VALUE);
 			int max_action_en_jeu = Config.getInstance().SOLDE_ACTIONS_INIT*Action.values().length*100;//100 joueurs
 			for(Action a : Action.values()){
 				banque.getSolde_actions().put(a, Integer.MAX_VALUE);
+				//prix plus à jour
 				achat(banque, a, 0.25f, max_action_en_jeu);
 				vend(banque, a, 25.0f, max_action_en_jeu);
 			}
@@ -106,7 +114,7 @@ public class Marche {
 
 	// synchronized pour les rares appels de gestion de joueur
 	public synchronized Joueur creer_joueur(String nom) {
-		Joueur j = new Joueur(nom);
+		Joueur j = new Joueur(nom, initial_euros);
 		liste_joueurs.add(j);
 		return j;
 	}
@@ -395,7 +403,7 @@ public class Marche {
 			secondes = 0;
 		sb.append(String.valueOf(secondes));
 		if (fini) {
-			sb.append(",'classement':[");
+			sb.append(",'classement':");
 			synchronized(this){
 				Collections.sort(liste_joueurs);
 			}
