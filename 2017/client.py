@@ -203,7 +203,7 @@ class Reseau:
 		return ok
 
 	def avantTop(self):
-		if(not self.__connect()):
+		if(not self.__connect):
 			raise RuntimeError("Vous n'êtes pas encore connecte.")
 		self.__envoyer(self.__message["AVANTTOP"])
 		return self.__recevoir()
