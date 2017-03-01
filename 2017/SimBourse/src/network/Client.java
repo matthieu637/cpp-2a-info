@@ -158,7 +158,7 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
 					envoyer(out, current.getMarche().getListeOperationsString());
 				} else if (userInput.startsWith(AVANTTOP) && create && !current.getMarche().est_ouvert()){
-					envoyer(out, current.getMarche().getListeJoueurString());
+					envoyer(out, current.getMarche().getListeJoueursString());
 				} else if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
 					numero_partie = (int) (Math.random() * 100000);
