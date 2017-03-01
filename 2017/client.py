@@ -203,6 +203,9 @@ class Reseau:
 		return ok
 
 	def avantTop(self):
+		'''
+		Pour le créateur: Renvoie la liste des noms des joueurs présents dans la partie avant le top
+		'''
 		if(not self.__connect):
 			raise RuntimeError("Vous n'êtes pas encore connecte.")
 		self.__envoyer(self.__message["AVANTTOP"])
