@@ -22,6 +22,7 @@ public class DispatcherServeur {
 
 			while (true) {
 				Socket client = ss.accept();
+				client.setTcpNoDelay(true);
 				new Client(client, this);
 			}
 		} catch (Exception e) {

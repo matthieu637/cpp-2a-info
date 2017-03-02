@@ -90,7 +90,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.8"
+		self.__versionClient="1.9"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -101,6 +101,7 @@ class Reseau:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
 		self.__sock.settimeout(300) #windows bug?
 		self.__sock.settimeout(None)
+		self.__sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 		if self.__recevoir()!=self.__versionClient:
 			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
 	def __del__(self):
@@ -134,21 +135,12 @@ class Reseau:
 				raise RuntimeError("Connexion perdu. _5")
 			length=int(length.decode())
 			result=''
-			while True:
-				keep = length - len(result)
-				if keep > 4096:
-					back = self.__sock.recv(4096)
-					if back == b'':
-						raise RuntimeError("Connexion perdu. _3")
-					result += back.decode()
-				else:
-					back = self.__sock.recv(keep)
-					if back == b'':
-						raise RuntimeError("Connexion perdu. _6")
-					result += back.decode()
-					if length == len(result):
-						break
-				
+			while len(result) < length:
+				back = self.__sock.recv(length-len(result))
+				if back == b'':
+			    		raise RuntimeError("Connexion perdu. _3")
+				result += back.decode()
+	
 			return result
 		except (ConnectionRefusedError):
 			raise RuntimeError("Connexion perdu. _4")
