@@ -13,7 +13,7 @@ public class Config {
 	public final int RESERVED_SIZE_SEND_PACKET = (int) (Math.pow(10, PACKET_SIZE)-1);
 	public final boolean BANQUE = false;
 	public final String CHEMIN_FICHIER="OperationsHistorique.txt";
-	public final String VERSION = "1.7";
+	public final String VERSION = "1.8";
 	
 	private Config (){
 		

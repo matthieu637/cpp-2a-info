@@ -90,7 +90,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.7"
+		self.__versionClient="1.8"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -103,6 +103,9 @@ class Reseau:
 		self.__sock.settimeout(None)
 		if self.__recevoir()!=self.__versionClient:
 			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
+	def __del__(self):
+		self.__sock.shutdown(socket.SHUT_RDWR)
+		self.__sock.close()
 
 	def __estConnect(self):
 		if(self.__connect):
@@ -207,9 +210,11 @@ class Reseau:
 		Pour le créateur: Renvoie la liste des noms des joueurs présents dans la partie avant le top
 		'''
 		if(not self.__connect):
-			raise RuntimeError("Vous n'êtes pas encore connecte.")
+			raise RuntimeError("Vous n'êtes pas encore connecté.")
+		if(self.__topbool):
+			raise RuntimeError("La partie est déjà lancée.")
 		self.__envoyer(self.__message["AVANTTOP"])
-		return self.__recevoir()
+		return eval(self.__recevoir())
 	
 	def top(self):
 		'''
