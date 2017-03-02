@@ -35,6 +35,7 @@ public class Client extends Thread {
 	private static final String CREATE="C ";
 	private static final String JOIN="D ";
 	private static final String LISTECOUPS="E";
+	private static final String AVANTTOP="F";
 	
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
@@ -65,50 +66,8 @@ public class Client extends Thread {
 				boolean peut_jouer = (create || join) && current.getMarche().est_ouvert() && !current.getMarche().est_fini();
 
 				// Utilisateur n'ayant ni créé ni rejoint peut créer
-				if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
-					String nom = arguments[1];
-					numero_partie = (int) (Math.random() * 100000);
-					envoyer(out, String.valueOf(numero_partie));
-					current = new Partie();
-					joueur = current.ajouter_client(client, nom);
-					serveur.ajouterPartie(numero_partie, current);
-					create = true;
-				} else if (userInput.startsWith(JOIN) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && !create
-						&& !join) {
-					numero_partie = Integer.parseInt(arguments[1]);
-					String nom = arguments[2];
-
-					if (!serveur.partieExiste(numero_partie)) {
-						envoyer(out, "-1");
-						continue;
-					}
-
-					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)) {
-						envoyer(out, "-2");
-						continue;
-					}
-
-					if (serveur.getListepartie(numero_partie).getMarche().est_ouvert()) {
-						envoyer(out, "-3");
-						continue;
-					}
-
-					envoyer(out, "0");
-					current = serveur.getListepartie(numero_partie);
-					joueur = current.ajouter_client(client, nom);
-					join = true;
-				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
-					current.getMarche().commence();
-					String retour = current.getMarche().getListeJoueursString();
-					for (Socket s : current.getListe_client())
-						if (s != client) {
-							OutputStreamWriter outAdvers = new OutputStreamWriter(s.getOutputStream());
-							envoyer(outAdvers, "0");
-						}
-					envoyer(out, retour); 
-				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
-					// attente retour
-				} else if (userInput.startsWith(SOLDE) && (create || join) && current.getMarche().est_ouvert()) {
+				
+				if (userInput.startsWith(SOLDE) && (create || join) && current.getMarche().est_ouvert()) {
 					String begin = "{'euros':" + String.valueOf(joueur.getSolde_euros()) + ", ";
 					envoyer(out, begin + MapToStringPython(joueur.getSolde_actions()) + "}");
 				} else if (userInput.startsWith(OPERATIONS) && peut_jouer) {
@@ -194,10 +153,55 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(ANNULER) && arguments.length == 2 && StringUtils.isNumeric(arguments[1]) && peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
 					envoyer(out, String.valueOf(current.getMarche().annuler(joueur, ordre)));
-				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
-					envoyer(out, current.getMarche().getListeOperationsString());
 				} else if (userInput.startsWith(FIN) && arguments.length == 1 && (create || join) && current.getMarche().est_ouvert()) {
 					envoyer(out, String.valueOf(current.getMarche().fin()));
+				} else if (userInput.startsWith(LISTECOUPS)  && (create || join) && current.getMarche().est_fini()){
+					envoyer(out, current.getMarche().getListeOperationsString());
+				} else if (userInput.startsWith(AVANTTOP) && create && !current.getMarche().est_ouvert()){
+					envoyer(out, current.getMarche().getListeJoueursString());
+				} else if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
+					String nom = arguments[1];
+					numero_partie = (int) (Math.random() * 100000);
+					envoyer(out, String.valueOf(numero_partie));
+					current = new Partie();
+					joueur = current.ajouter_client(client, nom);
+					serveur.ajouterPartie(numero_partie, current);
+					create = true;
+				} else if (userInput.startsWith(JOIN) && arguments.length == 3 && StringUtils.isNumeric(arguments[1]) && !create
+						&& !join) {
+					numero_partie = Integer.parseInt(arguments[1]);
+					String nom = arguments[2];
+
+					if (!serveur.partieExiste(numero_partie)) {
+						envoyer(out, "-1");
+						continue;
+					}
+
+					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)) {
+						envoyer(out, "-2");
+						continue;
+					}
+
+					if (serveur.getListepartie(numero_partie).getMarche().est_ouvert()) {
+						envoyer(out, "-3");
+						continue;
+					}
+
+					envoyer(out, "0");
+					current = serveur.getListepartie(numero_partie);
+					joueur = current.ajouter_client(client, nom);
+					join = true;
+				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
+					current.getMarche().commence();
+					String retour = current.getMarche().getListeJoueursString();
+					for (Socket s : current.getListe_client())
+						if (s != client) {
+							OutputStreamWriter outAdvers = new OutputStreamWriter(s.getOutputStream());
+							envoyer(outAdvers, "0");
+						}
+					envoyer(out, retour); 
+				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
+					// attente retour
 				} else {
 					System.out.println("FAIL |" + userInput + "|");
 					envoyer(out, "-4");

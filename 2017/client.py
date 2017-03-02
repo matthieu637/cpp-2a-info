@@ -85,7 +85,7 @@ class Reseau:
 		#membres privés
 		#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts		
 		self.__message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
-		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E"}
+		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E","AVANTTOP":"F"}
 		self.__connect = False
 		self.__topbool = False
 		self.__histoActions={}
@@ -202,6 +202,15 @@ class Reseau:
 			self.__connect = True
 		return ok
 
+	def avantTop(self):
+		'''
+		Pour le créateur: Renvoie la liste des noms des joueurs présents dans la partie avant le top
+		'''
+		if(not self.__connect):
+			raise RuntimeError("Vous n'êtes pas encore connecte.")
+		self.__envoyer(self.__message["AVANTTOP"])
+		return self.__recevoir()
+	
 	def top(self):
 		'''
 		Si vous avez rejoint, attend le top depart du createur.
