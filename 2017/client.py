@@ -96,7 +96,7 @@ class Reseau:
 		self.__sock.settimeout(5)
 		result = self.__sock.connect_ex((host, port))
 		if result != 0 and host == "193.54.21.49":
-			result = self.__sock.connect_ex(("matthieu-zimmer.net", 80))
+			result = self.__sock.connect_ex(("matthieu-zimmer.net", 23456))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
 		self.__sock.settimeout(300) #windows bug?
