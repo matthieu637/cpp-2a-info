@@ -79,7 +79,7 @@ class Reseau:
 			Dans chacun des groupes, les étudiants seront classés simplement par nombre d’actions possédées à l’issue de la partie, en ne prenant en compte que les 2 types d’actions possédées en plus grand nombre. (par exemple quelqu’un à qui il reste 712 actions Google, 14 actions Facebook, 1500 actions Google et 1500 actions Trydea aura un score de 1500+1500 =3000 actions. Les 712 actions Google et 14 actions Facebook ne compterons pas dans le score final, elles seront d’une certaine manière perdue). Dans le cas d’une égalité de ce score, les étudiants seront départagés avec l’argent restant. Dans le cas d’une nouvelle égalité, les étudiants seront classés égalité et auront la même note.
 
 	'''	
-	def __init__(self, host="matthieu-zimmer.net", port=23456):
+	def __init__(self, host="193.54.21.49", port=23456):
 		#membre publique
 		self.nomAction=[]
 		#membres privés
@@ -95,8 +95,8 @@ class Reseau:
 		#connexion
 		self.__sock.settimeout(5)
 		result = self.__sock.connect_ex((host, port))
-		if result != 0 and host == "matthieu-zimmer.net":
-			result = self.__sock.connect_ex(("paris.matthieu-zimmer.net", 80))
+		if result != 0 and host == "193.54.21.49":
+			result = self.__sock.connect_ex(("matthieu-zimmer.net", 80))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
 		self.__sock.settimeout(300) #windows bug?
