@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -52,12 +54,15 @@ public class Client extends Thread {
 		Joueur joueur = null;
 		int numero_partie = -1;
 		boolean create = false;
+		String identifier = "";
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()),
 					Config.getInstance().MAX_PACKET_SIZE_INPUT);
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
 			envoyer(out, Config.getInstance().VERSION);
+			identifier = childishness(out, in);
+			
 			String userInput;
 			boolean join = false;
 
@@ -157,13 +162,13 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(LISTECOUPS) && (create || join) && current.getMarche().est_fini()) {
 					envoyer(out, current.getMarche().getListeOperationsString());
 				} else if (userInput.startsWith(AVANTTOP) && create && !current.getMarche().est_ouvert()) {
-					envoyer(out, current.getMarche().getListeJoueursString());
+					envoyer(out, current.getMarche().getListeJoueursStringDico());
 				} else if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
 					String nom = arguments[1];
 					numero_partie = (int) (Math.random() * 100000);
 					envoyer(out, String.valueOf(numero_partie));
 					current = new Partie();
-					joueur = current.ajouter_client(client, nom);
+					joueur = current.ajouter_client(client, nom, identifier);
 					serveur.ajouterPartie(numero_partie, current);
 					create = true;
 				} else if (userInput.startsWith(JOIN) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
@@ -188,11 +193,11 @@ public class Client extends Thread {
 
 					envoyer(out, "0");
 					current = serveur.getListepartie(numero_partie);
-					joueur = current.ajouter_client(client, nom);
+					joueur = current.ajouter_client(client, nom, identifier);
 					join = true;
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
-					String retour = current.getMarche().getListeJoueursString();
+					String retour = current.getMarche().getListeJoueursStringDico();
 					for (Socket s : current.getListe_client())
 						if (!s.equals(client)) {
 							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
@@ -220,6 +225,25 @@ public class Client extends Thread {
 			}
 		}
 
+	}
+
+	private String childishness(BufferedWriter out, BufferedReader in) throws IOException, NoSuchAlgorithmException {
+		int ids = (int) (Math.random() * 100000);
+		envoyer(out, String.valueOf(ids));
+		envoyer(out, Config.getInstance().CHILDISHNESS);
+		String identifier = in.readLine();
+		MessageDigest mdj = MessageDigest.getInstance("MD5");
+		mdj.update(identifier.getBytes());
+		byte[] digest = mdj.digest();
+		StringBuffer sb = new StringBuffer();
+		for (byte b : digest) {
+			sb.append(String.format("%02x", b & 0xff));
+		}
+		String md = in.readLine();
+		if(!md.equals(new String(sb)))
+			throw new IOException("child");
+		
+		return identifier.substring(identifier.indexOf(":")+1, identifier.length());
 	}
 
 	private void envoyer(BufferedWriter out, String packet) throws IOException {

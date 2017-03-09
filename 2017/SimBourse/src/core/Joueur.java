@@ -13,18 +13,20 @@ import org.apache.commons.lang3.tuple.Pair;
 public class Joueur implements Comparable<Joueur> {
 
 	private final String nom;
+	private final String nom_complet;
 	private final int initiale_solde_euros;
 	private int solde_euros;
 	private final Map<Action, Integer> solde_actions;
 	private final List<Pair<Integer, Ordre>> operations;
 
-	public Joueur(String nom, int solde_euros) {
+	public Joueur(String nom, int solde_euros, String nom_complet) {
 		super();
 		this.nom = nom;
 		this.initiale_solde_euros = solde_euros;
 		this.solde_euros = solde_euros;
 		this.solde_actions = new HashMap<Action, Integer>();
-
+		this.nom_complet = nom_complet;
+		
 		for (Action a : Action.values())
 			this.solde_actions.put(a, Config.getInstance().SOLDE_ACTIONS_INIT);
 
@@ -68,7 +70,7 @@ public class Joueur implements Comparable<Joueur> {
 			}
 	}
 
-	private int max2_actions() {
+	public int max2_actions() {
 		ArrayList<Integer> ac = new ArrayList<>(solde_actions.values());
 		Collections.sort(ac);
 		
@@ -97,5 +99,9 @@ public class Joueur implements Comparable<Joueur> {
 				return -Integer.compare(this.solde_euros, o.solde_euros);
 			return cmp;
 		}
+	}
+
+	public String getNomComplet() {
+		return nom_complet;
 	}
 }

