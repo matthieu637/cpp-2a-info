@@ -193,11 +193,16 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
 					String retour = current.getMarche().getListeJoueursString();
-					for (Socket s : current.getListe_client())
-						if (!s.equals(client)) {
-							BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-							envoyer(outAdvers, "0");
+					for (Socket s : current.getListe_client()){
+						try {
+							if (!s.equals(client)) {
+								BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+								envoyer(outAdvers, "0");
+							}
+						} catch(Exception e) {
+							//peu importe client perdu
 						}
+					}
 					envoyer(out, retour);
 				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
 					// attente retour
@@ -250,6 +255,8 @@ public class Client extends Thread {
 			current.getMarche().destroy();
 			serveur.retirerPartie(numero_partie);
 		} else if (!create) {
+			if(current != null)
+				current.retirerJoueur(client);
 			client.close();
 		}
 		System.out.println("Client déconnecté");
