@@ -33,4 +33,8 @@ public class Partie {
 	public String toString() {
 		return "Partie [marche=" + marche + ", liste_client=" + liste_client + "]";
 	}
+
+	public void retirerJoueur(Socket client) {
+		liste_client.remove(client);
+	}
 }
