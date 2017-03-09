@@ -137,7 +137,7 @@ public class Client extends Thread {
 						int volume = Integer.parseInt(arguments[3]);
 						envoyer(out, String.valueOf(current.getMarche().achat(joueur, a, prix, volume)));
 					} else
-						envoyer(out, "-4");
+						envoyer(out, "-12");
 				} else if (userInput.startsWith(BID) && arguments.length == 4 && StringUtils.isNumeric(arguments[1])
 						&& NumberUtils.isCreatable(arguments[2]) && StringUtils.isNumeric(arguments[3]) && peut_jouer) {
 					int arg = Integer.parseInt(arguments[1]);
@@ -147,7 +147,7 @@ public class Client extends Thread {
 						int volume = Integer.parseInt(arguments[3]);
 						envoyer(out, String.valueOf(current.getMarche().vend(joueur, a, prix, volume)));
 					} else
-						envoyer(out, "-4");
+						envoyer(out, "-12");
 				} else if (userInput.startsWith(SUIVRE) && arguments.length == 2 && StringUtils.isNumeric(arguments[1])
 						&& peut_jouer) {
 					int ordre = Integer.parseInt(arguments[1]);
