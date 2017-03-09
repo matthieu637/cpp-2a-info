@@ -405,7 +405,7 @@ public class Marche {
 		if (fini) {
 			sb.append(",'classement':");
 			synchronized(this){
-				Collections.sort(liste_joueurs, Collections.reverseOrder());
+				Collections.sort(liste_joueurs);
 			}
 			String ljs = getListeJoueursStringDicoScore();
 			sb.append(ljs);
@@ -458,19 +458,20 @@ public class Marche {
 	
 	public String getListeJoueursStringDicoScore(){
 		StringBuffer sb = new StringBuffer(liste_joueurs.size() * 100);
-		sb.append("{");
+		sb.append("[");
 		for(Joueur j: liste_joueurs )
 			if(!j.getNom().equals("banque")){
+				sb.append("(");
 				sb.append("'");
 				sb.append(j.getNom());
-				sb.append("' : ('");
+				sb.append("', '");
 				sb.append(j.getNomComplet());
 				sb.append("',");
 				sb.append(j.max2_actions());
 				sb.append("),");
 			}
 		sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
-		sb.append("}");
+		sb.append("]");
 		
 		return new String(sb);
 	}

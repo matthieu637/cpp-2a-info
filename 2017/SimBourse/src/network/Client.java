@@ -197,7 +197,7 @@ public class Client extends Thread {
 					join = true;
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
-					String retour = current.getMarche().getListeJoueursString();
+					String retour = current.getMarche().getListeJoueursStringDico();
 					for (Socket s : current.getListe_client()){
 						try {
 							if (!s.equals(client)) {
