@@ -18,7 +18,7 @@ class Reseau:
 	
 		Avant de pouvoir rejoindre ou créer une partie, il faut tout d’abord importer la class (après l’avoir 
 		U{téléchargée<https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py>} : clic droit, enregistré le lien sous). 
-		Pour cela, il faut metre ce fichier dans le même dossier que le fichier courant puis dans le fichier courant, on commence par:
+		Pour cela, il faut mettre ce fichier dans le même dossier que le fichier courant puis dans le fichier courant, on commence par:
 			>>> from client import Reseau
 			r=Reseau() #On travaillera par la suite avec la variable r
 		
@@ -27,7 +27,7 @@ class Reseau:
 	Création d’une partie
 	=====================
 	
-		Une fois que la connexion est effectuée, on doit pouvoir choisir entre créer une partie ou en rejoindre une (à faire vous même...).
+		Une fois que la connexion est effectuée, on doit pouvoir choisir entre créer une partie ou en rejoindre une partie (à faire vous même...).
 		Pour créer une partie:
 			>>> num_partie=r.creerPartie("monNom") #On crée la partie
 			print(num_partie) #On récupère son numéro
@@ -57,29 +57,29 @@ class Reseau:
 	Synchronisation pour le départ
 	==============================
 
-		Lorsque tous les utilisateurs ont rejoint la partie, il faut se synchroniser pour le top depart.
+		Lorsque tous les utilisateurs ont rejoint la partie, il faut se synchroniser pour le top départ.
 		Pour cela, ceux qui ont rejoint la partie utiliseront :
-			>>> r.top() #ne rend pas la main tant que le createur n'a pas lance
+			>>> r.top() #ne rend pas la main tant que le créateur n'a pas lancé la partie
 		
-		Une fois que tous les joueurs ont rejoint la partie, le créateur entre à son tour qui lance la partie:
+		Une fois que tous les joueurs ont rejoint la partie, le créateur entre à son tour r.top() qui lance la partie:
 		
-		A partir de la, createur et utilisateurs ont acces aux memes fonctions du jeu.
+		A partir de la, créateur et utilisateurs ont acces aux mêmes fonctions du jeu.
 			>>> r.solde()
 			{'Apple': 100, 'Facebook': 100, 'Google': 100, 'Trydea': 100, 'euros': 1000}
 	
-		A partir de ce moment, il n’y a plus de différence entre le créateur et les autres.
+		A partir de ce moment, il n’y a plus de différence entre le créateur et les autres joueurs.
 		
 	Informations sur le classement final
 	====================================
 		
 			Dans un premier groupe seront d’abord classés les gens qui terminent la partie avec une somme d’argent supérieure ou égale à 90% de la somme d’argent initiale.
 
-			Dans un second groupe seront ensuite classés les gens qui terminent la partie avec une somme d’argent inférieur à 90% de la somme d’argent initiale.
+			Dans un second groupe seront ensuite classés les gens qui terminent la partie avec une somme d’argent inférieure à 90% de la somme d’argent initiale.
 
 			Dans chacun des groupes, les étudiants seront classés simplement par nombre d’actions possédées à l’issue de la partie, en ne prenant en compte que les 2 types d’actions possédées en plus grand nombre. (par exemple quelqu’un à qui il reste 712 actions Google, 14 actions Facebook, 1500 actions Google et 1500 actions Trydea aura un score de 1500+1500 =3000 actions. Les 712 actions Google et 14 actions Facebook ne compterons pas dans le score final, elles seront d’une certaine manière perdue). Dans le cas d’une égalité de ce score, les étudiants seront départagés avec l’argent restant. Dans le cas d’une nouvelle égalité, les étudiants seront classés égalité et auront la même note.
 
 	'''	
-	def __init__(self, host="matthieu-zimmer.net", port=23456):
+	def __init__(self, host="193.54.21.49", port=23456):
 		#membre publique
 		self.nomAction=[]
 		#membres privés
@@ -90,19 +90,23 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.7"
+		self.__versionClient="1.10"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
 		result = self.__sock.connect_ex((host, port))
-		if result != 0 and host == "matthieu-zimmer.net":
-			result = self.__sock.connect_ex(("paris.matthieu-zimmer.net", 80))
+		if result != 0 and host == "193.54.21.49":
+			result = self.__sock.connect_ex(("matthieu-zimmer.net", 23456))
 		if result != 0:
 			raise RuntimeError("Impossible de se connecter a l'host fourni.")
 		self.__sock.settimeout(300) #windows bug?
 		self.__sock.settimeout(None)
+		self.__sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 		if self.__recevoir()!=self.__versionClient:
 			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
+	def __del__(self):
+		self.__sock.shutdown(socket.SHUT_RDWR)
+		self.__sock.close()
 
 	def __estConnect(self):
 		if(self.__connect):
@@ -131,21 +135,12 @@ class Reseau:
 				raise RuntimeError("Connexion perdu. _5")
 			length=int(length.decode())
 			result=''
-			while True:
-				keep = length - len(result)
-				if keep > 4096:
-					back = self.__sock.recv(4096)
-					if back == b'':
-						raise RuntimeError("Connexion perdu. _3")
-					result += back.decode()
-				else:
-					back = self.__sock.recv(keep)
-					if back == b'':
-						raise RuntimeError("Connexion perdu. _6")
-					result += back.decode()
-					if length == len(result):
-						break
-				
+			while len(result) < length:
+				back = self.__sock.recv(length-len(result))
+				if back == b'':
+			    		raise RuntimeError("Connexion perdu. _3")
+				result += back.decode()
+	
 			return result
 		except (ConnectionRefusedError):
 			raise RuntimeError("Connexion perdu. _4")
@@ -161,17 +156,18 @@ class Reseau:
 		
 	def creerPartie(self, nom):
 		'''
-		Crée la partie et renvoie l’id à communiqur oralement aux autres joueurs.
+		Crée la partie et renvoie l’id à communiquer oralement aux autres joueurs.
 		
 		Exemple:
 
 		>>> id=r.creerPartie("MatthieuDevallé")
 		print(id)
 		31416 #id de la partie
-		En cas d'erreur(Exemple pseudo avec des espaces):
+		
+		En cas d'erreur(Exemple: pseudo avec des espaces):
 		Renvoie -4
 		
-		@param nom: le nom du joueur qui cree la partie
+		@param nom: le nom du joueur qui crée la partie
 		@type nom: string
 		'''
 		self.__estConnect()
@@ -185,12 +181,12 @@ class Reseau:
 		'''
 		Renvoie : 
 			- 0 si tout s'est bien passé.
-			- -1 si le numero de partie n'existe pas
-			- -2 si le nom de joueur est déja pris
-			- -3 si la partie est déja lancée (top)
+			- -1 si le numéro de partie n'existe pas
+			- -2 si le nom de joueur est déjà pris
+			- -3 si la partie est déjà lancée (top)
 			- -4 si les types ne sont pas respectés
 		
-		@param id_partie: le numero de la partie qui m'a ete communiquer oralement
+		@param id_partie: le numéro de la partie qui m'a été communiqué oralement
 		@type id_partie: entier
 		@param nom: le nom du joueur qui rejoint la partie
 		@type nom: string
@@ -204,18 +200,20 @@ class Reseau:
 
 	def avantTop(self):
 		'''
-		Pour le créateur: Renvoie la liste des noms des joueurs présents dans la partie avant le top
+		Pour le créateur: renvoie la liste des noms des joueurs présents dans la partie avant le top
 		'''
 		if(not self.__connect):
-			raise RuntimeError("Vous n'êtes pas encore connecte.")
+			raise RuntimeError("Vous n'êtes pas encore connecté.")
+		if(self.__topbool):
+			raise RuntimeError("La partie est déjà lancée.")
 		self.__envoyer(self.__message["AVANTTOP"])
-		return self.__recevoir()
+		return eval(self.__recevoir())
 	
 	def top(self):
 		'''
-		Si vous avez rejoint, attend le top depart du createur.
+		Si vous avez rejoint, attend le top départ du créateur.
 		
-		Si vous avez cree, donne le top depart aux autres.
+		Si vous avez créé, donne le top départ aux autres.
 		
 		Renvoie 0 pour ceux qui rejoignent et la liste des noms des joueurs pour le créateur
 		'''
@@ -268,18 +266,18 @@ class Reseau:
 		'''
 		Passer un ordre d'achat.
 		Renvoie :
-			- 0 si l'ordre a ete execute directement et que tout son volume a ete ecoule
-			- -4 si les types ne sont pas respectes
+			- 0 si l'ordre a été exécuté directement et que tout son volume a été écoulé
+			- -4 si les types ne sont pas respectés
 			- -5 si volume <= 0
 			- -6 si prix <= 0
-			- -7 si vous n'avez pas assez d'argent pour acheter cette quantite (prix*volume)
+			- -7 si vous n'avez pas assez d'argent pour acheter cette quantité (prix*volume)
 			- sinon renvoie l'identifiant de l'ordre (nombre positif)
 		
 		@param action: le nom de l'action 
 		@type action: string
 		@param prix: prix unitaire d'achat
 		@type prix: flottant
-		@param volume: le nombre d'action que vous voulez acheter
+		@param volume: le nombre d'actions que vous voulez acheter
 		@type volume: entier
 		'''
 		action=action.lower()
@@ -297,8 +295,8 @@ class Reseau:
 		'''
 		Passer un ordre de vente.
 		Renvoie :
-			- 0 si l'ordre a ete execute directement et que tout son volume a ete ecoule
-			- -4 si les types ne sont pas respectes
+			- 0 si l'ordre a été exécuté directement et que tout son volume a été écoulé
+			- -4 si les types ne sont pas respectés
 			- -8 si volume <= 0
 			- -9 si prix <= 0
 			- -10 si vous n'avez pas assez d'action de type action dans votre portefeuille
@@ -308,7 +306,7 @@ class Reseau:
 		@type action: string
 		@param prix: prix unitaire de vente
 		@type prix: flottant
-		@param volume: le nombre d'action que vous voulez vendre
+		@param volume: le nombre d'actions que vous voulez vendre
 		@type volume: entier
 		'''
 		action=action.lower()
@@ -324,7 +322,7 @@ class Reseau:
 
 	def achats(self, action, nbMaxElemListe=0):
 		'''
-		Liste tous les ordres d’achats avec nbMaxElemListe element de liste pour tous les joueurs sur une action donnée.
+		Liste tous les ordres d’achats avec nbMaxElemListe, le nombre maximum d'éléments de liste pour tous les joueurs sur une action donnée.
 		Pour pas de limite d'éléments de liste, mettre nbMaxElemListe=0
 		Retourne:
 			- -4 si l’action n’existe pas
@@ -440,7 +438,7 @@ class Reseau:
 		Annule un ordre transmis précédemment afin de récupérer les fonds provisionnés.
 		
 		Retourne:
-			- -11 si l’ordre n’existe plus ou est termine
+			- -11 si l’ordre n’existe plus ou est terminé
 			- -4 si les types ne sont pas respectés
 			- le volume d’action restant si c’est un ordre de vente
 			- les euros dépensés si c’est ordre d’achat
@@ -449,7 +447,7 @@ class Reseau:
 		
 		>>> r.annulerOrdre(31416)
 		
-		@param id_ordre: : id de l’odre (récupérer à partir de la fonction operationsEnCours())
+		@param id_ordre: : id de l’odre (récupéré à partir de la fonction operationsEnCours())
 		@type id_ordre: entier
 		'''
 		self.__estTop()
@@ -459,11 +457,11 @@ class Reseau:
 
 	def listeDesCoups(self):
 		'''
-		Retourne une liste qui contient les operations effectuées par tous les joueurs de la partie sous la forme :
-		['Achat', 'David', 'Facebook', 8.0, 10] pour un achat de 10 Facebook à 8.0 euros
-		['Vente', 'David', 'Facebook', 10.0, 4] pour une vente de 4 Facebook à 10.0 euros
-		['AnnulationAchat', 'David', 'Trydea', 4.0, 10] pour une annulation d'achat de 10 Trydea à 4.0 euros
-		['AnnulationVente', 'David', 'Trydea', 4.0, 10] pour une annulation de vente de 10 Trydea à 4.0 euros
+		Retourne une liste qui contient les opérations effectuées par tous les joueurs de la partie sous la forme :
+		>>> ['Achat', 'David', 'Facebook', 8.0, 10] #pour un achat de 10 Facebook à 8.0 euros
+		['Vente', 'David', 'Facebook', 10.0, 4] #pour une vente de 4 Facebook à 10.0 euros
+		['AnnulationAchat', 'David', 'Trydea', 4.0, 10] #pour une annulation d'achat de 10 Trydea à 4.0 euros
+		['AnnulationVente', 'David', 'Trydea', 4.0, 10] #pour une annulation de vente de 10 Trydea à 4.0 euros
 		'''
 		self.__estTop()
 		if(self.fin()['temps']>0):
@@ -474,7 +472,7 @@ class Reseau:
 	
 	def fin(self):
 		'''
-		Renvoie un dictionnaire le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
+		Renvoie un dictionnaire contenant le temps restant (en s) avant la fin de la partie (string:entier). Si la partie est terminée, affiche le classement (string:liste).
 		
 		Exemple:
 
@@ -484,7 +482,7 @@ class Reseau:
 		ou
 
 		>>> r.fin()
-		{'classement': ['Matthieu', 'Eshamuddin','banque'], 'temps': 0} #Le classement de fin de partie.
+		{'classement': ['Matthieu', 'Mukhlis','banque'], 'temps': 0} #Le classement de fin de partie.
 		'''
 		self.__estTop()
 		tempsRestant=self.__tempsFinPartie - time.time() #fin de partie - maintenant
