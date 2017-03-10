@@ -88,7 +88,7 @@ public class Marche {
 				}
 				fini = true;
 				try {
-					Thread.sleep(1000 * 60); // sleep 1 s to be sure fini is taking into account
+					Thread.sleep(1000); // sleep 1 s to be sure fini is taking into account
 				} catch (InterruptedException e) {
 					//might be interrupted if creator leaves
 					//don't print error in this case
