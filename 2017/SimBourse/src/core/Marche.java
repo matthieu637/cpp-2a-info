@@ -65,7 +65,7 @@ public class Marche {
 				prix_vente /= 2.5f;
 				float prix_achat = ((float)initial_euros*0.1f)/((float)Config.getInstance().SOLDE_ACTIONS_INIT*0.1f);
 				prix_achat *= 2.5f;
-				System.out.println(initial_euros+": "+prix_vente+" "+prix_achat);
+				//System.out.println(initial_euros+": "+prix_vente+" "+prix_achat);
 				for(Action a : Action.values()){
 					banque.getSolde_actions().put(a, Integer.MAX_VALUE);
 					//prix plus à jour
@@ -485,9 +485,9 @@ public class Marche {
 
 	@Override
 	public String toString() {
-		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
-				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
-				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex_ordre + "]";
+		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ",\n liste_achats=" + liste_achats
+				+ ",\n liste_ventes=" + liste_ventes + ",\n liste_joueurs=" + liste_joueurs + ",\n liste_id_ordres="
+				+ liste_id_ordres + ",\n historiques=" + historiques + "]";
 	}
 
 	public void destroy(){
