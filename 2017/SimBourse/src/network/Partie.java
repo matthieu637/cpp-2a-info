@@ -31,7 +31,7 @@ public class Partie {
 
 	@Override
 	public String toString() {
-		return "Partie [marche=" + marche + ", liste_client=" + liste_client + "]";
+		return String.valueOf(marche);
 	}
 
 	public void retirerJoueur(Socket client) {

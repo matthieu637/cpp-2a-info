@@ -80,6 +80,11 @@ public class Joueur implements Comparable<Joueur> {
 	private boolean rend90pourcent(){
 		return solde_euros >= (initiale_solde_euros * 0.90f) ;
 	}
+	
+	@Override
+	public String toString() {
+		return nom+":"+nom_complet;
+	}
 
 	@Override
 	public int compareTo(Joueur o) {
