@@ -57,7 +57,7 @@ public class Marche {
 		initial_euros = (int) Math.pow(10, pow);
 		
 		if(Config.getInstance().BANQUE){
-			Joueur banque = creer_joueur("banque");
+			Joueur banque = creer_joueur("banque", "banque.root");
 			banque.setSolde_euros(Integer.MAX_VALUE);
 			int max_action_en_jeu = Config.getInstance().SOLDE_ACTIONS_INIT*Action.values().length*100;//100 joueurs
 			for(Action a : Action.values()){
@@ -113,8 +113,8 @@ public class Marche {
 	}
 
 	// synchronized pour les rares appels de gestion de joueur
-	public synchronized Joueur creer_joueur(String nom) {
-		Joueur j = new Joueur(nom, initial_euros);
+	public synchronized Joueur creer_joueur(String nom, String nom_complet) {
+		Joueur j = new Joueur(nom, initial_euros, nom_complet);
 		liste_joueurs.add(j);
 		return j;
 	}
@@ -407,7 +407,7 @@ public class Marche {
 			synchronized(this){
 				Collections.sort(liste_joueurs);
 			}
-			String ljs = getListeJoueursString();
+			String ljs = getListeJoueursStringDicoScore();
 			sb.append(ljs);
 		}
 		sb.append("}");
@@ -432,6 +432,43 @@ public class Marche {
 				sb.append("'");
 				sb.append(j.getNom());
 				sb.append("',");
+			}
+		sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
+		sb.append("]");
+		
+		return new String(sb);
+	}
+	
+	public String getListeJoueursStringDico(){
+		StringBuffer sb = new StringBuffer(liste_joueurs.size() * 100);
+		sb.append("{");
+		for(Joueur j: liste_joueurs )
+			if(!j.getNom().equals("banque")){
+				sb.append("'");
+				sb.append(j.getNom());
+				sb.append("' : '");
+				sb.append(j.getNomComplet());
+				sb.append("',");
+			}
+		sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
+		sb.append("}");
+		
+		return new String(sb);
+	}
+	
+	public String getListeJoueursStringDicoScore(){
+		StringBuffer sb = new StringBuffer(liste_joueurs.size() * 100);
+		sb.append("[");
+		for(Joueur j: liste_joueurs )
+			if(!j.getNom().equals("banque")){
+				sb.append("(");
+				sb.append("'");
+				sb.append(j.getNom());
+				sb.append("', '");
+				sb.append(j.getNomComplet());
+				sb.append("',");
+				sb.append(j.max2_actions());
+				sb.append("),");
 			}
 		sb.deleteCharAt(sb.length()-1);//Pour retirer le dernier ","
 		sb.append("]");

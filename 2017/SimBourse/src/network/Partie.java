@@ -20,9 +20,9 @@ public class Partie {
 		return liste_client;
 	}
 	
-	public Joueur ajouter_client(Socket s, String nom){
+	public Joueur ajouter_client(Socket s, String nom, String nom_complet){
 		liste_client.add(s);
-		return marche.creer_joueur(nom);
+		return marche.creer_joueur(nom, nom_complet+":"+s.getInetAddress().getHostAddress());
 	}
 
 	public Marche getMarche() {
