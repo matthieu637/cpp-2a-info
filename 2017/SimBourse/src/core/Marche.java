@@ -57,14 +57,21 @@ public class Marche {
 		initial_euros = (int) Math.pow(10, pow);
 		
 		if(Config.getInstance().BANQUE){
-			Joueur banque = creer_joueur("banque", "banque.root");
-			banque.setSolde_euros(Integer.MAX_VALUE);
-			int max_action_en_jeu = Config.getInstance().SOLDE_ACTIONS_INIT*Action.values().length*100;//100 joueurs
-			for(Action a : Action.values()){
-				banque.getSolde_actions().put(a, Integer.MAX_VALUE);
-				//prix plus à jour
-				achat(banque, a, 0.25f, max_action_en_jeu);
-				vend(banque, a, 25.0f, max_action_en_jeu);
+			if(r.nextBoolean()){
+				Joueur banque = creer_joueur("banque", "banque.root");
+				banque.setSolde_euros(Integer.MAX_VALUE);
+				int max_action_en_jeu = Config.getInstance().SOLDE_ACTIONS_INIT*Action.values().length*100;//100 joueurs
+				float prix_vente = (((float)initial_euros*0.1f)/((float)Config.getInstance().SOLDE_ACTIONS_INIT*2));
+				prix_vente /= 2.5f;
+				float prix_achat = ((float)initial_euros*0.1f)/((float)Config.getInstance().SOLDE_ACTIONS_INIT*0.1f);
+				prix_achat *= 2.5f;
+				//System.out.println(initial_euros+": "+prix_vente+" "+prix_achat);
+				for(Action a : Action.values()){
+					banque.getSolde_actions().put(a, Integer.MAX_VALUE);
+					//prix plus à jour
+					achat(banque, a, prix_vente, max_action_en_jeu);
+					vend(banque, a, prix_achat, max_action_en_jeu);
+				}
 			}
 		}
 	}
@@ -88,7 +95,7 @@ public class Marche {
 				}
 				fini = true;
 				try {
-					Thread.sleep(1000 * 60); // sleep 1 s to be sure fini is taking into account
+					Thread.sleep(1000); // sleep 1 s to be sure fini is taking into account
 				} catch (InterruptedException e) {
 					//might be interrupted if creator leaves
 					//don't print error in this case
@@ -478,9 +485,9 @@ public class Marche {
 
 	@Override
 	public String toString() {
-		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ", liste_achats=" + liste_achats
-				+ ", liste_ventes=" + liste_ventes + ", liste_joueurs=" + liste_joueurs + ", liste_id_ordres="
-				+ liste_id_ordres + ", historiques=" + historiques + ", mutex=" + mutex_ordre + "]";
+		return "Marche [ouvert=" + ouvert + ", fini=" + fini + ", debut=" + debut + ",\n liste_achats=" + liste_achats
+				+ ",\n liste_ventes=" + liste_ventes + ",\n liste_joueurs=" + liste_joueurs + ",\n liste_id_ordres="
+				+ liste_id_ordres + ",\n historiques=" + historiques + "]";
 	}
 
 	public void destroy(){

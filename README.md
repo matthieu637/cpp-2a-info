@@ -5,7 +5,7 @@ Documentation officielle : https://matthieu637.github.io/cpp-2a-info/client.Rese
 
 Log (historique de toutes les parties en temps réel) : https://matthieu-zimmer.net/~matthieu/courses/simbourse.log
 
-### Contributions (la suite ne concernent que les personnes voulant aller plus loin avant la compétition)
+### Contributions (la suite ne concerne que les personnes voulant aller plus loin)
 Pour les plus motiver, nous vous encourageons à améliorer le projet (il vous faudra un compte sur github, utiliser [git](https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github), [forker le projet et proposer des pull requests](https://help.github.com/articles/creating-a-pull-request-from-a-fork/)).
 
 Attention à garder vos [branches à jour](https://help.github.com/articles/syncing-a-fork/#platform-linux)
