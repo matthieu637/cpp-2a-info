@@ -37,9 +37,7 @@ r = Reseau('localhost', 23456) #au lieu de de r=Reseau()
 Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directement disponibles sur le serveur officiel, cela vous permettra d'effectuer des tests en local. Après la validation de votre pull request, le serveur officiel sera relancé avec les nouveaux changements, vous permettant alors de réutiliser r=Reseau().
 
 #### Contributions possibles (triées par difficulté, * : prioritaire ) [[Liste des Contributeurs](https://github.com/matthieu637/cpp-2a-info/graphs/contributors)]
-- [ ] faire un graphique [de ce type](http://bigbrowser.blog.lemonde.fr/files/2014/07/TuOuVous-530x405.jpg) pour expliquer le classement des joueurs
 - [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
-- [ ] expliquer de façon simple le classement dans la [documentation](http://epydoc.sourceforge.net/manual-epytext.html) (client.py) : information présente dans la fonction core.Joueur::compareTo(Joueur) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
 - [ ] définir un ensemble de [tests unitaires](https://openclassrooms.com/courses/apprenez-a-programmer-en-python/les-tests-unitaires-avec-unittest) pour empêcher l'introduction de bug lors des contributions (client.py)
 - [x] [rendre l'argument action insensible à la casse dans la fonction historiques (client.py) : pouvoir utiliser r.historiques('facebook') sans déclencher d'erreur](https://github.com/matthieu637/cpp-2a-info/pull/4) terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
 - [x] [rendre l'argument action insensible à la casse dans toutes les fonctions (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/8) terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
