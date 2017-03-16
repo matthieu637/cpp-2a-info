@@ -148,7 +148,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">host</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">matthieu-zimmer.net</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">host</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">193.54.21.49</code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">port</span>=<span class="summary-sig-default">23456</span>)</span></td>
           <td align="right" valign="top">
             
@@ -426,15 +426,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="listeDesCoups"></a><span class="summary-sig-name">listeDesCoups</span>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="client.Reseau-class.html#listeDesCoups" class="summary-sig-name">listeDesCoups</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Retourne une liste qui contient les op&#233;rations effectu&#233;es par tous 
-      les joueurs de la partie sous la forme : &gt;&gt;&gt; ['Achat', 
-      'David', 'Facebook', 8.0, 10] #pour un achat de 10 Facebook &#224; 8.0 
-      euros ['Vente', 'David', 'Facebook', 10.0, 4] #pour une vente de 4 
-      Facebook &#224; 10.0 euros ['AnnulationAchat', 'David', 'Trydea', 4.0, 10]
-      #pour une annulation d'achat de 10 Trydea &#224; 4.0 euros 
-      ['AnnulationVente', 'David', 'Trydea', 4.0, 10] #pour une annulation 
-      de vente de 10 Trydea &#224; 4.0 euros</td>
+      les joueurs de la partie sous la forme :</td>
           <td align="right" valign="top">
             
             
@@ -611,7 +605,7 @@
   donc les suivre et les annuler.</p>
   <p>Exemple:</p>
 <pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>R.operationsEnCours()
+<span class="py-prompt">&gt;&gt;&gt; </span>r.operationsEnCours()
 <span class="py-output">[62098581, 20555477]</span></pre>
   <dl class="fields">
   </dl>
@@ -652,6 +646,9 @@
     <li>
       -7 si vous n'avez pas assez d'argent pour acheter cette quantit&#233; 
       (prix*volume)
+    </li>
+    <li>
+      -12 si vous avez appell&#233; plusieurs fois top()
     </li>
     <li>
       sinon renvoie l'identifiant de l'ordre (nombre positif)
@@ -702,6 +699,9 @@
     <li>
       -10 si vous n'avez pas assez d'action de type action dans votre 
       portefeuille
+    </li>
+    <li>
+      -12 si vous avez appell&#233; plusieurs fois top()
     </li>
     <li>
       sinon renvoie l'identifiant de l'ordre (nombre positif)
@@ -908,13 +908,38 @@
   </ul>
   <p>Exemple:</p>
 <pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span>r.annulerOrdre(31416)</pre>
+<span class="py-prompt">&gt;&gt;&gt; </span>r.annulerOperation(31416)</pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>id_ordre</code></strong> (entier) - : id de l&#8217;odre (r&#233;cup&#233;r&#233; &#224; partir de la fonction 
           operationsEnCours())</li>
     </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="listeDesCoups"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">listeDesCoups</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retourne une liste qui contient les op&#233;rations effectu&#233;es par tous les
+  joueurs de la partie sous la forme :</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>[<span class="py-string">'Achat'</span>, <span class="py-string">'David'</span>, <span class="py-string">'Facebook'</span>, 8.0, 10] <span class="py-comment">#pour un achat de 10 Facebook &#224; 8.0 euros</span>
+<span class="py-output">['Vente', 'David', 'Facebook', 10.0, 4] #pour une vente de 4 Facebook &#224; 10.0 euros</span>
+<span class="py-output">['AnnulationAchat', 'David', 'Trydea', 4.0, 10] #pour une annulation d'achat de 10 Trydea &#224; 4.0 euros</span>
+<span class="py-output">['AnnulationVente', 'David', 'Trydea', 4.0, 10] #pour une annulation de vente de 10 Trydea &#224; 4.0 euros</span></pre>
+  <dl class="fields">
   </dl>
 </td></tr></table>
 </div>
@@ -974,7 +999,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar  7 21:19:34 2017
+    Generated by Epydoc 3.0.1 on Thu Mar 16 14:07:16 2017
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

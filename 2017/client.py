@@ -279,6 +279,7 @@ class Reseau:
 			- -5 si volume <= 0
 			- -6 si prix <= 0
 			- -7 si vous n'avez pas assez d'argent pour acheter cette quantité (prix*volume)
+			- -12 si vous avez appellé plusieurs fois top()
 			- sinon renvoie l'identifiant de l'ordre (nombre positif)
 		
 		@param action: le nom de l'action 
@@ -308,6 +309,7 @@ class Reseau:
 			- -8 si volume <= 0
 			- -9 si prix <= 0
 			- -10 si vous n'avez pas assez d'action de type action dans votre portefeuille
+			- -12 si vous avez appellé plusieurs fois top()
 			- sinon renvoie l'identifiant de l'ordre (nombre positif)
 		
 		@param action: le nom de l'action 
