@@ -38,6 +38,7 @@ Puisque les nouvelles commandes que vous avez ajoutées ne seront pas directemen
 
 #### Contributions possibles (triées par difficulté, * : prioritaire ) [[Liste des Contributeurs](https://github.com/matthieu637/cpp-2a-info/graphs/contributors)]
 - [ ] [améliorer/correction](http://epydoc.sourceforge.net/manual-epytext.html) de la documentation (client.py) participation de [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
+- [ ] déclencher une exception si la version de python n'est pas la 3ème (client.py)
 - [ ] définir un ensemble de [tests unitaires](https://openclassrooms.com/courses/apprenez-a-programmer-en-python/les-tests-unitaires-avec-unittest) pour empêcher l'introduction de bug lors des contributions (client.py)
 - [x] [rendre l'argument action insensible à la casse dans la fonction historiques (client.py) : pouvoir utiliser r.historiques('facebook') sans déclencher d'erreur](https://github.com/matthieu637/cpp-2a-info/pull/4) terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
 - [x] [rendre l'argument action insensible à la casse dans toutes les fonctions (client.py)](https://github.com/matthieu637/cpp-2a-info/pull/8) terminée par [MatthieuDEVALLE](https://github.com/matthieuDEVALLE)
