@@ -6,6 +6,10 @@ import time
 import os
 import platform
 import hashlib
+import sys
+
+if sys.version_info[0] < 3:
+	raise Exception("il faut une version de python plus récente, utiliser python 3.X")
 
 class Reseau:
 	'''
