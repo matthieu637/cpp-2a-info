@@ -8,10 +8,8 @@ import platform
 import hashlib
 import sys
 
-try:
-	assert sys.version_info[0] >= 3
-except AssertionError:
-	print("Erreur : il faut une version de python plus récente, utiliser python 3.X")
+if sys.version_info[0] < 3:
+	raise Exception("il faut une version de python plus récente, utiliser python 3.X")
 
 class Reseau:
 	'''
