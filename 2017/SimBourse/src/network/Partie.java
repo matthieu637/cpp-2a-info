@@ -12,10 +12,13 @@ public class Partie {
 	private final Marche marche;
 	private final List<Socket> liste_client;
 	private final List<String> liste_HostAdress;
-	private final int modeExam;
+	private final boolean isModeExam;
 	
 	public Partie(int modeBanque, int modeExamen) {
-		modeExam=modeExamen;
+		if(modeExamen==1)
+			isModeExam=true;
+		else
+			isModeExam=false;	
 		liste_HostAdress=new LinkedList<String>();
 		marche = new Marche(modeBanque);
 		liste_client = new LinkedList<>();
@@ -27,19 +30,17 @@ public class Partie {
 	
 	public Joueur ajouter_client(Socket s, String nom, String nom_complet){
 		liste_client.add(s);
-		if(modeExam==1)
-			liste_HostAdress.add(s.getInetAddress().getHostAddress());
+		if(isModeExam)
+			liste_HostAdress.add(nom_complet+":"+s.getInetAddress().getHostAddress());
 		return marche.creer_joueur(nom, nom_complet+":"+s.getInetAddress().getHostAddress());
 	}
 	
-	public Boolean isModeExamen(){
-		if(modeExam==1)
-			return true;
-		return false;
+	public boolean isModeExamen(){
+		return isModeExam;
 	}
-	public Boolean testUniciteDeLaConnexion(Socket s){
+	public boolean testUniciteDeLaConnexion(Socket s,String nom_complet){
 
-		String hostAdress=s.getInetAddress().getHostAddress();
+		String hostAdress=nom_complet+":"+s.getInetAddress().getHostAddress();
 		Iterator<String> iter= liste_HostAdress.iterator();
 		while(iter.hasNext())
 			if(hostAdress.equals(iter.next()))
