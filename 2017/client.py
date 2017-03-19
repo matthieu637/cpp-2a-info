@@ -262,7 +262,7 @@ class Reseau:
 		
 		Exemple:
 
-		>>> R.operationsEnCours()
+		>>> r.operationsEnCours()
 		[62098581, 20555477]
 		'''
 		self.__estTop()
@@ -279,6 +279,7 @@ class Reseau:
 			- -5 si volume <= 0
 			- -6 si prix <= 0
 			- -7 si vous n'avez pas assez d'argent pour acheter cette quantité (prix*volume)
+			- -12 si vous avez appellé plusieurs fois top()
 			- sinon renvoie l'identifiant de l'ordre (nombre positif)
 		
 		@param action: le nom de l'action 
@@ -308,6 +309,7 @@ class Reseau:
 			- -8 si volume <= 0
 			- -9 si prix <= 0
 			- -10 si vous n'avez pas assez d'action de type action dans votre portefeuille
+			- -12 si vous avez appellé plusieurs fois top()
 			- sinon renvoie l'identifiant de l'ordre (nombre positif)
 		
 		@param action: le nom de l'action 
@@ -453,7 +455,7 @@ class Reseau:
 		
 		Exemple:
 		
-		>>> r.annulerOrdre(31416)
+		>>> r.annulerOperation(31416)
 		
 		@param id_ordre: : id de l’odre (récupéré à partir de la fonction operationsEnCours())
 		@type id_ordre: entier
@@ -466,10 +468,12 @@ class Reseau:
 	def listeDesCoups(self):
 		'''
 		Retourne une liste qui contient les opérations effectuées par tous les joueurs de la partie sous la forme :
+		
 		>>> ['Achat', 'David', 'Facebook', 8.0, 10] #pour un achat de 10 Facebook à 8.0 euros
 		['Vente', 'David', 'Facebook', 10.0, 4] #pour une vente de 4 Facebook à 10.0 euros
 		['AnnulationAchat', 'David', 'Trydea', 4.0, 10] #pour une annulation d'achat de 10 Trydea à 4.0 euros
 		['AnnulationVente', 'David', 'Trydea', 4.0, 10] #pour une annulation de vente de 10 Trydea à 4.0 euros
+		
 		'''
 		self.__estTop()
 		if(self.fin()['temps']>0):
