@@ -199,7 +199,7 @@ public class Client extends Thread {
 					}
 					
 					current = serveur.getListepartie(numero_partie);
-					if (current.isModeExamen()&&current.testUniciteDeLaConnexion(client)==false)
+					if (current.isModeExamen()&&!current.testUniciteDeLaConnexion(client,identifier))
 					{
 						envoyer(out, "-5");
 						continue;
