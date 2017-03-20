@@ -97,7 +97,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.11"
+		self.__versionClient="1.12"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -166,7 +166,7 @@ class Reseau:
 				break
 		return numAction
 		
-	def creerPartie(self, nom):
+	def creerPartie(self, nom, modeBanque=1, modeExam=0):
 		'''
 		Crée la partie et renvoie l’id à communiquer oralement aux autres joueurs.
 		
@@ -181,9 +181,13 @@ class Reseau:
 		
 		@param nom: le nom du joueur qui crée la partie
 		@type nom: string
+		@param modeBanque: 1 pour une apparition aléatoire de la banque, 2 pour forcer la présence, 3 pour ne pas qu'il y est de banque
+		@type modeBanque: int
+		@param modeExam: 1 pour une partie où une seule connexion par utilisateur est autorisé, 0 sinon
+		@type modeExam: int
 		'''
 		self.__estConnect()
-		self.__envoyer(self.__message["CREATE"]+nom)
+		self.__envoyer(self.__message["CREATE"]+nom+" "+str(modeBanque)+" "+str(modeExam))
 		id_partie = int(self.__recevoir())
 		if id_partie>=0:
 			self.__connect = True
@@ -197,6 +201,7 @@ class Reseau:
 			- -2 si le nom de joueur est déjà pris
 			- -3 si la partie est déjà lancée (top)
 			- -4 si les types ne sont pas respectés
+			- -5 si vous tenter de vous connecter plusieurs fois pendant une partie en modeExamen
 		
 		@param id_partie: le numéro de la partie qui m'a été communiqué oralement
 		@type id_partie: entier

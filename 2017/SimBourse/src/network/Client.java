@@ -163,14 +163,21 @@ public class Client extends Thread {
 					envoyer(out, current.getMarche().getListeOperationsString());
 				} else if (userInput.startsWith(AVANTTOP) && create && !current.getMarche().est_ouvert()) {
 					envoyer(out, current.getMarche().getListeJoueursStringDico());
-				} else if (userInput.startsWith(CREATE) && arguments.length == 2 && !create && !join) {
+				} else if (userInput.startsWith(CREATE) && arguments.length == 4 && !create && !join) {
 					String nom = arguments[1];
+					String modeBanque= arguments[2];
+					String modeExam= arguments[3];
 					numero_partie = (int) (Math.random() * 100000);
-					envoyer(out, String.valueOf(numero_partie));
-					current = new Partie();
-					joueur = current.ajouter_client(client, nom, identifier);
-					serveur.ajouterPartie(numero_partie, current);
-					create = true;
+					if ((modeBanque.equals("1")||modeBanque.equals("2")||modeBanque.equals("3")) && (modeExam.equals("0")||modeExam.equals("1"))){
+						envoyer(out, String.valueOf(numero_partie));
+						current = new Partie(Integer.parseInt(modeBanque),Integer.parseInt(modeExam));
+						joueur = current.ajouter_client(client, nom, identifier);
+						serveur.ajouterPartie(numero_partie, current);
+						create = true;
+					}
+					else
+						envoyer(out,"-4");
+					
 				} else if (userInput.startsWith(JOIN) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&& !create && !join) {
 					numero_partie = Integer.parseInt(arguments[1]);
@@ -190,9 +197,15 @@ public class Client extends Thread {
 						envoyer(out, "-3");
 						continue;
 					}
+					
+					current = serveur.getListepartie(numero_partie);
+					if (current.isModeExamen()&&!current.testUniciteDeLaConnexion(client,identifier))
+					{
+						envoyer(out, "-5");
+						continue;
+					}
 
 					envoyer(out, "0");
-					current = serveur.getListepartie(numero_partie);
 					joueur = current.ajouter_client(client, nom, identifier);
 					join = true;
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
@@ -217,12 +230,12 @@ public class Client extends Thread {
 				}
 			}
 
-			libererPartie(current, numero_partie, create, joueur);
+			libererPartie(current, numero_partie, create, joueur,identifier);
 		} catch (Exception e) {
 			if (!(e instanceof SocketException))
 				e.printStackTrace();
 			try {
-				libererPartie(current, numero_partie, create, joueur);
+				libererPartie(current, numero_partie, create, joueur,identifier);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				if (!(e1 instanceof SocketException))
@@ -267,7 +280,7 @@ public class Client extends Thread {
 		out.flush();
 	}
 
-	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur) throws IOException {
+	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur, String identifier) throws IOException {
 		if (joueur != null && current != null) {
 			current.getMarche().retirer_joueur(joueur);
 		}
@@ -280,7 +293,7 @@ public class Client extends Thread {
 			serveur.retirerPartie(numero_partie);
 		} else if (!create) {
 			if(current != null)
-				current.retirerJoueur(client);
+				current.retirerJoueur(client,identifier);
 			client.close();
 		}
 		System.out.println("Client déconnecté");

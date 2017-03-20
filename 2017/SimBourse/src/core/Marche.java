@@ -36,7 +36,7 @@ public class Marche {
 	private long ordre_unique = 0;
 	private final int initial_euros;
 	
-	public Marche() {
+	public Marche(int modeBanque) {
 		ouvert = false;
 		fini = false;
 		liste_achats = new HashMap<>();
@@ -57,7 +57,7 @@ public class Marche {
 		initial_euros = (int) Math.pow(10, pow);
 		
 		if(Config.getInstance().BANQUE){
-			if(r.nextBoolean()){
+			if((modeBanque==1 && r.nextBoolean()) || modeBanque==2){
 				Joueur banque = creer_joueur("banque", "banque.root");
 				banque.setSolde_euros(Integer.MAX_VALUE);
 				int max_action_en_jeu = Config.getInstance().SOLDE_ACTIONS_INIT*Action.values().length*100;//100 joueurs
