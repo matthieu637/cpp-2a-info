@@ -15,10 +15,7 @@ public class Partie {
 	private final boolean isModeExam;
 	
 	public Partie(int modeBanque, int modeExamen) {
-		if(modeExamen==1)
-			isModeExam=true;
-		else
-			isModeExam=false;	
+		isModeExam= modeExamen==1;
 		liste_HostAdress=new LinkedList<String>();
 		marche = new Marche(modeBanque);
 		liste_client = new LinkedList<>();
