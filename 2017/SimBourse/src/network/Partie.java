@@ -15,7 +15,7 @@ public class Partie {
 	private final boolean isModeExam;
 	
 	public Partie(int modeBanque, int modeExamen) {
-		isModeExam= modeExamen==1;
+		isModeExam= modeExamen==1;	
 		liste_HostAdress=new LinkedList<String>();
 		marche = new Marche(modeBanque);
 		liste_client = new LinkedList<>();
@@ -55,7 +55,9 @@ public class Partie {
 		return String.valueOf(marche);
 	}
 
-	public void retirerJoueur(Socket client) {
+	public void retirerJoueur(Socket client,String nom_complet) {
+		if(isModeExam)
+			liste_HostAdress.remove(nom_complet+":"+client.getInetAddress().getHostAddress());
 		liste_client.remove(client);
 	}
 }
