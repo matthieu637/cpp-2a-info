@@ -230,12 +230,12 @@ public class Client extends Thread {
 				}
 			}
 
-			libererPartie(current, numero_partie, create, joueur);
+			libererPartie(current, numero_partie, create, joueur,identifier);
 		} catch (Exception e) {
 			if (!(e instanceof SocketException))
 				e.printStackTrace();
 			try {
-				libererPartie(current, numero_partie, create, joueur);
+				libererPartie(current, numero_partie, create, joueur,identifier);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				if (!(e1 instanceof SocketException))
@@ -280,7 +280,7 @@ public class Client extends Thread {
 		out.flush();
 	}
 
-	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur) throws IOException {
+	private void libererPartie(Partie current, int numero_partie, boolean create, Joueur joueur, String identifier) throws IOException {
 		if (joueur != null && current != null) {
 			current.getMarche().retirer_joueur(joueur);
 		}
@@ -293,7 +293,7 @@ public class Client extends Thread {
 			serveur.retirerPartie(numero_partie);
 		} else if (!create) {
 			if(current != null)
-				current.retirerJoueur(client);
+				current.retirerJoueur(client,identifier);
 			client.close();
 		}
 		System.out.println("Client déconnecté");
