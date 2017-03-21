@@ -236,6 +236,8 @@ class Reseau:
 		'''
 		if(not self.__connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
+		if self.__topbool:
+			return -4
 		self.__envoyer(self.__message["TOP"]) 
 		r = (self.__recevoir())
 		self.__topbool= True
