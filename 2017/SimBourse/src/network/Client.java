@@ -209,7 +209,6 @@ public class Client extends Thread {
 					}
 
 					envoyer(out, "0");
-					//joueur = current.ajouter_client(client, nomGlobal, identifier);
 					attendTop = true;
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
