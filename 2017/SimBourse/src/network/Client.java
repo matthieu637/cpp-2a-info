@@ -169,8 +169,7 @@ public class Client extends Thread {
 					String nom = arguments[1];
 					String modeBanque= arguments[2];
 					String modeExam= arguments[3];
-					//numero_partie = (int) (Math.random() * 100000);
-					numero_partie=1000;
+					numero_partie = (int) (Math.random() * 100000);
 					if ((modeBanque.equals("1")||modeBanque.equals("2")||modeBanque.equals("3")) && (modeExam.equals("0")||modeExam.equals("1"))){
 						envoyer(out, String.valueOf(numero_partie));
 						current = new Partie(Integer.parseInt(modeBanque),Integer.parseInt(modeExam));
