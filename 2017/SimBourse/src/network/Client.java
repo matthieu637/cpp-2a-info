@@ -66,6 +66,7 @@ public class Client extends Thread {
 			
 			String userInput;
 			boolean join = false;
+			boolean attendTop=false;
 
 			while ((userInput = in.readLine()) != null) {
 				// System.out.println(userInput + "\n");
@@ -168,7 +169,8 @@ public class Client extends Thread {
 					String nom = arguments[1];
 					String modeBanque= arguments[2];
 					String modeExam= arguments[3];
-					numero_partie = (int) (Math.random() * 100000);
+					//numero_partie = (int) (Math.random() * 100000);
+					numero_partie=1000;
 					if ((modeBanque.equals("1")||modeBanque.equals("2")||modeBanque.equals("3")) && (modeExam.equals("0")||modeExam.equals("1"))){
 						envoyer(out, String.valueOf(numero_partie));
 						current = new Partie(Integer.parseInt(modeBanque),Integer.parseInt(modeExam));
@@ -208,7 +210,8 @@ public class Client extends Thread {
 					}
 
 					envoyer(out, "0");
-					join = true;
+					//joueur = current.ajouter_client(client, nomGlobal, identifier);
+					attendTop = true;
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
 					String retour = current.getMarche().getListeJoueursStringDico();
@@ -223,8 +226,10 @@ public class Client extends Thread {
 						}
 					}
 					envoyer(out, retour);
-				} else if (userInput.startsWith(TOP) && join && !current.getMarche().est_ouvert()) {
+				} else if (userInput.startsWith(TOP) && attendTop && !current.getMarche().est_ouvert()) {
 					// on ajoute le client à la partie après son top
+					join=true;
+					attendTop=false;
 					current = serveur.getListepartie(numero_partie);
 					joueur = current.ajouter_client(client, nomGlobal, identifier);
 				} else {
