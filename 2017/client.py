@@ -7,6 +7,7 @@ import os
 import platform
 import hashlib
 import sys
+import getpass
 
 if sys.version_info[0] < 3:
 	raise Exception("il faut une version de python plus récente, utiliser python 3.X")
@@ -92,7 +93,7 @@ class Reseau:
 		#membres privés
 		#On définit un dictionnaire qui permettra la communication client/serveur avec des messages très courts		
 		self.__message={"TOP":"1","SOLDE":"2","OPERATIONS":"3","ACHATS":"4 ","VENTES":"5 ","HISTO":"6 ","ASK":"7 ","BID":"8 ",
-		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E","AVANTTOP":"F"}
+		"SUIVRE":"9 ","ANNULER":"A ","FIN":"B","CREATE":"C ","JOIN":"D ","LISTECOUPS":"E","AVANTTOP":"F","CREERCLE":"G "}
 		self.__connect = False
 		self.__topbool = False
 		self.__histoActions={}
@@ -236,6 +237,8 @@ class Reseau:
 		'''
 		if(not self.__connect):
 			raise RuntimeError("Vous n'etes pas encore connecte.")
+		if self.__topbool:
+			return -4
 		self.__envoyer(self.__message["TOP"]) 
 		r = (self.__recevoir())
 		self.__topbool= True
@@ -511,4 +514,9 @@ class Reseau:
 			return {'temps': int(tempsRestant)+1}
 		#si la partie est finie on fait une requete au serveur pour qu'il donne la liste des vainqueurs
 		self.__envoyer(self.__message["FIN"])
+		return eval(self.__recevoir())
+
+	def creerCle(self,pseudo):
+		mdp=getpass.getpass()
+		self.__envoyer(self.__message["CREERCLE"] + str(pseudo) + " " + str(mdp))
 		return eval(self.__recevoir())
