@@ -34,7 +34,6 @@ public class Config {
 
 	@SuppressWarnings("unchecked")
 	private Config() {
-		cles.put("DD", "David");
 		if (new File("cles.txt").exists())
 			try {
 				InputStream file = new FileInputStream("cles.txt");
