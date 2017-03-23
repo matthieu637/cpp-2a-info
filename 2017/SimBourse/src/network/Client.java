@@ -170,19 +170,18 @@ public class Client extends Thread {
 					String nom = arguments[1];
 					String modeBanque= arguments[2];
 					String modeExam= arguments[3];
-					//numero_partie = (int) (Math.random() * 100000);
-					numero_partie=1000;
+					
+					numero_partie = (int) (Math.random() * 100000);
 					if ((modeBanque.equals("1")||modeBanque.equals("2")||modeBanque.equals("3")) && (modeExam.equals("0")||modeExam.equals("1"))){
 						if(modeExam.equals("1") && !Config.getInstance().cles.containsKey(nom)) {
-							System.out.println("Cle refuse");
 							envoyer(out,"-5");
 						}
 						else{
-						envoyer(out, String.valueOf(numero_partie));
-						current = new Partie(Integer.parseInt(modeBanque),Integer.parseInt(modeExam));
-						joueur = current.ajouter_client(client, nom, identifier);
-						serveur.ajouterPartie(numero_partie, current);
-						create = true;
+							envoyer(out, String.valueOf(numero_partie));
+							current = new Partie(Integer.parseInt(modeBanque),Integer.parseInt(modeExam));
+							joueur = current.ajouter_client(client, nom, identifier);
+							serveur.ajouterPartie(numero_partie, current);
+							create = true;
 						}
 					}
 					else
@@ -210,6 +209,7 @@ public class Client extends Thread {
 					}
 					
 					current = serveur.getListepartie(numero_partie);
+					
 					if (current.isModeExamen()&&( !Config.getInstance().cles.containsKey(nomGlobal) || !current.testUniciteDeLaConnexion(client,nomGlobal)))
 					{
 						envoyer(out, "-5");
@@ -238,10 +238,11 @@ public class Client extends Thread {
 					attendTop=false;
 					current = serveur.getListepartie(numero_partie);
 					joueur = current.ajouter_client(client, nomGlobal, identifier);
-				} else if (userInput.startsWith(CREERCLE) && arguments.length==3){
-					//String identifier = in.readLine();
-					//String identifier = in.readLine();
-					envoyer(out,Config.getInstance().getCleFromULAccount(arguments[1],arguments[2]));
+				} else if (userInput.startsWith(CREERCLE)){
+					in.readLine();
+					String ndc = in.readLine();
+					String mdp = in.readLine();
+					envoyer(out,Config.getInstance().getCleFromULAccount(ndc,mdp));
 				}else {
 					System.out.println("FAIL |" + userInput + "|");
 					envoyer(out, "-4");

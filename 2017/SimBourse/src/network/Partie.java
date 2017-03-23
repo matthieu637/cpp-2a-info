@@ -28,6 +28,7 @@ public class Partie {
 
 	public Joueur ajouter_client(Socket s, String nom, String nom_complet) {
 		liste_client.add(s);
+
 		if (isModeExam) {
 			liste_HostAdress.add(nom);
 			return marche.creer_joueur(Config.getInstance().cles.get(nom), nom);
@@ -58,9 +59,9 @@ public class Partie {
 		return String.valueOf(marche);
 	}
 
-	public void retirerJoueur(Socket client, String nom_complet) {
-		if (isModeExam)
-			liste_HostAdress.remove(nom_complet + ":" + client.getInetAddress().getHostAddress());
+	public void retirerJoueur(Socket client,String nom_complet) {
+		if(isModeExam)
+			liste_HostAdress.remove(nom_complet+":"+client.getInetAddress().getHostAddress());
 		liste_client.remove(client);
 	}
 }
