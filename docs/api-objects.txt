@@ -22,4 +22,5 @@ client.Reseau.suivreOperation	client.Reseau-class.html#suivreOperation
 client.Reseau.ask	client.Reseau-class.html#ask
 client.Reseau.operationsEnCours	client.Reseau-class.html#operationsEnCours
 client.Reseau.__notEnd	client.Reseau-class.html#__notEnd
+client.Reseau.creerCle	client.Reseau-class.html#creerCle
 client.Reseau.creerPartie	client.Reseau-class.html#creerPartie
