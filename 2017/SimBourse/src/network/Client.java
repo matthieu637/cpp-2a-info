@@ -216,7 +216,7 @@ public class Client extends Thread {
 					}
 
 					envoyer(out, "0");
-					attendTop = true;
+					join=true;
 					joueur = current.ajouter_client(this, nom, identifier);
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
@@ -234,9 +234,13 @@ public class Client extends Thread {
 					}
 					envoyer(out, retour);
 				} else if (userInput.startsWith(TOP) && !current.getMarche().est_ouvert()) {
-					// on ajoute le client à la partie après son top
-					join=true;
-				}else {
+				  // attend le top
+					attendTop = true;
+				} else if (userInput.startsWith(TOP) && current.getMarche().est_ouvert() && join && !attendTop && !create) {
+				  // retardataires qui ont oublie d'appeller top
+					envoyer(out, "0");
+					attendTop = true;
+				} else {
 					System.out.println("FAIL |" + userInput + "|");
 					envoyer(out, "-4");
 				}
