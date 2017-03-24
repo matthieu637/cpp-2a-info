@@ -220,7 +220,7 @@ public class Marche {
 					int volume_vendu = volume_achat;
 
 					joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (vente.prix * volume_vendu));
-					joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (vente.prix * volume_vendu));
+					joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (Math.ceil(vente.prix * volume_vendu)));
 					joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
 					vente.setVolume(vente.getVolume() - volume_vendu);
 					
@@ -239,7 +239,7 @@ public class Marche {
 				int volume_vendu = vente.volume;
 
 				joueur_vente.setSolde_euros(joueur_vente.getSolde_euros() + (int) (vente.prix * volume_vendu));
-				joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (vente.prix * volume_vendu));
+				joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (Math.ceil(vente.prix * volume_vendu)));
 				joueur_achat.getSolde_actions().put(a, joueur_achat.getSolde_actions().get(a) + volume_vendu);
 				vente.setVolume(vente.getVolume() - volume_vendu);
 
@@ -254,7 +254,7 @@ public class Marche {
 		}
 
 		// provisionne le reste
-		joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (prix_achat * volume_achat));
+		joueur_achat.setSolde_euros(joueur_achat.getSolde_euros() - (int) (Math.ceil(prix_achat * volume_achat)));
 
 		int id = creer_id_ordre();
 		Ordre achat = new Achat(id, a, prix_achat, volume_achat, joueur_achat, ordre_unique++);
