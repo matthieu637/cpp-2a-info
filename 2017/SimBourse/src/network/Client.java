@@ -23,6 +23,7 @@ import core.Joueur;
 public class Client extends Thread {
 	private Socket client;
 	private DispatcherServeur serveur;
+	private boolean attendTop;
 
 	private static final String TOP = "1";
 	private static final String SOLDE = "2";
@@ -39,12 +40,12 @@ public class Client extends Thread {
 	private static final String JOIN = "D ";
 	private static final String LISTECOUPS = "E";
 	private static final String AVANTTOP = "F";
-	private static final String CREERCLE = "G";
 
 	public Client(Socket client, DispatcherServeur serveur) {
 		super();
 		this.client = client;
 		this.serveur = serveur;
+		this.attendTop=false;
 		start();
 	}
 
@@ -56,7 +57,6 @@ public class Client extends Thread {
 		int numero_partie = -1;
 		boolean create = false;
 		String identifier = "";
-		String nomGlobal="";
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()),
 					Config.getInstance().MAX_PACKET_SIZE_INPUT);
@@ -67,7 +67,6 @@ public class Client extends Thread {
 			
 			String userInput;
 			boolean join = false;
-			boolean attendTop=false;
 
 			while ((userInput = in.readLine()) != null) {
 				// System.out.println(userInput + "\n");
@@ -179,7 +178,7 @@ public class Client extends Thread {
 						else{
 							envoyer(out, String.valueOf(numero_partie));
 							current = new Partie(Integer.parseInt(modeBanque),Integer.parseInt(modeExam));
-							joueur = current.ajouter_client(client, nom, identifier);
+							joueur = current.ajouter_client(this, nom, identifier);
 							serveur.ajouterPartie(numero_partie, current);
 							create = true;
 						}
@@ -190,7 +189,7 @@ public class Client extends Thread {
 				} else if (userInput.startsWith(JOIN) && arguments.length == 3 && StringUtils.isNumeric(arguments[1])
 						&& !create && !join) {
 					numero_partie = Integer.parseInt(arguments[1]);
-					nomGlobal = arguments[2];
+					String nom = arguments[2];
 					
 
 					if (!serveur.partieExiste(numero_partie)) {
@@ -198,7 +197,7 @@ public class Client extends Thread {
 						continue;
 					}
 
-					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nomGlobal)) {
+					if (!serveur.getListepartie(numero_partie).getMarche().nom_possible(nom)) {
 						envoyer(out, "-2");
 						continue;
 					}
@@ -210,7 +209,7 @@ public class Client extends Thread {
 					
 					current = serveur.getListepartie(numero_partie);
 					
-					if (current.isModeExamen()&&( !Config.getInstance().cles.containsKey(nomGlobal) || !current.testUniciteDeLaConnexion(client,nomGlobal)))
+					if (current.isModeExamen()&&( !Config.getInstance().cles.containsKey(nom) || !current.testUniciteDeLaConnexion(client,nom)))
 					{
 						envoyer(out, "-5");
 						continue;
@@ -218,12 +217,14 @@ public class Client extends Thread {
 
 					envoyer(out, "0");
 					attendTop = true;
+					joueur = current.ajouter_client(this, nom, identifier);
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					current.getMarche().commence();
 					String retour = current.getMarche().getListeJoueursStringDico();
-					for (Socket s : current.getListe_client()){
+					for (Client c : current.getListe_client()){
+						Socket s = c.getSock();
 						try {
-							if (!s.equals(client)) {
+							if (!s.equals(client) && c.isAttendTop()) {
 								BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 								envoyer(outAdvers, "0");
 							}
@@ -232,17 +233,9 @@ public class Client extends Thread {
 						}
 					}
 					envoyer(out, retour);
-				} else if (userInput.startsWith(TOP) && attendTop && !current.getMarche().est_ouvert()) {
+				} else if (userInput.startsWith(TOP) && !current.getMarche().est_ouvert()) {
 					// on ajoute le client à la partie après son top
 					join=true;
-					attendTop=false;
-					current = serveur.getListepartie(numero_partie);
-					joueur = current.ajouter_client(client, nomGlobal, identifier);
-				} else if (userInput.startsWith(CREERCLE)){
-					in.readLine();
-					String ndc = in.readLine();
-					String mdp = in.readLine();
-					envoyer(out,Config.getInstance().getCleFromULAccount(ndc,mdp));
 				}else {
 					System.out.println("FAIL |" + userInput + "|");
 					envoyer(out, "-4");
@@ -262,6 +255,14 @@ public class Client extends Thread {
 			}
 		}
 
+	}
+
+	public Socket getSock() {
+		return client;
+	}
+
+	public boolean isAttendTop() {
+		return attendTop;
 	}
 
 	private String childishness(BufferedWriter out, BufferedReader in) throws IOException, NoSuchAlgorithmException {
@@ -305,8 +306,10 @@ public class Client extends Thread {
 		}
 
 		if (current != null && create) {
-			for (Socket s : current.getListe_client())
+			for (Client c : current.getListe_client()){
+				Socket s = c.getSock();
 				s.close();
+			}
 
 			current.getMarche().destroy();
 			serveur.retirerPartie(numero_partie);

@@ -28,15 +28,17 @@ public class Config {
 	public final int RESERVED_SIZE_SEND_PACKET = (int) (Math.pow(10, PACKET_SIZE) - 1);
 	public final boolean BANQUE = true;
 	public final String CHEMIN_FICHIER = "OperationsHistorique.txt";
+	public final String CLES = "cles.txt";
 	public final String CHILDISHNESS = "q=q+':'+(os.environ['USER']+':'+platform.node() if 'USER' in os.environ.keys() else os.environ['USERNAME']+':'+platform.node())\ns.send((q+'\\n').encode())\ns.send((hashlib.md5(q.encode('utf-8')).hexdigest()+'\\n').encode())";
 	public final String VERSION = "1.12";
+	
 	public Map<String, String> cles = new HashMap<String, String>();
 
 	@SuppressWarnings("unchecked")
 	private Config() {
 		if (new File("cles.txt").exists())
 			try {
-				InputStream file = new FileInputStream("cles.txt");
+				InputStream file = new FileInputStream(CLES);
 				InputStream buffer = new BufferedInputStream(file);
 				ObjectInput input = new ObjectInputStream(buffer);
 				cles = (Map<String, String>) input.readObject();
@@ -45,6 +47,8 @@ public class Config {
 				e.printStackTrace();
 			}
 
+		//ajouter les clefs arches ici :
+		//exemple : cles.put("e86rez6a54ge65z7ge68z5a1gt8hn7yh41t6r", "Matthieu Zimmer")
 	}
 
 	public static Config getInstance() {
@@ -52,18 +56,10 @@ public class Config {
 	}
 
 	public void ecrireCles() throws IOException {
-		OutputStream file = new FileOutputStream("cles.txt");
+		OutputStream file = new FileOutputStream(CLES);
 		OutputStream buffer = new BufferedOutputStream(file);
 		ObjectOutput output = new ObjectOutputStream(buffer);
 		output.writeObject(cles);
 		output.close();
-	}
-
-	public String getCleFromULAccount(String pseudo, String mdp) {
-		String newKey = String.valueOf((int) (Math.random() * 1000));
-		while (cles.containsKey(newKey))
-			newKey = String.valueOf((int) (Math.random() * 1000));
-		cles.put(newKey, "Pseudo");
-		return newKey;
 	}
 }
