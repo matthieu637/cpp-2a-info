@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import core.Config;
+
 public class Console extends Thread {
 
 	private final Map<Integer, Partie> liste_partie;
@@ -20,8 +22,10 @@ public class Console extends Thread {
 			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
 			while ((commande = in.readLine()) != null) {
-				if (commande.equalsIgnoreCase("stop"))
+				if (commande.equalsIgnoreCase("stop")){
+					Config.getInstance().ecrireCles();
 					System.exit(1);
+				}
 				else if (commande.equalsIgnoreCase("help")) {
 					System.err.println("Commandes :");
 					System.err.println("\tstop");
