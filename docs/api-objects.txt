@@ -1,5 +1,4 @@
 client	client-module.html
-client.__package__	client-module.html#__package__
 client.Reseau	client.Reseau-class.html
 client.Reseau.annulerOperation	client.Reseau-class.html#annulerOperation
 client.Reseau.achats	client.Reseau-class.html#achats
