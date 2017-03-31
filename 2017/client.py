@@ -7,7 +7,7 @@ import os
 import platform
 import hashlib
 import sys
-import getpass
+import random
 
 if sys.version_info[0] < 3:
 	raise Exception("il faut une version de python plus récente, utiliser python 3.X")
@@ -98,7 +98,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.12"
+		self.__versionClient="1.13"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -516,7 +516,13 @@ class Reseau:
 		self.__envoyer(self.__message["FIN"])
 		return eval(self.__recevoir())
 
-	def creerCle(self,pseudo):
-		mdp=getpass.getpass()
-		self.__envoyer(self.__message["CREERCLE"] + str(pseudo) + " " + str(mdp))
-		return eval(self.__recevoir())
+	def creerCle(self):
+		'''
+		Renvoie une clé aléatoire à déposer sur arche. Ne pas la divulger aux autres : elle sert d'identification.
+		Lors des parties avec modeExamen=1, vous utiliserez cette clé à la place de votre nom.
+		'''
+		key=hashlib.md5(str(random.random()).encode('utf-8')).hexdigest()
+		print(key)
+		print('A copier-coller ici : http://arche.univ-lorraine.fr/mod/assign/view.php?id=437197&action=editsubmission dans le champs texte en ligne')
+		print('Puis à utiliser en tant que nom lors des parties avec modeExamen=1')
+		return key

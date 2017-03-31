@@ -11,7 +11,7 @@ import core.Marche;
 
 public class Partie {
 	private final Marche marche;
-	private final List<Socket> liste_client;
+	private final List<Client> liste_client;
 	private final List<String> liste_HostAdress;
 	private final boolean isModeExam;
 
@@ -22,18 +22,18 @@ public class Partie {
 		liste_client = new LinkedList<>();
 	}
 
-	public List<Socket> getListe_client() {
+	public List<Client> getListe_client() {
 		return liste_client;
 	}
 
-	public Joueur ajouter_client(Socket s, String nom, String nom_complet) {
+	public Joueur ajouter_client(Client s, String nom, String nom_complet) {
 		liste_client.add(s);
 
 		if (isModeExam) {
 			liste_HostAdress.add(nom);
 			return marche.creer_joueur(Config.getInstance().cles.get(nom), nom);
 		}
-		return marche.creer_joueur(nom, nom_complet + ":" + s.getInetAddress().getHostAddress());
+		return marche.creer_joueur(nom, nom_complet + ":" + s.getSock().getInetAddress().getHostAddress());
 	}
 
 	public boolean isModeExamen() {
