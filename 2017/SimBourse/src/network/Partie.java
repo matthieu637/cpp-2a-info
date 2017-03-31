@@ -31,7 +31,7 @@ public class Partie {
 
 		if (isModeExam) {
 			liste_HostAdress.add(nom);
-			return marche.creer_joueur(Config.getInstance().cles.get(nom), nom);
+			return marche.creer_joueur(Config.getInstance().cles.get(nom), "");
 		}
 		return marche.creer_joueur(nom, nom_complet + ":" + s.getSock().getInetAddress().getHostAddress());
 	}
