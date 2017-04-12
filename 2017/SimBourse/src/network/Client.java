@@ -219,7 +219,6 @@ public class Client extends Thread {
 					join=true;
 					joueur = current.ajouter_client(this, nom, identifier);
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
-					current.getMarche().commence();
 					String retour = current.getMarche().getListeJoueursStringDico();
 					for (Client c : current.getListe_client()){
 						Socket s = c.getSock();
@@ -233,6 +232,7 @@ public class Client extends Thread {
 						}
 					}
 					envoyer(out, retour);
+					current.getMarche().commence();
 				} else if (userInput.startsWith(TOP) && !current.getMarche().est_ouvert()) {
 				  // attend le top
 					attendTop = true;
