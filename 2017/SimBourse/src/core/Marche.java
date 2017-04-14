@@ -193,11 +193,9 @@ public class Marche {
 			return -5;
 		if (prix_achat <= 0.0)
 			return -6;
-
-		volume_achat= (int)((int)(volume_achat*prix_achat)/prix_achat);
-		if(volume_achat==0)
+		if((int)(volume_achat * prix_achat) == 0)
 			return -8;
-		
+
 		mutex_ordre_write.lock();
 		int argent_joueur= joueur_achat.getSolde_euros();
 		int argent_engage = (int) (volume_achat * prix_achat);
@@ -273,9 +271,7 @@ public class Marche {
 			return -8;
 		if (prix_vente <= 0.0)
 			return -9;
-		
-		volume_vente= (int)((int)(volume_vente * prix_vente)/prix_vente);
-		if(volume_vente==0)
+		if((int)(volume_vente * prix_vente) == 0)
 			return -11;
 
 		mutex_ordre_write.lock();
