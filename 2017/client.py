@@ -192,6 +192,8 @@ class Reseau:
 		id_partie = int(self.__recevoir())
 		if id_partie>=0:
 			self.__connect = True
+		if id_partie == -5:
+			raise RuntimeError("Votre clé n'est pas valide. Pour ne pas l'utiliser il faut préciser modeExam=0 dans creerPartie.")
 		return id_partie
 	
 	def rejoindrePartie(self, id_partie, nom):
@@ -202,7 +204,7 @@ class Reseau:
 			- -2 si le nom de joueur est déjà pris
 			- -3 si la partie est déjà lancée (top)
 			- -4 si les types ne sont pas respectés
-			- -5 si vous tenter de vous connecter plusieurs fois pendant une partie en modeExamen
+			- -5 si vous tenter de vous connecter plusieurs fois pendant une partie en modeExamen, ou que votre clé n'est pas valide
 		
 		@param id_partie: le numéro de la partie qui m'a été communiqué oralement
 		@type id_partie: entier
@@ -214,6 +216,9 @@ class Reseau:
 		ok = int(self.__recevoir())
 		if ok==0:
 			self.__connect = True
+		if ok == -5:
+			raise RuntimeError("Votre clé n'est pas valide.")
+
 		return ok
 
 	def avantTop(self):
