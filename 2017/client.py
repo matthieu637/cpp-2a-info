@@ -98,7 +98,7 @@ class Reseau:
 		self.__topbool = False
 		self.__histoActions={}
 		self.__tempsFinPartie= 0
-		self.__versionClient="1.13"
+		self.__versionClient="1.14"
 		self.__sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#connexion
 		self.__sock.settimeout(5)
@@ -240,7 +240,9 @@ class Reseau:
 		if self.__topbool:
 			return -4
 		self.__envoyer(self.__message["TOP"]) 
-		r = (self.__recevoir())
+		r = eval(self.__recevoir())
+		ttowait = r[0]
+		time.sleep(float(ttowait)/1000.)
 		self.__topbool= True
 		self.__envoyer(self.__message["FIN"]) # Pour avoir la duree de la partie
 		self.__tempsFinPartie=time.time() + int(eval(self.__recevoir())['temps']) #lance le 'chronometre' quand le serveur a lance le top

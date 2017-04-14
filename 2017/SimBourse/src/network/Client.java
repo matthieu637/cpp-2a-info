@@ -220,18 +220,22 @@ public class Client extends Thread {
 					joueur = current.ajouter_client(this, nom, identifier);
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					String retour = current.getMarche().getListeJoueursStringDico();
+					long futureTop = System.currentTimeMillis() + 2000;//in 2 seconds
 					for (Client c : current.getListe_client()){
 						Socket s = c.getSock();
 						try {
 							if (!s.equals(client) && c.isAttendTop()) {
 								BufferedWriter outAdvers = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-								envoyer(outAdvers, "0");
+								envoyer(outAdvers, "("+String.valueOf((int)(futureTop - System.currentTimeMillis()))+",)");
 							}
 						} catch(Exception e) {
 							//peu importe client perdu
 						}
 					}
-					envoyer(out, retour);
+					envoyer(out, "("+String.valueOf((int)(futureTop - System.currentTimeMillis())+","+retour+")"));
+					long reste = futureTop - System.currentTimeMillis();
+					if(reste > 0)
+						Thread.sleep(reste);
 					current.getMarche().commence();
 				} else if (userInput.startsWith(TOP) && !current.getMarche().est_ouvert()) {
 				  // attend le top
