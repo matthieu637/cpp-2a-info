@@ -167,7 +167,7 @@ class Reseau:
 				break
 		return numAction
 		
-	def creerPartie(self, nom, modeBanque=1, modeExam=0):
+	def creerPartie(self, nom, modeBanque=1, modeExam=1):
 		'''
 		Crée la partie et renvoie l’id à communiquer oralement aux autres joueurs.
 		

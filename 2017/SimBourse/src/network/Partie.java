@@ -28,12 +28,17 @@ public class Partie {
 
 	public Joueur ajouter_client(Client s, String nom, String nom_complet) {
 		liste_client.add(s);
+		nom_complet += ":" + s.getSock().getInetAddress().getHostAddress();
 
 		if (isModeExam) {
 			liste_HostAdress.add(nom);
-			return marche.creer_joueur(Config.getInstance().cles.get(nom), "");
+			return marche.creer_joueur(Config.getInstance().cles.get(nom), nom_complet);
 		}
-		return marche.creer_joueur(nom, nom_complet + ":" + s.getSock().getInetAddress().getHostAddress());
+		
+		if(Config.getInstance().cles.containsKey(nom))
+			nom = Config.getInstance().cles.get(nom);
+		
+		return marche.creer_joueur(nom, nom_complet);
 	}
 
 	public boolean isModeExamen() {
