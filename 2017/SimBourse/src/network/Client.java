@@ -220,7 +220,7 @@ public class Client extends Thread {
 					joueur = current.ajouter_client(this, nom, identifier);
 				} else if (userInput.startsWith(TOP) && create && !current.getMarche().est_ouvert()) {
 					String retour = current.getMarche().getListeJoueursStringDico();
-					long futureTop = System.currentTimeMillis() + 2000;//in 2 seconds
+					long futureTop = System.currentTimeMillis() + 3500;//in 3.5 seconds
 					for (Client c : current.getListe_client()){
 						Socket s = c.getSock();
 						try {
@@ -233,7 +233,7 @@ public class Client extends Thread {
 						}
 					}
 					envoyer(out, "("+String.valueOf((int)(futureTop - System.currentTimeMillis())+","+retour+")"));
-					long reste = futureTop - System.currentTimeMillis();
+					long reste = futureTop - System.currentTimeMillis() - 50;
 					if(reste > 0)
 						Thread.sleep(reste);
 					current.getMarche().commence();
